@@ -3,8 +3,9 @@
 #ifndef PROGRESSINDICATOR_H
 #define PROGRESSINDICATOR_H
 
-#include <QWidget>
 #include <QDateTime>
+#include <QElapsedTimer>
+#include <QWidget>
 
 class QProgressBar;
 class QLabel;
@@ -60,12 +61,12 @@ private:
     float totalTime;
     float processedTime;
 
-    QTime updateTime;
+    QElapsedTimer updateTime;
     float lastProcessedTime;
     TrailingAverage timeAverage;
     TrailingAverage speedAverage;
 
-signals:
+Q_SIGNALS:
     void progressChanged( const QString& progress );
 };
 

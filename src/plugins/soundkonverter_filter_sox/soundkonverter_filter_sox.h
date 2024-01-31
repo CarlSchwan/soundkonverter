@@ -8,7 +8,7 @@
 #include <QDateTime>
 
 class FilterOptions;
-class KDialog;
+class QDialog;
 class KComboBox;
 
 
@@ -44,8 +44,20 @@ public:
     CodecWidget *newCodecWidget();
     FilterWidget *newFilterWidget();
 
-    int convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags = 0, bool replayGain = false );
-    QStringList convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags = 0, bool replayGain = false );
+    int convert(const QUrl &inputFile,
+                const QUrl &outputFile,
+                const QString &inputCodec,
+                const QString &outputCodec,
+                const ConversionOptions *_conversionOptions,
+                TagData *tags = 0,
+                bool replayGain = false);
+    QStringList convertCommand(const QUrl &inputFile,
+                               const QUrl &outputFile,
+                               const QString &inputCodec,
+                               const QString &outputCodec,
+                               const ConversionOptions *_conversionOptions,
+                               TagData *tags = 0,
+                               bool replayGain = false);
     float parseOutput( const QString& output );
 
     FilterOptions *filterOptionsFromXml( QDomElement filterOptions );
@@ -55,7 +67,7 @@ private:
     QWeakPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
-    QWeakPointer<KDialog> configDialog;
+    QWeakPointer<QDialog> configDialog;
     KComboBox *configDialogSamplingRateQualityComboBox;
 
     int configVersion;

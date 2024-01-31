@@ -6,7 +6,7 @@
 #include <QTreeWidget>
 #include "filelistitem.h"
 
-#include <QTime>
+#include <QElapsedTimer>
 // #include <QDebug>
 
 class FileListItem;
@@ -18,7 +18,7 @@ class OptionsLayer;
 class ConversionOptions;
 
 class QMenu;
-class KAction;
+class QAction;
 class QProgressBar;
 
 /**
@@ -62,11 +62,11 @@ private:
     /** A progressbar, that is shown, when a directory is added recursive */
     QProgressBar *pScanStatus;
     /** Update timer for the scan status */
-    QTime tScanStatus;
+    QElapsedTimer tScanStatus;
 
-// debug
-//     int TimeCount;
-//     QTime Time;
+    // debug
+    //     int TimeCount;
+    //     QTime Time;
 
     void convertNextItem();
     int waitingCount();
@@ -91,11 +91,11 @@ private:
     OptionsLayer *optionsLayer;
 
     QMenu *contextMenu;
-    KAction *editAction;
-    KAction *startAction;
-    KAction *stopAction;
-    KAction *removeAction;
-//     KAction* paste;
+    QAction *editAction;
+    QAction *startAction;
+    QAction *stopAction;
+    QAction *removeAction;
+    //     QAction* paste;
 
 private slots:
     void showContextMenu( const QPoint& point );
@@ -130,7 +130,7 @@ public slots:
     /** The ripping of a track has finished, so the device is free for ripping the next track */
     void rippingFinished( const QString& device );
 
-signals:
+Q_SIGNALS:
     // connected to ProgressIndicator
     void timeChanged( float timeDelta );
     void finished( bool );

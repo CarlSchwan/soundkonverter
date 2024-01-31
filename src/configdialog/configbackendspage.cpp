@@ -13,26 +13,25 @@
 #include "../config.h"
 #include "../core/codecplugin.h"
 
-#include <QBoxLayout>
 #include <KComboBox>
-#include <KIcon>
-#include <KLocale>
+#include <KLocalizedString>
 #include <KMessageBox>
-#include <KPushButton>
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
 #include <QListWidget>
+#include <QLocale>
+#include <QPushButton>
 #include <QToolButton>
-
 
 BackendsListWidget::BackendsListWidget( const QString& _name, Config *_config, QWidget *parent )
     : QGroupBox( _name, parent ),
     config( _config ),
     name( _name )
 {
-    QVBoxLayout *box = new QVBoxLayout();
-    setLayout( box );
+    auto box = new QVBoxLayout(this);
 
     lBackends = new QListWidget( this );
     connect( lBackends, SIGNAL(currentRowChanged(int)), this, SLOT(itemSelected(int)) );
@@ -42,28 +41,28 @@ BackendsListWidget::BackendsListWidget( const QString& _name, Config *_config, Q
     box->addLayout( arrowBox );
 
     pUp = new QToolButton( this );
-    pUp->setIcon( KIcon("arrow-up") );
+    pUp->setIcon(QIcon::fromTheme("arrow-up"));
     pUp->setAutoRaise( true );
     pUp->setEnabled( false );
     connect( pUp, SIGNAL(clicked()), this, SLOT(up()) );
     arrowBox->addWidget( pUp );
 
     pDown = new QToolButton( this );
-    pDown->setIcon( KIcon("arrow-down") );
+    pDown->setIcon(QIcon::fromTheme("arrow-down"));
     pDown->setAutoRaise( true );
     pDown->setEnabled( false );
     connect( pDown, SIGNAL(clicked()), this, SLOT(down()) );
     arrowBox->addWidget( pDown );
 
     pConfigure = new QToolButton( this );
-    pConfigure->setIcon( KIcon("configure") );
+    pConfigure->setIcon(QIcon::fromTheme("configure"));
     pConfigure->setAutoRaise( true );
     pConfigure->setEnabled( false );
     connect( pConfigure, SIGNAL(clicked()), this, SLOT(configure()) );
     arrowBox->addWidget( pConfigure );
 
     pInfo = new QToolButton( this );
-    pInfo->setIcon( KIcon("help-about") );
+    pInfo->setIcon(QIcon::fromTheme("help-about"));
     pInfo->setAutoRaise( true );
     pInfo->setEnabled( false );
     arrowBox->addWidget( pInfo );
@@ -253,7 +252,7 @@ ConfigBackendsPage::ConfigBackendsPage( Config *_config, QWidget *parent )
     ripperBox->setStretchFactor( cSelectorRipper, 1 );
     connect( cSelectorRipper, SIGNAL(activated(int)), this, SLOT(somethingChanged()) );
     connect( cSelectorRipper, SIGNAL(activated(const QString&)), this, SLOT(ripperChanged(const QString&)) );
-    pConfigureRipper = new KPushButton( KIcon("configure"), "", this );
+    pConfigureRipper = new QPushButton(QIcon::fromTheme("configure"), "", this);
     pConfigureRipper->setFixedSize( cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height() );
     pConfigureRipper->setFlat( true );
     ripperBox->addWidget( pConfigureRipper );
@@ -288,7 +287,7 @@ ConfigBackendsPage::ConfigBackendsPage( Config *_config, QWidget *parent )
         filterCheckBoxes.append( newCheckBox );
         connect( newCheckBox, SIGNAL(stateChanged(int)), this, SLOT(somethingChanged()) );
 
-        KPushButton *newConfigButton = new KPushButton( KIcon("configure"), "", this );
+        QPushButton *newConfigButton = new QPushButton(QIcon::fromTheme("configure"), "", this);
         newConfigButton->setFixedSize( cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height() );
         newConfigButton->setFlat( true );
         filterGrid->addWidget( newConfigButton, row, 2 );
@@ -356,7 +355,7 @@ ConfigBackendsPage::ConfigBackendsPage( Config *_config, QWidget *parent )
     optimizationsBox->addSpacing( spacingOffset );
     formatBox->addLayout( optimizationsBox );
     optimizationsBox->addStretch();
-    pShowOptimizations = new KPushButton( KIcon("games-solve"), i18n("Show possible optimizations"), this );
+    pShowOptimizations = new QPushButton(QIcon::fromTheme("games-solve"), i18n("Show possible optimizations"), this);
     optimizationsBox->addWidget( pShowOptimizations );
     connect( pShowOptimizations, SIGNAL(clicked()), this, SLOT(showOptimizations()) );
     optimizationsBox->addStretch();
@@ -396,9 +395,12 @@ void ConfigBackendsPage::formatChanged( const QString& format, bool ignoreChange
 
     if( !ignoreChanges && ( decoderList->changed() || encoderList->changed() || replaygainList->changed() ) )
     {
-        const int ret = KMessageBox::questionYesNo( this, i18n("You have changed the current settings.\nDo you want to save them?"), i18n("Settings changed") );
-        if( ret == KMessageBox::Yes )
-        {
+        const int ret = KMessageBox::questionTwoActions(this,
+                                                        i18n("You have changed the current settings.\nDo you want to save them?"),
+                                                        i18n("Settings changed"),
+                                                        KStandardGuiItem::save(),
+                                                        KStandardGuiItem::cancel());
+        if (ret == KMessageBox::PrimaryAction) {
             saveSettings();
             config->save();
         }
@@ -448,8 +450,7 @@ void ConfigBackendsPage::resetDefaults()
         const QString pluginName = plugin->name();
         foreach( const ConversionPipeTrunk& trunk, plugin->codecTable() )
         {
-            if( trunk.enabled && allPlugins.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-            {
+            if (trunk.enabled && allPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                 allPlugins += QString::number(trunk.rating).rightJustified(8,'0') + pluginName;
                 break;
             }
@@ -472,10 +473,13 @@ void ConfigBackendsPage::resetDefaults()
         i++;
     }
 
-    const int answer = KMessageBox::questionYesNo( this, i18n("This will choose the best backends for all formats and save the new preferences immediately.\n\nDo you want to continue?") );
+    const int answer = KMessageBox::questionTwoActions(this,
+                                                       i18n("This will choose the best backends for all formats and save the new preferences immediately."),
+                                                       i18n("Do you want to continue?"),
+                                                       KStandardGuiItem::ok(),
+                                                       KStandardGuiItem::cancel());
 
-    if( answer == KMessageBox::Yes )
-    {
+    if (answer == KMessageBox::PrimaryAction) {
         QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations( true );
         for( int i=0; i<optimizationList.count(); i++ )
         {
@@ -577,8 +581,7 @@ void ConfigBackendsPage::configureRipper()
 void ConfigBackendsPage::configureFilter()
 {
     int i = 0;
-    foreach( const KPushButton *configButton, filterConfigButtons )
-    {
+    foreach (const QPushButton *configButton, filterConfigButtons) {
         if( configButton == QObject::sender() )
         {
             const QString filterPluginName = config->data.backends.filters.at(i);

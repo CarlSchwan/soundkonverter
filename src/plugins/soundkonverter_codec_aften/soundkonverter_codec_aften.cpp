@@ -80,7 +80,13 @@ CodecWidget *soundkonverter_codec_aften::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_aften::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_aften::convert(const QUrl &inputFile,
+                                        const QUrl &outputFile,
+                                        const QString &inputCodec,
+                                        const QString &outputCodec,
+                                        const ConversionOptions *_conversionOptions,
+                                        TagData *tags,
+                                        bool replayGain)
 {
     const QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -103,7 +109,13 @@ int soundkonverter_codec_aften::convert( const KUrl& inputFile, const KUrl& outp
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_aften::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_aften::convertCommand(const QUrl &inputFile,
+                                                       const QUrl &outputFile,
+                                                       const QString &inputCodec,
+                                                       const QString &outputCodec,
+                                                       const ConversionOptions *_conversionOptions,
+                                                       TagData *tags,
+                                                       bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)

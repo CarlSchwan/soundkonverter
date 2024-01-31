@@ -7,9 +7,9 @@ set(soundkonverter_codec_musepack_SRCS
 )
 
 add_library(soundkonverter_codec_musepack MODULE ${soundkonverter_codec_musepack_SRCS})
-target_link_libraries(soundkonverter_codec_musepack KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+target_link_libraries(soundkonverter_codec_musepack KF6::WidgetsAddons Qt6::Xml soundkonvertercore)
 
 ########### install files ###############
 
-install(TARGETS soundkonverter_codec_musepack DESTINATION ${PLUGIN_INSTALL_DIR})
+install(TARGETS soundkonverter_codec_musepack DESTINATION ${KDE_INSTALL_PLUGINDIR})
 install(FILES soundkonverter_codec_musepack.desktop DESTINATION ${SERVICES_INSTALL_DIR})

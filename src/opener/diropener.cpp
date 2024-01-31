@@ -4,65 +4,73 @@
 #include "../options.h"
 #include "../codecproblems.h"
 
-#include <QApplication>
-#include <QLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QDir>
-#include <QCheckBox>
-#include <KLocale>
-#include <KPushButton>
-#include <KFileDialog>
-#include <KIcon>
-#include <KListWidget>
-#include <KUrlRequester>
+#include <KLocalizedString>
 #include <KMessageBox>
+#include <KSharedConfig>
+#include <KUrlRequester>
+#include <KWindowConfig>
+#include <QApplication>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLabel>
+#include <QLayout>
+#include <QListWidget>
+#include <QLocale>
+#include <QPushButton>
 
-
-DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    dialogAborted( false ),
-    config( _config ),
-    mode( _mode )
+DirOpener::DirOpener(Config *_config, Mode _mode, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , dialogAborted(false)
+    , config(_config)
+    , mode(_mode)
+    , m_buttonBox(new QDialogButtonBox(this))
 {
-    setCaption( i18n("Add folder") );
-    setWindowIcon( KIcon("folder") );
+    setWindowTitle(i18n("Add folder"));
+    setWindowIcon(QIcon::fromTheme("folder"));
 
-    if( mode == Convert )
-    {
-        setButtons( KDialog::User1 | KDialog::Cancel );
-    }
-    else if( mode == ReplayGain )
-    {
-        setButtons( KDialog::Ok | KDialog::Cancel );
-    }
+    auto mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins({});
+    mainLayout->setSpacing(0);
 
-    setButtonText( KDialog::User1, i18n("Proceed") );
-    setButtonIcon( KDialog::User1, KIcon("go-next") );
+    QPushButton *proceedButton = nullptr;
+    if (mode == Convert) {
+        m_buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+        proceedButton = new QPushButton(m_buttonBox);
+        proceedButton->setText(i18nc("@action:button", "Proceed"));
+        proceedButton->setIcon(QIcon::fromTheme("go-next"));
+        m_buttonBox->addButton(proceedButton, QDialogButtonBox::ActionRole);
+
+        connect(proceedButton, &QPushButton::clicked, this, &DirOpener::proceedClicked);
+    } else if (mode == ReplayGain) {
+        m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    }
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    connect( this, SIGNAL(user1Clicked()), this, SLOT(proceedClicked()) );
-    connect( this, SIGNAL(okClicked()), this, SLOT(addClicked()) );
+    connect(m_buttonBox, &QDialogButtonBox::accepted, this, &DirOpener::addClicked);
 
     page = DirOpenPage;
 
-    QWidget *widget = new QWidget();
-    QGridLayout *mainGrid = new QGridLayout( widget );
-    QGridLayout *topGrid = new QGridLayout();
+    QGridLayout *mainGrid = new QGridLayout;
+    QGridLayout *topGrid = new QGridLayout;
     mainGrid->addLayout( topGrid, 0, 0 );
-    setMainWidget( widget );
+    mainLayout->addLayout(mainGrid);
+    mainLayout->addWidget(m_buttonBox);
 
-    lSelector = new QLabel( i18n("1. Select directory"), widget );
+    lSelector = new QLabel(i18n("1. Select directory"), this);
     QFont font;
     font.setBold( true );
     lSelector->setFont( font );
     topGrid->addWidget( lSelector, 0, 0 );
-    lOptions = new QLabel( i18n("2. Set conversion options"), widget );
+    lOptions = new QLabel(i18n("2. Set conversion options"), this);
     topGrid->addWidget( lOptions, 0, 1 );
 
     // draw a horizontal line
-    QFrame *lineFrame = new QFrame( widget );
+    QFrame *lineFrame = new QFrame(this);
     lineFrame->setFrameShape( QFrame::HLine );
     lineFrame->setFrameShadow( QFrame::Sunken );
     mainGrid->addWidget( lineFrame, 1, 0 );
@@ -76,7 +84,7 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
 
     // Dir Opener Widget
 
-    dirOpenerWidget = new QWidget( widget );
+    dirOpenerWidget = new QWidget(this);
     mainGrid->addWidget( dirOpenerWidget, 2, 0 );
 
     QVBoxLayout *box = new QVBoxLayout( dirOpenerWidget );
@@ -87,7 +95,7 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
     QLabel *labelFilter = new QLabel( i18n("Directory:"), dirOpenerWidget );
     directoryBox->addWidget( labelFilter );
 
-    uDirectory = new KUrlRequester( KUrl("kfiledialog:///soundkonverter-add-media"), dirOpenerWidget );
+    uDirectory = new KUrlRequester(QUrl("kfiledialog:///soundkonverter-add-media"), dirOpenerWidget);
     uDirectory->setMode( KFile::Directory | KFile::ExistingOnly | KFile::LocalOnly );
     directoryBox->addWidget( uDirectory );
 
@@ -98,7 +106,7 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
     box->addLayout( fileTypesBox );
 
     QStringList codecList;
-    fileTypes = new KListWidget( dirOpenerWidget );
+    fileTypes = new QListWidget(dirOpenerWidget);
     if( mode == Convert )
     {
         codecList = config->pluginLoader()->formatList( PluginLoader::Decode, PluginLoader::CompressionType(PluginLoader::InferiorQuality|PluginLoader::Lossy|PluginLoader::Lossless|PluginLoader::Hybrid) );
@@ -127,11 +135,11 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
     fileTypesBox->addLayout( fileTypesButtonsBox );
     fileTypesButtonsBox->addStretch();
 
-    pSelectAll = new KPushButton( KIcon("edit-select-all"), i18n("Select all"), dirOpenerWidget );
+    pSelectAll = new QPushButton(QIcon::fromTheme("edit-select-all"), i18n("Select all"), dirOpenerWidget);
     fileTypesButtonsBox->addWidget( pSelectAll );
     connect( pSelectAll, SIGNAL(clicked()), this, SLOT(selectAllClicked()) );
 
-    pSelectNone = new KPushButton( KIcon("application-x-zerosize"), i18n("Select none"), dirOpenerWidget );
+    pSelectNone = new QPushButton(QIcon::fromTheme("application-x-zerosize"), i18n("Select none"), dirOpenerWidget);
     fileTypesButtonsBox->addWidget( pSelectNone );
     connect( pSelectNone, SIGNAL(clicked()), this, SLOT(selectNoneClicked()) );
 
@@ -145,13 +153,12 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
 
     // Conversion Options Widget
 
-    options = new Options( config, i18n("Select your desired output options and click on \"Ok\"."), widget );
+    options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
     mainGrid->addWidget( options, 2, 0 );
     adjustSize();
     options->hide();
 
-
-    const KUrl url = KFileDialog::getExistingDirectoryUrl( uDirectory->url(), this );
+    const QUrl url = QFileDialog::getExistingDirectoryUrl(this, i18nc("@title:window", "Directory"), uDirectory->url().toLocalFile());
     if( !url.isEmpty() )
         uDirectory->setUrl( url );
     else
@@ -159,17 +166,26 @@ DirOpener::DirOpener( Config *_config, Mode _mode, QWidget *parent, Qt::WFlags f
 
         // Prevent the dialog from beeing too wide because of the directory history
     if( parent && width() > parent->width() )
-        setInitialSize( QSize(parent->width()-fontHeight,sizeHint().height()) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "DirOpener" );
-    restoreDialogSize( group );
+        resize(QSize(parent->width() - fontHeight, sizeHint().height()));
+
+    readConfig();
 }
 
 DirOpener::~DirOpener()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "DirOpener" );
-    saveDialogSize( group );
+    writeConfig();
+}
+
+void DirOpener::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "DirOpener");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void DirOpener::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "DirOpener");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 void DirOpener::proceedClicked()
@@ -184,7 +200,8 @@ void DirOpener::proceedClicked()
         lSelector->setFont( font );
         font.setBold( true );
         lOptions->setFont( font );
-        setButtons( KDialog::Ok | KDialog::Cancel );
+        m_buttonBox->clear();
+        m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     }
 }
 

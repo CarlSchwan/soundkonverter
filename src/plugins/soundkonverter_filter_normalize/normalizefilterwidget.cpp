@@ -4,10 +4,10 @@
 #include "normalizefilterwidget.h"
 #include "normalizefilteroptions.h"
 
-#include <QLayout>
-#include <QHBoxLayout>
-#include <KLocale>
 #include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QLocale>
 
 NormalizeFilterWidget::NormalizeFilterWidget()
     : FilterWidget()

@@ -14,7 +14,7 @@ class OutputDirectory;
 // class OptionsDetailed;
 
 class KToolBarButton;
-class KPushButton;
+class QPushButton;
 class QLabel;
 class QCheckBox;
 class KComboBox;
@@ -61,10 +61,10 @@ public:
 
 private:
     KComboBox* cProfile;
-    KPushButton* pProfileRemove;
-    KPushButton* pProfileInfo;
+    QPushButton *pProfileRemove;
+    QPushButton *pProfileInfo;
     KComboBox* cFormat;
-    KPushButton* pFormatInfo;
+    QPushButton *pFormatInfo;
 
     QCheckBox *cReplayGain;
 //     QCheckBox *cBpm;
@@ -88,7 +88,7 @@ private slots:
 
     void somethingChanged();
 
-signals:
+Q_SIGNALS:
     void optionsChanged();
     void customProfilesEdited();
 };

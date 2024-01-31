@@ -3,13 +3,12 @@
 
 #include "soundkonverter_replaygain_mp3gain.h"
 
-#include <KDialog>
-#include <QComboBox>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
 #include <QDoubleSpinBox>
 #include <QHBoxLayout>
 #include <QLabel>
-
 
 Mp3GainPluginItem::Mp3GainPluginItem( QObject *parent )
     : ReplayGainPluginItem( parent )
@@ -78,9 +77,9 @@ void soundkonverter_replaygain_mp3gain::showConfigDialog( ActionType action, con
 
     if( !configDialog.data() )
     {
-        configDialog = new KDialog( parent );
+        configDialog = new QDialog(parent);
         configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
-        configDialog.data()->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Default );
+        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
         QWidget *configDialogWidget = new QWidget( configDialog.data() );
         QVBoxLayout *configDialogBox = new QVBoxLayout( configDialogWidget );
@@ -160,7 +159,7 @@ void soundkonverter_replaygain_mp3gain::showInfo( QWidget *parent )
     Q_UNUSED(parent)
 }
 
-int soundkonverter_replaygain_mp3gain::apply( const KUrl::List& fileList, ReplayGainPlugin::ApplyMode mode )
+int soundkonverter_replaygain_mp3gain::apply(const QList<QUrl> &fileList, ReplayGainPlugin::ApplyMode mode)
 {
     if( fileList.count() <= 0 )
         return BackendPlugin::UnknownError;
@@ -219,8 +218,7 @@ int soundkonverter_replaygain_mp3gain::apply( const KUrl::List& fileList, Replay
             command += "i";
         }
     }
-    foreach( const KUrl& file, fileList )
-    {
+    foreach (const QUrl &file, fileList) {
         command += "\"" + escapeUrl(file) + "\"";
     }
 
@@ -275,8 +273,7 @@ void soundkonverter_replaygain_mp3gain::undoProcessExit( int exitCode, QProcess:
     // delete tags
     command += "-s";
     command += "d";
-    foreach( const KUrl& file, item->undoFileList )
-    {
+    foreach (const QUrl &file, item->undoFileList) {
         command += "\"" + escapeUrl(file) + "\"";
     }
 

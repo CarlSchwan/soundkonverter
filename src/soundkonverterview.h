@@ -6,15 +6,12 @@
 #ifndef _SOUNDKONVERTERVIEW_H_
 #define _SOUNDKONVERTERVIEW_H_
 
-
+#include <QUrl>
 #include <QWidget>
-#include <KUrl>
 
-
-class KPushButton;
+class QPushButton;
 class QMenu;
-class KAction;
-class KActionMenu;
+class QAction;
 class QToolButton;
 
 class ProgressIndicator;
@@ -26,7 +23,7 @@ class FileList;
 class OptionsLayer;
 
 // class QPainter;
-// class KUrl;
+// class QUrl;
 
 /**
  * This is the main view class for soundKonverter.  Most of the non-menu,
@@ -48,17 +45,20 @@ public:
     /** Destructor */
     ~soundKonverterView();
 
-    void addConvertFiles( const KUrl::List& urls, QString _profile, QString _format, const QString& directory, const QString& notifyCommand = "" );
+    void addConvertFiles(const QList<QUrl> &urls, QString _profile, QString _format, const QString &directory, const QString &notifyCommand = "");
     void loadAutosaveFileList();
     void loadFileList(const QString& fileListPath);
 
     QAction *start() { return startAction; }
-    KActionMenu *stopMenu() { return stopActionMenu; }
+    QMenu *stopMenu()
+    {
+        return stopActionMenu;
+    }
 
     void startConversion();
     void killConversion();
 
-signals:
+Q_SIGNALS:
     /** Use this signal to change the content of the statusbar */
 //     void signalChangeStatusbar(const QString& text);
 
@@ -100,24 +100,24 @@ private:
     ComboButton *cAdd;
 
     /** The button to start the conversion */
-    KPushButton *pStart;
+    QPushButton *pStart;
     /** Tha start action */
     QAction *startAction;
 
     /** The button to stop the conversion */
-    KPushButton *pStop;
+    QPushButton *pStop;
     /** The menu for the stop button */
-    KActionMenu *stopActionMenu;
-    KAction *killAction;
-    KAction *stopAction;
-    KAction *continueAction;
+    QMenu *stopActionMenu;
+    QAction *killAction;
+    QAction *stopAction;
+    QAction *continueAction;
 
     /** Displays the current progress */
     ProgressIndicator *progressIndicator;
 
     void cleanupParameters( QString *profile, QString *format );
 
-signals:
+Q_SIGNALS:
     void progressChanged( const QString& progress );
     void signalConversionStarted();
     void signalConversionStopped( bool failed );

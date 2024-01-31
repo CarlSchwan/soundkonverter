@@ -10,8 +10,7 @@ class OptionsDetailed;
 class Config;
 class ConversionOptions;
 
-class KTabWidget;
-
+class QTabWidget;
 
 /**
  * @short The widget, where we can set our output options
@@ -53,7 +52,7 @@ public slots:
 private:
     Config *config;
 
-    KTabWidget *tab;
+    QTabWidget *tab;
 
     OptionsSimple *optionsSimple;
     OptionsDetailed *optionsDetailed;

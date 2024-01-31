@@ -6,7 +6,7 @@
 #include "soxfilteroptions.h"
 
 class KComboBox;
-class KPushButton;
+class QPushButton;
 class QHBoxLayout;
 
 
@@ -27,8 +27,8 @@ private:
     KComboBox *cEffect;
     QHBoxLayout *widgetsBox;
     QList<QWidget*> widgets;
-    KPushButton *pRemove;
-    KPushButton *pAdd;
+    QPushButton *pRemove;
+    QPushButton *pAdd;
 
 private slots:
     void removeClicked();
@@ -36,7 +36,7 @@ private slots:
 
     void normalizeVolumeChanged( double value );
 
-signals:
+Q_SIGNALS:
     void addEffectWidgetClicked();
     void removeEffectWidgetClicked( SoxEffectWidget *widget );
 

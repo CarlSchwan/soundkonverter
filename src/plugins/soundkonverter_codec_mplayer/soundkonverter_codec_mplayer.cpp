@@ -123,7 +123,13 @@ CodecWidget *soundkonverter_codec_mplayer::newCodecWidget()
     return 0;
 }
 
-int soundkonverter_codec_mplayer::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_mplayer::convert(const QUrl &inputFile,
+                                          const QUrl &outputFile,
+                                          const QString &inputCodec,
+                                          const QString &outputCodec,
+                                          const ConversionOptions *_conversionOptions,
+                                          TagData *tags,
+                                          bool replayGain)
 {
     const QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -146,7 +152,13 @@ int soundkonverter_codec_mplayer::convert( const KUrl& inputFile, const KUrl& ou
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_mplayer::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_mplayer::convertCommand(const QUrl &inputFile,
+                                                         const QUrl &outputFile,
+                                                         const QString &inputCodec,
+                                                         const QString &outputCodec,
+                                                         const ConversionOptions *_conversionOptions,
+                                                         TagData *tags,
+                                                         bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(_conversionOptions)

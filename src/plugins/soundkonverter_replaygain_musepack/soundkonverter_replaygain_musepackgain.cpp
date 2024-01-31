@@ -64,7 +64,7 @@ void soundkonverter_replaygain_musepackgain::showInfo( QWidget *parent )
     Q_UNUSED(parent)
 }
 
-int soundkonverter_replaygain_musepackgain::apply( const KUrl::List& fileList, ReplayGainPlugin::ApplyMode mode )
+int soundkonverter_replaygain_musepackgain::apply(const QList<QUrl> &fileList, ReplayGainPlugin::ApplyMode mode)
 {
     if( fileList.count() <= 0 )
         return BackendPlugin::UnknownError;
@@ -81,8 +81,7 @@ int soundkonverter_replaygain_musepackgain::apply( const KUrl::List& fileList, R
 
     QStringList command;
     command += binaries["mpcgain"];
-    foreach( const KUrl& file, fileList )
-    {
+    foreach (const QUrl &file, fileList) {
         command += "\"" + escapeUrl(file) + "\"";
     }
 

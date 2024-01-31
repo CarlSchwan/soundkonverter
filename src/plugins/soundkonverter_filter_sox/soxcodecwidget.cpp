@@ -6,16 +6,15 @@
 
 #include <math.h>
 
-#include <QCheckBox>
-#include <QLayout>
-#include <QBoxLayout>
-#include <QLabel>
-#include <QSpinBox>
-#include <QSlider>
 #include <KComboBox>
-#include <KLocale>
 #include <KLineEdit>
-
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QSlider>
+#include <QSpinBox>
 
 // TODO clean up use of modeChanged()
 

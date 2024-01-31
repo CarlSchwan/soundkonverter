@@ -3,12 +3,11 @@
 #include "MetaReplayGain.h"
 #include "config.h"
 
-
-#include <QFile>
-#include <QDir>
+#include <KLocalizedString>
 #include <QBuffer>
-
-#include <KLocale>
+#include <QDir>
+#include <QFile>
+#include <QLocale>
 
 #include <fileref.h>
 #include <id3v1genres.h> //used to load genre list
@@ -134,9 +133,9 @@ TagEngine::TagEngine( Config *_config )
 TagEngine::~TagEngine()
 {}
 
-TagData* TagEngine::readTags( const KUrl& fileName )
+TagData *TagEngine::readTags(const QUrl &fileName)
 {
-    TagLib::FileRef fileref( fileName.pathOrUrl().toLocal8Bit() );
+    TagLib::FileRef fileref(fileName.toDisplayString(QUrl::PreferLocalFile).toLocal8Bit());
 
     if( !fileref.isNull() )
     {
@@ -233,7 +232,7 @@ TagData* TagEngine::readTags( const KUrl& fileName )
                         if( frame && frame->owner() == "http://musicbrainz.org" )
                         {
                             const TagLib::ByteVector id = frame->identifier();
-                            tagData->musicBrainzTrackId = QString::fromAscii( id.data(), id.size() );
+                            tagData->musicBrainzTrackId = QString::fromLatin1(id.data(), id.size());
                         }
                     }
                 }
@@ -482,7 +481,7 @@ TagData* TagEngine::readTags( const KUrl& fileName )
             const int i = track.indexOf('/');
             if( i != -1 )
             {
-                tagData->trackTotal = track.right( track.count() - i - 1 ).toInt();
+                tagData->trackTotal = track.right(track.length() - i - 1).toInt();
             }
         }
 
@@ -492,7 +491,7 @@ TagData* TagEngine::readTags( const KUrl& fileName )
             if( i != -1 )
             {
                 tagData->disc = disc.left( i ).toInt();
-                tagData->discTotal = disc.right( disc.count() - i - 1 ).toInt();
+                tagData->discTotal = disc.right(disc.length() - i - 1).toInt();
             }
             else
             {
@@ -506,12 +505,12 @@ TagData* TagEngine::readTags( const KUrl& fileName )
     return 0;
 }
 
-bool TagEngine::writeTags( const KUrl& fileName, TagData *tagData )
+bool TagEngine::writeTags(const QUrl &fileName, TagData *tagData)
 {
     if( !tagData )
         return false;
 
-    TagLib::FileRef fileref( fileName.pathOrUrl().toLocal8Bit(), false );
+    TagLib::FileRef fileref(fileName.toDisplayString(QUrl::PreferLocalFile).toLocal8Bit(), false);
 
     //Set default codec to UTF-8 (see bugs 111246 and 111232)
     TagLib::ID3v2::FrameFactory::instance()->setDefaultTextEncoding( TagLib::String::UTF8 );
@@ -1013,11 +1012,11 @@ bool TagEngine::writeTags( const KUrl& fileName, TagData *tagData )
     return false;
 }
 
-QList<CoverData*> TagEngine::readCovers( const KUrl& fileName )
+QList<CoverData *> TagEngine::readCovers(const QUrl &fileName)
 {
     QList<CoverData*> covers;
 
-    TagLib::FileRef fileref( fileName.pathOrUrl().toLocal8Bit() );
+    TagLib::FileRef fileref(fileName.toDisplayString(QUrl::PreferLocalFile).toLocal8Bit());
 
     if( !fileref.isNull() )
     {
@@ -1185,12 +1184,12 @@ QList<CoverData*> TagEngine::readCovers( const KUrl& fileName )
     return covers;
 }
 
-bool TagEngine::writeCovers( const KUrl& fileName, QList<CoverData*> covers )
+bool TagEngine::writeCovers(const QUrl &fileName, QList<CoverData *> covers)
 {
     if( covers.isEmpty() )
         return true;
 
-    TagLib::FileRef fileref( fileName.pathOrUrl().toLocal8Bit(), false );
+    TagLib::FileRef fileref(fileName.toDisplayString(QUrl::PreferLocalFile).toLocal8Bit(), false);
 
     if( !fileref.isNull() )
     {
@@ -1374,15 +1373,15 @@ bool TagEngine::writeCoversToDirectory( const QString& directoryName, TagData *t
         {
             extension = ".jpg";
             if( fileName.toLower().endsWith(".jpg") )
-                fileName = fileName.left( fileName.count() - 4 );
+                fileName = fileName.left(fileName.length() - 4);
             if( fileName.toLower().endsWith(".jpeg") )
-                fileName = fileName.left( fileName.count() - 5 );
+                fileName = fileName.left(fileName.length() - 5);
         }
         else if( cover->mimeType == "image/png" )
         {
             extension = ".png";
             if( fileName.toLower().endsWith(".png") )
-                fileName = fileName.left( fileName.count() - 4 );
+                fileName = fileName.left(fileName.length() - 4);
         }
 
         QFile file( directoryName + "/" + fileName + extension );

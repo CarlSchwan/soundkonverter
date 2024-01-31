@@ -2,15 +2,14 @@
 #include "progressindicator.h"
 #include "global.h"
 
+#include <KLocalizedString>
 #include <QApplication>
-#include <QLayout>
 #include <QBoxLayout>
 #include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QProgressBar>
 #include <QToolTip>
-
-#include <KLocale>
-
 
 TrailingAverage::TrailingAverage()
 {
@@ -108,7 +107,7 @@ ProgressIndicator::ProgressIndicator( QWidget *parent, Feature features )
             timeAverage.setCount( 60 );
         }
 
-        updateTime.setHMS( 24, 0, 0 );
+        // updateTime.setHMS( 24, 0, 0 );
     }
 }
 
@@ -147,7 +146,7 @@ void ProgressIndicator::finished( bool reset )
     else
         pBar->setValue( pBar->maximum() );
 
-    updateTime.setHMS( 24, 0, 0 );
+    // updateTime.setHMS( 24, 0, 0 );
 
     if( lTime )
     {
@@ -179,7 +178,7 @@ void ProgressIndicator::update( float timeProgress )
 
         if( updateTime.elapsed() >= 1000 )
         {
-            const float deltaTime = updateTime.restart() / 1000;
+            const float deltaTime = updateTime.restart() / 1000.0;
 
             if( lTime )
             {

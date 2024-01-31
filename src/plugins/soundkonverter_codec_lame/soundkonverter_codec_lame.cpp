@@ -5,17 +5,16 @@
 #include "lameconversionoptions.h"
 #include "lamecodecwidget.h"
 
-
-#include <QWidget>
-#include <QLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <KLocale>
 #include <KComboBox>
-#include <KDialog>
-#include <QSpinBox>
+#include <QCheckBox>
+#include <QDialog>
 #include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
+#include <QSpinBox>
+#include <QWidget>
 
 soundkonverter_codec_lame::soundkonverter_codec_lame( QObject *parent, const QVariantList& args  )
     : CodecPlugin( parent )
@@ -109,9 +108,9 @@ void soundkonverter_codec_lame::showConfigDialog( ActionType action, const QStri
 
     if( !configDialog.data() )
     {
-        configDialog = new KDialog( parent );
+        configDialog = new QDialog(parent);
         configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
-        configDialog.data()->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Default );
+        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
         QWidget *configDialogWidget = new QWidget( configDialog.data() );
         QHBoxLayout *configDialogBox = new QHBoxLayout( configDialogWidget );
@@ -164,9 +163,9 @@ bool soundkonverter_codec_lame::hasInfo()
 
 void soundkonverter_codec_lame::showInfo( QWidget *parent )
 {
-    KDialog *dialog = new KDialog( parent );
+    QDialog *dialog = new QDialog(parent);
     dialog->setCaption( i18n("About %1",*global_plugin_name) );
-    dialog->setButtons( KDialog::Ok );
+    dialog->setButtons(QDialog::Ok);
 
     QLabel *widget = new QLabel( dialog );
 
@@ -184,7 +183,13 @@ CodecWidget *soundkonverter_codec_lame::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_lame::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_lame::convert(const QUrl &inputFile,
+                                       const QUrl &outputFile,
+                                       const QString &inputCodec,
+                                       const QString &outputCodec,
+                                       const ConversionOptions *_conversionOptions,
+                                       TagData *tags,
+                                       bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -207,7 +212,13 @@ int soundkonverter_codec_lame::convert( const KUrl& inputFile, const KUrl& outpu
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_lame::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_lame::convertCommand(const QUrl &inputFile,
+                                                      const QUrl &outputFile,
+                                                      const QString &inputCodec,
+                                                      const QString &outputCodec,
+                                                      const ConversionOptions *_conversionOptions,
+                                                      TagData *tags,
+                                                      bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)

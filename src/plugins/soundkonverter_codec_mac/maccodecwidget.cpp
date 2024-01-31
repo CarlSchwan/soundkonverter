@@ -4,16 +4,13 @@
 #include "maccodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-
-
-#include <QLayout>
-#include <QLabel>
-#include <QSpinBox>
-#include <QSlider>
-#include <QCheckBox>
 #include <KLineEdit>
-#include <KLocale>
-
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QSlider>
+#include <QSpinBox>
 
 MacCodecWidget::MacCodecWidget()
     : CodecWidget(),

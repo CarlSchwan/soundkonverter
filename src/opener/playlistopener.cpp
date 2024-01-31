@@ -14,35 +14,33 @@
 #include "../config.h"
 #include "../codecproblems.h"
 
+#include <KLocalizedString>
+#include <KMessageBox>
+#include <KSharedConfig>
+#include <KWindowConfig>
 #include <QApplication>
-#include <KLocale>
-#include <KPushButton>
+#include <QDir>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
-#include <QHBoxLayout>
-#include <KMessageBox>
-#include <KFileDialog>
-#include <QDir>
-#include <KIcon>
+#include <QLocale>
+#include <QPushButton>
 
-
-PlaylistOpener::PlaylistOpener( Config *_config, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    dialogAborted( false ),
-    config( _config )
+PlaylistOpener::PlaylistOpener(Config *_config, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , dialogAborted(false)
+    , config(_config)
 {
-    setCaption( i18n("Add playlist") );
-    setWindowIcon( KIcon("view-media-playlist") );
-    setButtons( 0 );
+    setWindowTitle(i18n("Add playlist"));
+    setWindowIcon(QIcon::fromTheme("view-media-playlist"));
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QWidget *widget = new QWidget();
-    setMainWidget( widget );
+    QGridLayout *mainGrid = new QGridLayout(this);
 
-    QGridLayout *mainGrid = new QGridLayout( widget );
-
-    options = new Options( config, i18n("Select your desired output options and click on \"Ok\"."), widget );
+    options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
     mainGrid->addWidget( options, 1, 0 );
 
     // add a horizontal box layout for the control elements
@@ -50,35 +48,26 @@ PlaylistOpener::PlaylistOpener( Config *_config, QWidget *parent, Qt::WFlags f )
     mainGrid->addLayout( controlBox, 2, 0 );
     controlBox->addStretch();
 
-    pAdd = new KPushButton( KIcon("dialog-ok"), i18n("Ok"), widget );
+    pAdd = new QPushButton(QIcon::fromTheme("dialog-ok"), i18n("Ok"), this);
     controlBox->addWidget( pAdd );
     connect( pAdd, SIGNAL(clicked()), this, SLOT(okClickedSlot()) );
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), this);
     controlBox->addWidget( pCancel );
     connect( pCancel, SIGNAL(clicked()), this, SLOT(reject()) );
 
-    fileDialog = new KFileDialog( KUrl("kfiledialog:///soundkonverter-add-media"), "*.m3u", this );
-    fileDialog->setWindowTitle( i18n("Add Files") );
-    fileDialog->setMode( KFile::File | KFile::ExistingOnly );
-    connect( fileDialog, SIGNAL(accepted()), this, SLOT(fileDialogAccepted()) );
-    connect( fileDialog, SIGNAL(rejected()), this, SLOT(reject()) );
-    const int dialogReturnCode = fileDialog->exec();
-    if( dialogReturnCode == QDialog::Rejected )
-        dialogAborted = true;
-
-        // Prevent the dialog from beeing too wide because of the directory history
+    // Prevent the dialog from beeing too wide because of the directory history
     if( parent && width() > parent->width() )
-        setInitialSize( QSize(parent->width()-fontHeight,sizeHint().height()) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "PlaylistOpener" );
-    restoreDialogSize( group );
-}
+        resize(QSize(parent->width() - fontHeight, sizeHint().height()));
+    readConfig();
 
-PlaylistOpener::~PlaylistOpener()
-{
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "PlaylistOpener" );
-    saveDialogSize( group );
+    fileDialog = new QFileDialog(this, i18n("Add Files"), QStringLiteral("kfiledialog:///soundkonverter-add-media"), "*.m3u");
+    fileDialog->setFileMode(QFileDialog::ExistingFile);
+    connect(fileDialog, &QFileDialog::accepted, this, &PlaylistOpener::fileDialogAccepted);
+    connect(fileDialog, &QFileDialog::rejected, this, &PlaylistOpener::reject);
+    const int dialogReturnCode = fileDialog->exec();
+    if (dialogReturnCode == QDialog::Rejected) {
+        dialogAborted = true;
+    }
 }
 
 void PlaylistOpener::fileDialogAccepted()
@@ -91,7 +80,7 @@ void PlaylistOpener::fileDialogAccepted()
     QStringList filesNotFound;
 
     urls.clear();
-    KUrl playlistUrl = fileDialog->selectedUrl();
+    QUrl playlistUrl = fileDialog->selectedUrls().first();
     QFile playlistFile( playlistUrl.toLocalFile() );
     if( playlistFile.open(QIODevice::ReadOnly) )
     {
@@ -229,17 +218,31 @@ void PlaylistOpener::fileDialogAccepted()
     if( urls.count() <= 0 ) reject();
 }
 
+PlaylistOpener::~PlaylistOpener()
+{
+    writeConfig();
+}
+
+void PlaylistOpener::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "PlaylistOpener");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void PlaylistOpener::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "PlaylistOpener");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
+}
+
 void PlaylistOpener::okClickedSlot()
 {
     ConversionOptions *conversionOptions = options->currentConversionOptions();
-    if( conversionOptions )
-    {
+    if (conversionOptions) {
         options->accepted();
-        emit openFiles( urls, conversionOptions );
+        Q_EMIT openFiles(urls, conversionOptions);
         accept();
-    }
-    else
-    {
+    } else {
         KMessageBox::error( this, i18n("No conversion options selected.") );
     }
 }

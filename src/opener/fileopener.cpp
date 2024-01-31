@@ -14,33 +14,31 @@
 #include "../config.h"
 #include "../codecproblems.h"
 
+#include <KLocalizedString>
+#include <KMessageBox>
+#include <KSharedConfig>
+#include <KWindowConfig>
 #include <QApplication>
-#include <KLocale>
-#include <KPushButton>
+#include <QBoxLayout>
+#include <QDir>
+#include <QFileDialog>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
-#include <QBoxLayout>
-#include <KMessageBox>
-#include <KFileDialog>
-#include <QDir>
-#include <KIcon>
+#include <QLocale>
+#include <QPushButton>
 
-
-FileOpener::FileOpener( Config *_config, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    dialogAborted( false ),
-    config( _config )
+FileOpener::FileOpener(Config *_config, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , dialogAborted(false)
+    , config(_config)
 {
-    setCaption( i18n("Add Files") );
-    setWindowIcon( KIcon("audio-x-generic") );
-    setButtons( 0 );
+    setWindowTitle(i18nc("@window:title", "Add Files"));
+    setWindowIcon(QIcon::fromTheme("audio-x-generic"));
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QWidget *widget = new QWidget();
-    setMainWidget( widget );
-
-    QGridLayout *mainGrid = new QGridLayout( widget );
+    QGridLayout *mainGrid = new QGridLayout(this);
 
     QStringList filterList;
     QStringList allFilter;
@@ -57,7 +55,7 @@ FileOpener::FileOpener( Config *_config, QWidget *parent, Qt::WFlags f )
     filterList.prepend( allFilter.join(" ") + "|" + i18n("All supported files") );
     filterList += "*.*|" + i18n("All files");
 
-    options = new Options( config, i18n("Select your desired output options and click on \"Ok\"."), widget );
+    options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
     mainGrid->addWidget( options, 1, 0 );
 
     // add a horizontal box layout for the control elements
@@ -65,20 +63,19 @@ FileOpener::FileOpener( Config *_config, QWidget *parent, Qt::WFlags f )
     mainGrid->addLayout( controlBox, 2, 0 );
     controlBox->addStretch();
 
-    pAdd = new KPushButton( KIcon("dialog-ok"), i18n("Ok"), widget );
+    pAdd = new QPushButton(QIcon::fromTheme("dialog-ok"), i18n("Ok"), this);
     controlBox->addWidget( pAdd );
     connect( pAdd, SIGNAL(clicked()), this, SLOT(okClickedSlot()) );
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), this);
     controlBox->addWidget( pCancel );
     connect( pCancel, SIGNAL(clicked()), this, SLOT(reject()) );
 
     // add the control elements
-    formatHelp = new QLabel( "<a href=\"format-help\">" + i18n("Are you missing some file formats?") + "</a>", widget );
+    formatHelp = new QLabel("<a href=\"format-help\">" + i18n("Are you missing some file formats?") + "</a>", this);
     connect( formatHelp, SIGNAL(linkActivated(const QString&)), this, SLOT(showHelp()) );
 
-    fileDialog = new KFileDialog( KUrl("kfiledialog:///soundkonverter-add-media"), filterList.join("\n"), this, formatHelp );
-    fileDialog->setWindowTitle( i18n("Add Files") );
-    fileDialog->setMode( KFile::Files | KFile::ExistingOnly );
+    fileDialog = new QFileDialog(this, i18nc("@title:window", "Add Files"), "kfiledialog:///soundkonverter-add-media", filterList.join("\n"));
+    fileDialog->setFileMode(QFileDialog::ExistingFiles);
     connect( fileDialog, SIGNAL(accepted()), this, SLOT(fileDialogAccepted()) );
     connect( fileDialog, SIGNAL(rejected()), this, SLOT(reject()) );
     const int dialogReturnCode = fileDialog->exec();
@@ -87,17 +84,25 @@ FileOpener::FileOpener( Config *_config, QWidget *parent, Qt::WFlags f )
 
     // Prevent the dialog from beeing too wide because of the directory history
     if( parent && width() > parent->width() )
-        setInitialSize( QSize(parent->width()-fontHeight,sizeHint().height()) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "FileOpener" );
-    restoreDialogSize( group );
+        resize(QSize(parent->width() - fontHeight, sizeHint().height()));
+    readConfig();
 }
 
 FileOpener::~FileOpener()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "FileOpener" );
-    saveDialogSize( group );
+    writeConfig();
+}
+
+void FileOpener::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "FileOpener");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void FileOpener::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "FileOpener");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 void FileOpener::fileDialogAccepted()

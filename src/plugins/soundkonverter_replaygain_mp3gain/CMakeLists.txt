@@ -5,9 +5,9 @@ set(soundkonverter_replaygain_mp3gain_SRCS
 )
 
 add_library(soundkonverter_replaygain_mp3gain MODULE ${soundkonverter_replaygain_mp3gain_SRCS})
-target_link_libraries(soundkonverter_replaygain_mp3gain KF5::WidgetsAddons soundkonvertercore)
+target_link_libraries(soundkonverter_replaygain_mp3gain KF6::WidgetsAddons soundkonvertercore)
 
 ########### install files ###############
 
-install(TARGETS soundkonverter_replaygain_mp3gain DESTINATION ${PLUGIN_INSTALL_DIR})
+install(TARGETS soundkonverter_replaygain_mp3gain DESTINATION ${KDE_INSTALL_PLUGINDIR})
 install(FILES soundkonverter_replaygain_mp3gain.desktop DESTINATION ${SERVICES_INSTALL_DIR})

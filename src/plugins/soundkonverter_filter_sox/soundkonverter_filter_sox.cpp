@@ -7,13 +7,12 @@
 #include "soxfilterwidget.h"
 #include "soxcodecwidget.h"
 
-#include <KDialog>
-#include <QHBoxLayout>
 #include <KComboBox>
 #include <KMessageBox>
-#include <QLabel>
+#include <QDialog>
 #include <QFileInfo>
-
+#include <QHBoxLayout>
+#include <QLabel>
 
 soundkonverter_filter_sox::soundkonverter_filter_sox( QObject *parent, const QVariantList& args  )
     : FilterPlugin( parent )
@@ -238,9 +237,9 @@ void soundkonverter_filter_sox::showConfigDialog( ActionType action, const QStri
 
     if( !configDialog.data() )
     {
-        configDialog = new KDialog( parent );
+        configDialog = new QDialog(parent);
         configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
-        configDialog.data()->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Default );
+        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
         QWidget *configDialogWidget = new QWidget( configDialog.data() );
         QHBoxLayout *configDialogBox = new QHBoxLayout( configDialogWidget );
@@ -312,7 +311,13 @@ CodecWidget *soundkonverter_filter_sox::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_filter_sox::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_filter_sox::convert(const QUrl &inputFile,
+                                       const QUrl &outputFile,
+                                       const QString &inputCodec,
+                                       const QString &outputCodec,
+                                       const ConversionOptions *_conversionOptions,
+                                       TagData *tags,
+                                       bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -335,7 +340,13 @@ int soundkonverter_filter_sox::convert( const KUrl& inputFile, const KUrl& outpu
     return newItem->id;
 }
 
-QStringList soundkonverter_filter_sox::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_filter_sox::convertCommand(const QUrl &inputFile,
+                                                      const QUrl &outputFile,
+                                                      const QString &inputCodec,
+                                                      const QString &outputCodec,
+                                                      const ConversionOptions *_conversionOptions,
+                                                      TagData *tags,
+                                                      bool replayGain)
 {
     Q_UNUSED( tags );
     Q_UNUSED( replayGain );

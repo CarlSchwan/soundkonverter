@@ -7,11 +7,11 @@
 #include "replaygainfilelist.h"
 #include "global.h"
 
-#include <KLocale>
+#include <QLocale>
 
+#include <KLocalizedString>
 #include <QFile>
 #include <QFileInfo>
-
 
 ReplayGainProcessorItem::ReplayGainProcessorItem( ReplayGainFileListItem *_fileListItem )
     : fileListItem( _fileListItem )
@@ -68,7 +68,7 @@ void ReplayGainProcessor::replaygain( ReplayGainProcessorItem *item )
 
     item->backendPlugin = item->replaygainPipes.at(item->take).plugin;
 
-    KUrl::List urlList = item->fileListItem->urls();
+    QList<QUrl> urlList = item->fileListItem->urls();
 
     if( item->backendPlugin->name() == "Vorbis Gain" )
     {
@@ -267,7 +267,11 @@ void ReplayGainProcessor::add( ReplayGainFileListItem* fileListItem, ReplayGainP
     }
     else
     {
-        identifier = config->data.general.replayGainGrouping == Config::Data::General::Directory ? fileListItem->url.pathOrUrl().right(fileListItem->url.pathOrUrl().length()-fileListItem->url.pathOrUrl().lastIndexOf("/")-1) : fileListItem->albumName;
+        identifier = config->data.general.replayGainGrouping == Config::Data::General::Directory
+            ? fileListItem->url.toDisplayString(QUrl::PreferLocalFile)
+                  .right(fileListItem->url.toDisplayString(QUrl::PreferLocalFile).length()
+                         - fileListItem->url.toDisplayString(QUrl::PreferLocalFile).lastIndexOf("/") - 1)
+            : fileListItem->albumName;
     }
     logger->log( 1000, i18n("Adding new item to Replay Gain processing list: '%1'",identifier) );
 

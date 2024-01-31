@@ -6,10 +6,10 @@
 #include "soxfilteroptions.h"
 
 #include <QApplication>
-#include <KLocale>
 #include <QCheckBox>
-#include <QLayout>
 #include <QLabel>
+#include <QLayout>
+#include <QLocale>
 
 #include <KComboBox>
 

@@ -16,7 +16,7 @@
 
 class Config;
 class QCheckBox;
-class KIntSpinBox;
+class QSpinBox;
 class KComboBox;
 
 /**
@@ -45,7 +45,7 @@ private:
     QCheckBox *cEjectCdAfterRip;
     QCheckBox *cWriteLogFiles;
     QCheckBox *cUseSharedMemoryForTempFiles;
-    KIntSpinBox *iMaxSizeForSharedMemoryTempFiles;
+    QSpinBox *iMaxSizeForSharedMemoryTempFiles;
     QCheckBox *cUsePipes;
 
     Config *config;

@@ -6,31 +6,32 @@
 #include "../outputdirectory.h"
 #include "../global.h"
 
-#include <KLocale>
-#include <KPushButton>
-#include <KLineEdit>
 #include <KComboBox>
-#include <KNumInput>
-#include <KTextEdit>
-#include <KFileDialog>
+#include <KLineEdit>
+#include <KLocalizedString>
 #include <KMessageBox>
-#include <KStandardDirs>
-#include <KInputDialog>
-#include <KIcon>
-
+#include <KWindowConfig>
 #include <QApplication>
-#include <QLayout>
 #include <QBoxLayout>
-#include <QGridLayout>
-#include <QLabel>
-#include <QGroupBox>
-#include <QTreeWidget>
-#include <QDateTime>
+#include <QCheckBox>
 #include <QColor>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
-#include <QCheckBox>
+#include <QFileDialog>
+#include <QGridLayout>
+#include <QGroupBox>
 #include <QHeaderView>
+#include <QIcon>
+#include <QInputDialog>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QPushButton>
+#include <QSpinBox>
+#include <QStandardPaths>
+#include <QTextEdit>
+#include <QTreeWidget>
 
 #include <solid/device.h>
 #include <solid/block.h>
@@ -47,11 +48,11 @@ PlayerWidget::PlayerWidget( Phonon::MediaObject *mediaObject, int _track, QTreeW
     QHBoxLayout *trackPlayerBox = new QHBoxLayout();
     setLayout( trackPlayerBox );
 
-    pStartPlayback = new KPushButton( KIcon("media-playback-start"), "", this );
+    pStartPlayback = new QPushButton(QIcon::fromTheme("media-playback-start"), "", this);
     pStartPlayback->setFixedSize( 1.5*fontHeight, 1.5*fontHeight );
     trackPlayerBox->addWidget( pStartPlayback );
     connect( pStartPlayback, SIGNAL(clicked()), this, SLOT(startPlaybackClicked()) );
-    pStopPlayback = new KPushButton( KIcon("media-playback-stop"), "", this );
+    pStopPlayback = new QPushButton(QIcon::fromTheme("media-playback-stop"), "", this);
     pStopPlayback->setFixedSize( 1.5*fontHeight, 1.5*fontHeight );
     pStopPlayback->hide();
     trackPlayerBox->addWidget( pStopPlayback );
@@ -103,43 +104,38 @@ void PlayerWidget::trackChanged( int _track )
     }
 }
 
-
-CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    noCdFound( false ),
-    config( _config ),
-    cdDrive( 0 ),
-    cdParanoia( 0 ),
-    cddb( 0 ),
-    cdTextFound( false ),
-    cddbFound( false )
+CDOpener::CDOpener(Config *_config, const QString &_device, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , noCdFound(false)
+    , config(_config)
+    , cdDrive(0)
+    , cdParanoia(0)
+    , cddb(0)
+    , cdTextFound(false)
+    , cddbFound(false)
 {
-    setButtons( 0 );
-
     page = CdOpenPage;
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
     // let the dialog look nice
-    setCaption( i18n("Add CD tracks") );
-    setWindowIcon( KIcon("media-optical-audio") );
+    setWindowTitle(i18n("Add CD tracks"));
+    setWindowIcon(QIcon::fromTheme("media-optical-audio"));
 
-    QWidget *widget = new QWidget( this );
-    QGridLayout *mainGrid = new QGridLayout( widget );
+    QGridLayout *mainGrid = new QGridLayout(this);
     QGridLayout *topGrid = new QGridLayout();
-    mainGrid->addLayout( topGrid, 0, 0 );
-    setMainWidget( widget );
+    mainGrid->addLayout(topGrid, 0, 0);
 
-    lSelector = new QLabel( i18n("1. Select CD tracks"), widget );
+    lSelector = new QLabel(i18n("1. Select CD tracks"), this);
     QFont font;
     font.setBold( true );
     lSelector->setFont( font );
     topGrid->addWidget( lSelector, 0, 0 );
-    lOptions = new QLabel( i18n("2. Set conversion options"), widget );
+    lOptions = new QLabel(i18n("2. Set conversion options"), this);
     topGrid->addWidget( lOptions, 0, 1 );
 
     // draw a horizontal line
-    QFrame *lineFrame = new QFrame( widget );
+    QFrame *lineFrame = new QFrame(this);
     lineFrame->setFrameShape( QFrame::HLine );
     lineFrame->setFrameShadow( QFrame::Sunken );
     mainGrid->addWidget( lineFrame, 1, 0 );
@@ -147,7 +143,7 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
 
     // CD Opener Widget
 
-    cdOpenerWidget = new QWidget( widget );
+    cdOpenerWidget = new QWidget(this);
     mainGrid->addWidget( cdOpenerWidget, 2, 0 );
 
     // the grid for all widgets in the dialog
@@ -160,7 +156,7 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     // the album cover
     QLabel *lAlbumCover = new QLabel( "", cdOpenerWidget );
     topBoxLayout->addWidget( lAlbumCover );
-    lAlbumCover->setPixmap( QPixmap( KStandardDirs::locate("data","soundkonverter/images/nocover.png") ) );
+    lAlbumCover->setPixmap(QPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "soundkonverter/images/nocover.png")));
     lAlbumCover->setContentsMargins( 0, 0, 0.5*fontHeight, 0 );
 
     // the grid for the artist and album input
@@ -187,17 +183,23 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     QHBoxLayout *yearBox = new QHBoxLayout();
     topGridLayout->addLayout( yearBox, 2, 1 );
     // and fill it up
-    iDisc = new KIntSpinBox( 1, 99, 1, 1, cdOpenerWidget );
+    iDisc = new QSpinBox(cdOpenerWidget);
+    iDisc->setRange(1, 99);
+    iDisc->setValue(1);
     yearBox->addWidget( iDisc );
     QLabel *lDiscTotalLabel = new QLabel( i18nc("Track/Disc No. x of y","of"), cdOpenerWidget );
     lDiscTotalLabel->setAlignment( Qt::AlignHCenter | Qt::AlignVCenter );
     yearBox->addWidget( lDiscTotalLabel );
-    iDiscTotal = new KIntSpinBox( 1, 99, 1, 1, cdOpenerWidget );
+    iDiscTotal = new QSpinBox(cdOpenerWidget);
+    iDiscTotal->setRange(1, 99);
+    iDiscTotal->setValue(1);
     yearBox->addWidget( iDiscTotal );
     QLabel *lYearLabel = new QLabel( i18n("Year:"), cdOpenerWidget );
     lYearLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
     yearBox->addWidget( lYearLabel );
-    iYear = new KIntSpinBox( 0, 99999, 1, QDate::currentDate().year(), cdOpenerWidget );
+    iYear = new QSpinBox(cdOpenerWidget);
+    iDiscTotal->setRange(0, 99999);
+    iDiscTotal->setValue(QDate::currentDate().year());
     yearBox->addWidget( iYear );
     QLabel *lGenreLabel = new QLabel( i18n("Genre:"), cdOpenerWidget );
     lGenreLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
@@ -231,10 +233,10 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     trackList->setSelectionMode( QAbstractItemView::ExtendedSelection );
     trackList->setSortingEnabled( false );
     trackList->setRootIsDecorated( false );
-    trackList->header()->setResizeMode( Column_Artist, QHeaderView::ResizeToContents );
-    trackList->header()->setResizeMode( Column_Composer, QHeaderView::ResizeToContents );
-    trackList->header()->setResizeMode( Column_Title, QHeaderView::ResizeToContents );
-//     trackList->setMouseTracking( true );
+    trackList->header()->setSectionResizeMode(Column_Artist, QHeaderView::ResizeToContents);
+    trackList->header()->setSectionResizeMode(Column_Composer, QHeaderView::ResizeToContents);
+    trackList->header()->setSectionResizeMode(Column_Title, QHeaderView::ResizeToContents);
+    //     trackList->setMouseTracking( true );
     connect( trackList, SIGNAL(itemSelectionChanged()), this, SLOT(trackChanged()) );
 //     connect( trackList, SIGNAL(itemEntered(QTreeWidgetItem*,int)), this, SLOT(itemHighlighted(QTreeWidgetItem*,int)) );
     gridLayout->setRowStretch( 1, 1 );
@@ -246,14 +248,14 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     QGridLayout *tagGridLayout = new QGridLayout( tagGroupBox );
 
     // add the up and down buttons
-    pTrackUp = new KPushButton( "", tagGroupBox );
-    pTrackUp->setIcon( KIcon("arrow-up") );
+    pTrackUp = new QPushButton("", tagGroupBox);
+    pTrackUp->setIcon(QIcon::fromTheme("arrow-up"));
     pTrackUp->setFixedSize( pTrackUp->sizeHint().height(), pTrackUp->sizeHint().height() );
     pTrackUp->setAutoRepeat( true );
     connect( pTrackUp, SIGNAL(clicked()), this, SLOT(trackUpPressed()) );
     tagGridLayout->addWidget( pTrackUp, 0, 0 );
-    pTrackDown = new KPushButton( "", tagGroupBox );
-    pTrackDown->setIcon( KIcon("arrow-down") );
+    pTrackDown = new QPushButton("", tagGroupBox);
+    pTrackDown->setIcon(QIcon::fromTheme("arrow-down"));
     pTrackDown->setFixedSize( pTrackDown->sizeHint().height(), pTrackDown->sizeHint().height() );
     pTrackDown->setAutoRepeat( true );
     connect( pTrackDown, SIGNAL(clicked()), this, SLOT(trackDownPressed()) );
@@ -271,8 +273,8 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     lTrackTitle = new KLineEdit( tagGroupBox );
     trackTitleBox->addWidget( lTrackTitle );
     connect( lTrackTitle, SIGNAL(textChanged(const QString&)), this, SLOT(trackTitleChanged(const QString&)) );
-    pTrackTitleEdit = new KPushButton( "", tagGroupBox );
-    pTrackTitleEdit->setIcon( KIcon("document-edit") );
+    pTrackTitleEdit = new QPushButton(tagGroupBox);
+    pTrackTitleEdit->setIcon(QIcon::fromTheme("document-edit"));
     pTrackTitleEdit->setFixedSize( lTrackTitle->sizeHint().height(), lTrackTitle->sizeHint().height() );
     pTrackTitleEdit->hide();
     trackTitleBox->addWidget( pTrackTitleEdit );
@@ -286,8 +288,8 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     lTrackArtist = new KLineEdit( tagGroupBox );
     trackArtistBox->addWidget( lTrackArtist );
     connect( lTrackArtist, SIGNAL(textChanged(const QString&)), this, SLOT(trackArtistChanged(const QString&)) );
-    pTrackArtistEdit = new KPushButton( "", tagGroupBox );
-    pTrackArtistEdit->setIcon( KIcon("document-edit") );
+    pTrackArtistEdit = new QPushButton("", tagGroupBox);
+    pTrackArtistEdit->setIcon(QIcon::fromTheme("document-edit"));
     pTrackArtistEdit->setFixedSize( lTrackArtist->sizeHint().height(), lTrackArtist->sizeHint().height() );
     pTrackArtistEdit->hide();
     trackArtistBox->addWidget( pTrackArtistEdit );
@@ -297,8 +299,8 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     lTrackComposer = new KLineEdit( tagGroupBox );
     trackArtistBox->addWidget( lTrackComposer );
     connect( lTrackComposer, SIGNAL(textChanged(const QString&)), this, SLOT(trackComposerChanged(const QString&)) );
-    pTrackComposerEdit = new KPushButton( "", tagGroupBox );
-    pTrackComposerEdit->setIcon( KIcon("document-edit") );
+    pTrackComposerEdit = new QPushButton("", tagGroupBox);
+    pTrackComposerEdit->setIcon(QIcon::fromTheme("document-edit"));
     pTrackComposerEdit->setFixedSize( lTrackComposer->sizeHint().height(), lTrackComposer->sizeHint().height() );
     pTrackComposerEdit->hide();
     trackArtistBox->addWidget( pTrackComposerEdit );
@@ -309,12 +311,12 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     // and fill it up
     QLabel *lTrackCommentLabel = new QLabel( i18n("Comment:"), tagGroupBox );
     tagGridLayout->addWidget( lTrackCommentLabel, 2, 1 );
-    tTrackComment = new KTextEdit( tagGroupBox );
+    tTrackComment = new QTextEdit(tagGroupBox);
     trackCommentBox->addWidget( tTrackComment );
     tTrackComment->setFixedHeight( 4*fontHeight );
     connect( tTrackComment, SIGNAL(textChanged()), this, SLOT(trackCommentChanged()) );
-    pTrackCommentEdit = new KPushButton( "", tagGroupBox );
-    pTrackCommentEdit->setIcon( KIcon("document-edit") );
+    pTrackCommentEdit = new QPushButton("", tagGroupBox);
+    pTrackCommentEdit->setIcon(QIcon::fromTheme("document-edit"));
     pTrackCommentEdit->setFixedSize( lTrackTitle->sizeHint().height(), lTrackTitle->sizeHint().height() );
     pTrackCommentEdit->hide();
     trackCommentBox->addWidget( pTrackCommentEdit );
@@ -338,7 +340,7 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
 
     // Cd Opener Overlay Widget
 
-    cdOpenerOverlayWidget = new QWidget( widget );
+    cdOpenerOverlayWidget = new QWidget(this);
     mainGrid->addWidget( cdOpenerOverlayWidget, 2, 0 );
     QHBoxLayout *cdOpenerOverlayLayout = new QHBoxLayout();
     cdOpenerOverlayWidget->setLayout( cdOpenerOverlayLayout );
@@ -358,14 +360,14 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     QVBoxLayout *optionsBox = new QVBoxLayout();
     mainGrid->addLayout( optionsBox, 2, 0 );
 
-    options = new Options( config, i18n("Select your desired output options and click on \"Ok\"."), widget );
+    options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
     optionsBox->addWidget( options );
     options->hide();
     optionsBox->addStretch();
 
 
     // draw a horizontal line
-    QFrame *buttonLineFrame = new QFrame( widget );
+    QFrame *buttonLineFrame = new QFrame(this);
     buttonLineFrame->setFrameShape( QFrame::HLine );
     buttonLineFrame->setFrameShadow( QFrame::Sunken );
     buttonLineFrame->setFrameShape( QFrame::HLine );
@@ -376,17 +378,17 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     mainGrid->addLayout( controlBox, 5, 0 );
 
     // add the control elements
-    pSaveCue = new KPushButton( KIcon("document-save"), i18n("Save cue sheet..."), widget );
+    pSaveCue = new QPushButton(QIcon::fromTheme("document-save"), i18n("Save cue sheet..."), this);
     controlBox->addWidget( pSaveCue );
     connect( pSaveCue, SIGNAL(clicked()), this, SLOT(saveCuesheetClicked()) );
     controlBox->addSpacing( fontHeight );
 
-    pCDDB = new KPushButton( KIcon("download"), i18n("Request CDDB"), widget );
+    pCDDB = new QPushButton(QIcon::fromTheme("download"), i18n("Request CDDB"), this);
     controlBox->addWidget( pCDDB );
     connect( pCDDB, SIGNAL(clicked()), this, SLOT(requestCddb()) );
     controlBox->addStretch();
 
-    cEntireCd = new QCheckBox( i18n("Rip entire CD to one file"), widget );
+    cEntireCd = new QCheckBox(i18n("Rip entire CD to one file"), this);
     QStringList errorList;
     cEntireCd->setEnabled( config->pluginLoader()->canRipEntireCd(&errorList) );
     if( !cEntireCd->isEnabled() )
@@ -407,14 +409,14 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     controlBox->addWidget( cEntireCd );
     controlBox->addSpacing( 2*fontHeight );
 
-    pProceed = new KPushButton( KIcon("go-next"), i18n("Proceed"), widget );
+    pProceed = new QPushButton(QIcon::fromTheme("go-next"), i18n("Proceed"), this);
     controlBox->addWidget( pProceed );
     connect( pProceed, SIGNAL(clicked()), this, SLOT(proceedClicked()) );
-    pAdd = new KPushButton( KIcon("dialog-ok"), i18n("Ok"), widget );
+    pAdd = new QPushButton(QIcon::fromTheme("dialog-ok"), i18n("Ok"), this);
     controlBox->addWidget( pAdd );
     pAdd->hide();
     connect( pAdd, SIGNAL(clicked()), this, SLOT(addClicked()) );
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), this);
     controlBox->addWidget( pCancel );
     connect( pCancel, SIGNAL(clicked()), this, SLOT(reject()) );
 
@@ -455,7 +457,8 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
                 list.append( desc );
             }
             bool ok = false;
-            const QString selection = KInputDialog::getItem( i18n("Select CD-ROM drive"), i18n("Multiple CD-ROM drives where found. Please select one:"), list, 0, false, &ok, this );
+            const QString selection =
+                QInputDialog::getItem(this, i18n("Select CD-ROM drive"), i18n("Multiple CD-ROM drives where found. Please select one:"), list, 0, false, &ok);
 
             if( ok )
             {
@@ -482,35 +485,34 @@ CDOpener::CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt
     mediaSource = new Phonon::MediaSource( Phonon::Cd, device );
     mediaObject->setCurrentSource( *mediaSource ); // WARNING doesn't work with phonon-xine
 
-
-    // Prevent the dialog from beeing too wide because of the directory history
-    if( parent && width() > parent->width() )
-        setInitialSize( QSize(parent->width()-fontHeight,sizeHint().height()) );
-
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "CDOpener" );
-    restoreDialogSize( group );
+    readConfig();
 }
 
 CDOpener::~CDOpener()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "CDOpener" );
-    saveDialogSize( group );
+    writeConfig();
 
-    if( cdParanoia )
-    {
-        paranoia_free( cdParanoia );
-//         delete cdParanoia;
+    if (cdParanoia) {
+        paranoia_free(cdParanoia);
     }
-    if( cdDrive )
-    {
-        cdda_close( cdDrive );
-//         delete cdDrive;
+    if (cdDrive) {
+        cdda_close(cdDrive);
     }
 
     if( cddb )
         delete cddb;
+}
+
+void CDOpener::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "CDOpener");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void CDOpener::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "CDOpener");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 void CDOpener::setProfile( const QString& profile )
@@ -550,7 +552,7 @@ QMap<QString,QString> CDOpener::cdDevices()
                 const Solid::Device parentDevice( solidDevice.parentUdi() );
                 const QString name = parentDevice.product();
 
-                cdDrive = cdda_identify( device.toAscii(), CDDA_MESSAGE_PRINTIT, 0 );
+                cdDrive = cdda_identify(device.toLatin1(), CDDA_MESSAGE_PRINTIT, 0);
                 if( cdDrive && cdda_open(cdDrive) == 0 )
                 {
                     const QString desc = i18n("%1 (%2): Audio CD with %3 tracks",name,device,cdda_audio_tracks(cdDrive));
@@ -586,7 +588,7 @@ bool CDOpener::openCdDevice( const QString& _device )
     }
     else
     {
-        cdDrive = cdda_identify( _device.toAscii(), CDDA_MESSAGE_PRINTIT, 0 );
+        cdDrive = cdda_identify(_device.toLatin1(), CDDA_MESSAGE_PRINTIT, 0);
         if( !cdDrive || cdda_open( cdDrive ) != 0 )
         {
             return false;
@@ -638,11 +640,11 @@ bool CDOpener::openCdDevice( const QString& _device )
 
         QStringList data;
         data.append( "" );
-        data.append( QString().sprintf("%02i",newTags->track) );
+        data.append(QString().asprintf("%02i", newTags->track));
         data.append( newTags->artist );
         data.append( newTags->composer );
         data.append( newTags->title );
-        data.append( QString().sprintf("%i:%02i",newTags->length/60,newTags->length%60) );
+        data.append(QString().asprintf("%i:%02i", newTags->length / 60, newTags->length % 60));
         QTreeWidgetItem *item = new QTreeWidgetItem( trackList, data );
         PlayerWidget *playerWidget = new PlayerWidget( mediaObject, newTags->track, item, this );
 //         playerWidget->hide();
@@ -727,7 +729,8 @@ void CDOpener::lookup_cddb_done( KCDDB::Result result )
         }
 
         bool ok = false;
-        const QString cddbItem = KInputDialog::getItem( i18n("Select CDDB Entry"), i18n("Multiple CDDB entries where found. Please select one:"), list, 0, false, &ok, this );
+        const QString cddbItem =
+            QInputDialog::getItem(this, i18n("Select CDDB Entry"), i18n("Multiple CDDB entries where found. Please select one:"), list, 0, false, &ok);
 
         if( ok )
         {
@@ -891,10 +894,10 @@ void CDOpener::trackChanged()
         }
         else
         {
-            trackListString = i18n("Tracks") + QString().sprintf( " %02i", selectedTracks.at(0) );
+            trackListString = i18n("Tracks") + QString().asprintf(" %02i", selectedTracks.at(0));
             for( int i=1; i<selectedTracks.count(); i++ )
             {
-                trackListString += QString().sprintf( ", %02i", selectedTracks.at(i) );
+                trackListString += QString().asprintf(", %02i", selectedTracks.at(i));
             }
         }
         tagGroupBox->setTitle( trackListString );
@@ -985,7 +988,7 @@ void CDOpener::trackChanged()
         else
             pTrackDown->setEnabled( false );
 
-        tagGroupBox->setTitle( i18n("Track") + QString().sprintf(" %02i",selectedTracks.at(0)) );
+        tagGroupBox->setTitle(i18n("Track") + QString().asprintf(" %02i", selectedTracks.at(0)));
 
         lTrackTitle->setEnabled( true );
         lTrackTitle->setText( tags.at(selectedTracks.at(0))->title );
@@ -1295,17 +1298,19 @@ void CDOpener::addClicked()
 
 void CDOpener::saveCuesheetClicked()
 {
-    QString filename = KFileDialog::getSaveFileName( QDir::homePath(), "*.cue" );
+    QString filename = QFileDialog::getSaveFileName(this, QStandardPaths::writableLocation(QStandardPaths::HomeLocation), "*.cue");
     if( filename.isEmpty() )
         return;
 
     QFile cueFile( filename );
     if( cueFile.exists() )
     {
-        const int ret = KMessageBox::questionYesNo( this,
-                    i18n("A file with this name already exists.\n\nDo you want to overwrite the existing one?"),
-                    i18n("File already exists") );
-        if( ret == KMessageBox::No )
+        const int ret = KMessageBox::questionTwoActions(this,
+                                                        i18n("A file with this name already exists.\n\nDo you want to overwrite the existing one?"),
+                                                        i18n("File already exists"),
+                                                        KStandardGuiItem::overwrite(),
+                                                        KStandardGuiItem::cancel());
+        if (ret == KMessageBox::SecondaryAction)
             return;
     }
     if( !cueFile.open( QIODevice::WriteOnly ) )
@@ -1320,14 +1325,14 @@ void CDOpener::saveCuesheetClicked()
 
     for( int i=1; i<tags.count(); i++ )
     {
-        content.append( QString().sprintf("  TRACK %02i AUDIO\n",tags.at(i)->track ) );
+        content.append(QString().asprintf("  TRACK %02i AUDIO\n", tags.at(i)->track));
         content.append( "    TITLE \"" + tags.at(i)->title + "\"\n" );
         content.append( "    PERFORMER \"" + tags.at(i)->artist + "\"\n" );
         content.append( "    SONGWRITER \"" + tags.at(i)->composer + "\"\n" );
         const long size = CD_FRAMESIZE_RAW * cdda_track_firstsector(cdDrive,i);
         const long length = (8 * size) / (44100 * 2 * 16);
         const long frames = (8 * size) / (588 * 2 * 16);
-        content.append( QString().sprintf("    INDEX 01 %02li:%02li:%02li\n",length/60,length%60,frames%75) );
+        content.append(QString().asprintf("    INDEX 01 %02li:%02li:%02li\n", length / 60, length % 60, frames % 75));
     }
 
     QTextStream ts( &cueFile );

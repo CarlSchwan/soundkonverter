@@ -6,11 +6,11 @@
 
 // #include <math.h>
 
-#include <QLayout>
-#include <QLabel>
-#include <KLocale>
 #include <KComboBox>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
 // #include <QCheckBox>
 #include <QLineEdit>

@@ -85,7 +85,13 @@ CodecWidget *soundkonverter_filter_normalize::newCodecWidget()
 return 0;
 }
 
-int soundkonverter_filter_normalize::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_filter_normalize::convert(const QUrl &inputFile,
+                                             const QUrl &outputFile,
+                                             const QString &inputCodec,
+                                             const QString &outputCodec,
+                                             const ConversionOptions *_conversionOptions,
+                                             TagData *tags,
+                                             bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -108,7 +114,13 @@ int soundkonverter_filter_normalize::convert( const KUrl& inputFile, const KUrl&
     return newItem->id;
 }
 
-QStringList soundkonverter_filter_normalize::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_filter_normalize::convertCommand(const QUrl &inputFile,
+                                                            const QUrl &outputFile,
+                                                            const QString &inputCodec,
+                                                            const QString &outputCodec,
+                                                            const ConversionOptions *_conversionOptions,
+                                                            TagData *tags,
+                                                            bool replayGain)
 {
     Q_UNUSED( inputCodec );
     Q_UNUSED( outputCodec );

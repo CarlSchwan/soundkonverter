@@ -4,18 +4,21 @@
 #include "global.h"
 
 #include <KConfigGroup>
+#include <KLocalizedString>
+#include <KSharedConfig>
 #include <QDir>
 #include <QDomElement>
+#include <QElapsedTimer>
+#include <QRegularExpression>
+#include <QStandardPaths>
 #include <QTime>
 #include <solid/device.h>
-#include <KStandardDirs>
-
 
 Config::Config( Logger *_logger, QObject *parent )
     : QObject( parent ),
     logger( _logger )
 {
-    connect( this, SIGNAL(updateWriteLogFilesSetting(bool)), logger, SLOT(updateWriteSetting(bool)) );
+    connect(this, &Config::updateWriteLogFilesSetting, logger, &Logger::updateWriteSetting);
 
     pPluginLoader = new PluginLoader( logger, this );
     pTagEngine = new TagEngine( this );
@@ -30,12 +33,12 @@ Config::~Config()
 
 void Config::load()
 {
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     QStringList formats;
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    auto conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group( "General" );
@@ -95,10 +98,10 @@ void Config::load()
         {
             QTextStream t( &chkdf );
             QString s = t.readLine();
-            QRegExp rxlen( "^(?:\\S+)(?:\\s+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)" );
-            if( s.contains(rxlen) )
-            {
-                data.advanced.sharedMemorySize = rxlen.cap(1).toInt();
+            static QRegularExpression rxlen("^(?:\\S+)(?:\\s+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)(?:\\s+)(\\d+)");
+            QRegularExpressionMatch match;
+            if (s.contains(rxlen, &match)) {
+                data.advanced.sharedMemorySize = match.captured(1).toInt();
             }
             chkdf.close();
         }
@@ -172,8 +175,8 @@ void Config::load()
             {
                 pluginName = trunk.plugin->name();
                 enabledPlugins += pluginName;
-                if( !data.backends.codecs.at(codecIndex).encoders.contains(pluginName) && newPlugins.filter(QRegExp("[0-9]{8,8}"+pluginName)).count()==0 )
-                {
+                if (!data.backends.codecs.at(codecIndex).encoders.contains(pluginName)
+                    && newPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     newPlugins += QString::number(trunk.rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -204,8 +207,8 @@ void Config::load()
             {
                 pluginName = trunk.plugin->name();
                 enabledPlugins += pluginName;
-                if( !data.backends.codecs.at(codecIndex).decoders.contains(pluginName) && newPlugins.filter(QRegExp("[0-9]{8,8}"+pluginName)).count()==0 )
-                {
+                if (!data.backends.codecs.at(codecIndex).decoders.contains(pluginName)
+                    && newPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     newPlugins += QString::number(trunk.rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -241,8 +244,8 @@ void Config::load()
             {
                 pluginName = pipe.plugin->name();
                 enabledPlugins += pluginName;
-                if( !data.backends.codecs.at(codecIndex).replaygain.contains(pluginName) && newPlugins.filter(QRegExp("[0-9]{8,8}"+pluginName)).count()==0 )
-                {
+                if (!data.backends.codecs.at(codecIndex).replaygain.contains(pluginName)
+                    && newPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     newPlugins += QString::number(pipe.rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -281,8 +284,7 @@ void Config::load()
             if( trunk.enabled && trunk.codecFrom == "wav" && trunk.codecTo == "wav" )
             {
                 enabledPlugins += pluginName;
-                if( !data.backends.filters.contains(pluginName) && newPlugins.filter(QRegExp("[0-9]{8,8}"+pluginName)).count()==0 )
-                {
+                if (!data.backends.filters.contains(pluginName) && newPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     newPlugins += QString::number(trunk.rating).rightJustified(8,'0') + pluginName;
                     break;
                 }
@@ -324,7 +326,7 @@ void Config::load()
     if( data.app.configVersion < 1006 )
     {
         const QString src = QDir::homePath() + "/.kde4/share/apps/soundkonverter/profiles.xml";
-        const QString dest = KStandardDirs::locateLocal("data","soundkonverter/profiles.xml");
+        const QString dest = QStandardPaths::locate(QStandardPaths::AppLocalDataLocation, "profiles.xml");
         if( QFile::exists(src) && !QFile::exists(dest) )
         {
             QFile::copy(src, dest);
@@ -333,7 +335,7 @@ void Config::load()
     }
 
     logger->log( 1000, "\nloading profiles ..." );
-    QFile listFile( KStandardDirs::locateLocal("data","soundkonverter/profiles.xml") );
+    QFile listFile(QStandardPaths::locate(QStandardPaths::AppLocalDataLocation, "profiles.xml"));
     if( listFile.open( QIODevice::ReadOnly ) )
     {
         QDomDocument list("soundkonverter_profilelist");
@@ -475,7 +477,7 @@ void Config::save()
 {
     writeServiceMenu();
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group( "General" );
@@ -592,7 +594,8 @@ void Config::writeServiceMenu()
     content += "Icon=soundkonverter\n";
     content += "Exec=soundkonverter %F\n";
 
-    const QString convertActionFileName = KStandardDirs::locateLocal( "services", "ServiceMenus/convert_with_soundkonverter.desktop" );
+    const QString convertActionFileName =
+        QStandardPaths::locate(QStandardPaths::GenericDataLocation, "services/ServiceMenus/convert_with_soundkonverter.desktop");
     if( ( data.general.actionMenuConvertMimeTypes != mimeTypes || !QFile::exists(convertActionFileName) ) && mimeTypes.count() > 0 )
     {
         QFile convertActionFile( convertActionFileName );
@@ -628,7 +631,8 @@ void Config::writeServiceMenu()
     content += "Icon=soundkonverter-replaygain\n";
     content += "Exec=soundkonverter --replaygain %F\n";
 
-    const QString replaygainActionFileName = KStandardDirs::locateLocal( "services", "ServiceMenus/add_replaygain_with_soundkonverter.desktop" );
+    const QString replaygainActionFileName =
+        QStandardPaths::locate(QStandardPaths::GenericDataLocation, "services/ServiceMenus/add_replaygain_with_soundkonverter.desktop");
     if( ( data.general.actionMenuReplayGainMimeTypes != mimeTypes || !QFile::exists(replaygainActionFileName) ) && mimeTypes.count() > 0 )
     {
         QFile replaygainActionFile( replaygainActionFileName );
@@ -669,7 +673,7 @@ QStringList Config::customProfiles()
 
 QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIgnored )
 {
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     QList<CodecOptimizations::Optimization> optimizationList;
@@ -707,8 +711,7 @@ QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIg
             if( pPluginLoader->conversionPipeTrunks.at(j).codecTo == format && pPluginLoader->conversionPipeTrunks.at(j).enabled && pPluginLoader->conversionPipeTrunks.at(j).plugin->type() == "codec" )
             {
                 const QString pluginName = pPluginLoader->conversionPipeTrunks.at(j).plugin->name();
-                if( tempPluginList.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-                {
+                if (tempPluginList.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     tempPluginList += QString::number(pPluginLoader->conversionPipeTrunks.at(j).rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -718,8 +721,7 @@ QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIg
             if( pPluginLoader->filterPipeTrunks.at(j).codecTo == format && pPluginLoader->filterPipeTrunks.at(j).enabled && pPluginLoader->filterPipeTrunks.at(j).plugin->type() == "filter" )
             {
                 const QString pluginName = pPluginLoader->filterPipeTrunks.at(j).plugin->name();
-                if( tempPluginList.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-                {
+                if (tempPluginList.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     tempPluginList += QString::number(pPluginLoader->filterPipeTrunks.at(j).rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -786,8 +788,7 @@ QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIg
             if( pPluginLoader->conversionPipeTrunks.at(j).codecFrom == format && pPluginLoader->conversionPipeTrunks.at(j).enabled && pPluginLoader->conversionPipeTrunks.at(j).plugin->type() == "codec" )
             {
                 const QString pluginName = pPluginLoader->conversionPipeTrunks.at(j).plugin->name();
-                if( tempPluginList.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-                {
+                if (tempPluginList.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     tempPluginList += QString::number(pPluginLoader->conversionPipeTrunks.at(j).rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -797,8 +798,7 @@ QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIg
             if( pPluginLoader->filterPipeTrunks.at(j).codecFrom == format && pPluginLoader->filterPipeTrunks.at(j).enabled && pPluginLoader->filterPipeTrunks.at(j).plugin->type() == "filter" )
             {
                 const QString pluginName = pPluginLoader->filterPipeTrunks.at(j).plugin->name();
-                if( tempPluginList.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-                {
+                if (tempPluginList.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     tempPluginList += QString::number(pPluginLoader->filterPipeTrunks.at(j).rating).rightJustified(8,'0') + pluginName;
                 }
             }
@@ -865,8 +865,7 @@ QList<CodecOptimizations::Optimization> Config::getOptimizations( bool includeIg
             if( pPluginLoader->replaygainPipes.at(j).codecName == format && pPluginLoader->replaygainPipes.at(j).enabled )
             {
                 const QString pluginName = pPluginLoader->replaygainPipes.at(j).plugin->name();
-                if( tempPluginList.filter(QRegExp("[0-9]{8,8}"+pluginName)).count() == 0 )
-                {
+                if (tempPluginList.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
                     tempPluginList += QString::number(pPluginLoader->replaygainPipes.at(j).rating).rightJustified(8,'0') + pluginName;
                 }
             }

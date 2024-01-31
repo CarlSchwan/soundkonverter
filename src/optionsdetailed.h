@@ -16,7 +16,7 @@ class CodecWidget;
 class FilterWidget;
 
 class KComboBox;
-class KPushButton;
+class QPushButton;
 class QGridLayout;
 class QLabel;
 class QToolButton;
@@ -59,12 +59,12 @@ private:
     KComboBox *cFormat;
     QLabel *lPlugin;
     KComboBox *cPlugin;
-    KPushButton *pConfigurePlugin;
+    QPushButton *pConfigurePlugin;
     CodecWidget *wPlugin;
     QMap<FilterWidget*,FilterPlugin*> wFilter;
     QCheckBox *cReplayGain;
     QLabel *lEstimSize;
-    KPushButton *pProfileSave;
+    QPushButton *pProfileSave;
     QToolButton *pProfileLoad;
 
     Config *config;
@@ -84,7 +84,7 @@ private slots:
     void encoderChanged( const QString& encoder );
     void configurePlugin();
 
-signals:
+Q_SIGNALS:
     // connected to optionsSimple
     void currentDataRateChanged( int rate );
 //     void optionsChanged();

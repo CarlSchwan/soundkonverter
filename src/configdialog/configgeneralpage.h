@@ -17,9 +17,9 @@
 class Config;
 class QCheckBox;
 class KComboBox;
-class KIntSpinBox;
+class QSpinBox;
 class KLineEdit;
-class KPushButton;
+class QPushButton;
 
 /**
 	@author Daniel Faust <hessijames@gmail.com>
@@ -41,11 +41,11 @@ private:
 //     KComboBox *cPriority;
 //     QStringList sPriority;
     KComboBox *cConflictHandling;
-    KIntSpinBox *iNumFiles;
+    QSpinBox *iNumFiles;
     QCheckBox *cWaitForAlbumGain;
     QCheckBox *cCopyIfSameCodec;
     KComboBox *cReplayGainGrouping;
-    KIntSpinBox *iNumReplayGainFiles;
+    QSpinBox *iNumReplayGainFiles;
 
     Config *config;
 

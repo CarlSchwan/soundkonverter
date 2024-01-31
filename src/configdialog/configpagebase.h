@@ -35,7 +35,7 @@ public slots:
     virtual void resetDefaults();
     virtual void saveSettings();
 
-signals:
+Q_SIGNALS:
     void configChanged( bool state = true );
 
 };

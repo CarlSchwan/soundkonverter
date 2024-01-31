@@ -2,33 +2,31 @@
 #include "aboutplugins.h"
 #include "config.h"
 
+#include <KLocalizedString>
+#include <KSharedConfig>
+#include <KWindowConfig>
 #include <QApplication>
-#include <KLocale>
-#include <KIcon>
-#include <KPushButton>
-#include <QLayout>
+#include <QIcon>
 #include <QLabel>
+#include <QLayout>
 #include <QListWidget>
+#include <QLocale>
+#include <QPushButton>
 #include <QToolTip>
 
-
-AboutPlugins::AboutPlugins( Config *_config, QWidget* parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    config( _config ),
-    currentPlugin( 0 )
+AboutPlugins::AboutPlugins(Config *_config, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , config(_config)
+    , currentPlugin(0)
 {
-    setCaption( i18n("About plugins") );
-    setWindowIcon( KIcon("preferences-plugin") );
-    setButtons( KDialog::Close );
-    setButtonFocus( KDialog::Close );
+    setWindowTitle(i18nc("@title:window", "About plugins"));
+    setWindowIcon(QIcon::fromTheme("preferences-plugin"));
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
-    QHBoxLayout *box = new QHBoxLayout( widget );
+    QHBoxLayout *box = new QHBoxLayout(this);
 
-    QVBoxLayout *pluginListBox = new QVBoxLayout( widget );
+    QVBoxLayout *pluginListBox = new QVBoxLayout(this);
     box->addLayout( pluginListBox );
 
     QLabel *installedPlugins = new QLabel( i18n("Installed plugins:"), this );
@@ -78,7 +76,7 @@ AboutPlugins::AboutPlugins( Config *_config, QWidget* parent, Qt::WFlags f )
 
     box->addSpacing( fontHeight );
 
-    QVBoxLayout *pluginInfoBox = new QVBoxLayout( widget );
+    QVBoxLayout *pluginInfoBox = new QVBoxLayout(this);
     box->addLayout( pluginInfoBox );
 
     aboutPluginLabel = new QLabel( this );
@@ -90,9 +88,9 @@ AboutPlugins::AboutPlugins( Config *_config, QWidget* parent, Qt::WFlags f )
 
     pluginInfoBox->addStretch();
 
-    QHBoxLayout *configurePluginBox = new QHBoxLayout( widget );
+    QHBoxLayout *configurePluginBox = new QHBoxLayout(this);
     pluginInfoBox->addLayout( configurePluginBox );
-    configurePlugin = new KPushButton( KIcon("configure"), "", widget );
+    configurePlugin = new QPushButton(QIcon::fromTheme("configure"), "", this);
     configurePlugin->hide();
     configurePluginBox->addWidget( configurePlugin );
     configurePluginBox->addStretch();
@@ -105,17 +103,14 @@ AboutPlugins::AboutPlugins( Config *_config, QWidget* parent, Qt::WFlags f )
         currentPluginChanged( currentItem->text() );
     }
 
-    setInitialSize( QSize(50*fontHeight,40*fontHeight) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "AboutPlugins" );
-    restoreDialogSize( group );
+    KConfigGroup group(KSharedConfig::openStateConfig(), "AboutPlugins");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 AboutPlugins::~AboutPlugins()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "AboutPlugins" );
-    saveDialogSize( group );
+    KConfigGroup group(KSharedConfig::openStateConfig(), "AboutPlugins");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
 }
 
 void AboutPlugins::currentPluginChanged( const QString& pluginName )

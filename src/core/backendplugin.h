@@ -4,14 +4,15 @@
 
 #include <kcoreaddons_export.h>
 
-#include <KGenericFactory>
 #include <KProcess>
-#include <KUrl>
 #include <QList>
+#include <QMap>
 #include <QObject>
+#include <QUrl>
 
 class BackendPlugin;
 
+using namespace Qt::Literals::StringLiterals;
 
 struct ConversionPipeTrunk
 {
@@ -89,7 +90,7 @@ public:
     virtual QString type() const = 0;
 
     virtual FormatInfo formatInfo( const QString& codecName );
-    virtual QString getCodecFromFile( const KUrl& filename, const QString& mimeType = "application/octet-stream", short *rating = 0 );
+    virtual QString getCodecFromFile(const QUrl &filename, const QString &mimeType = u"application/octet-stream"_s, short *rating = 0);
     virtual bool isConfigSupported( ActionType action, const QString& codecName ) = 0;
     virtual void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent ) = 0;
     virtual bool hasInfo() = 0;
@@ -114,7 +115,7 @@ public:
     QString standardMessage( const QString& type, const QString& arguments1, const QString& arguments2, const QString& arguments3 ) const;
 
     /** returns the url as a string with all special characters escaped so the bash can find the files */
-    QString escapeUrl( const KUrl& url );
+    QString escapeUrl(const QUrl &url);
 
     void logCommand( int id, const QString& message );
     void logOutput( int id, const QString& message );
@@ -125,11 +126,11 @@ protected:
     QStringList allCodecs;
 //     int priority;
 
-signals:
+Q_SIGNALS:
     void log( int id, const QString& message );
     void jobFinished( int id, int exitCode );
 
-private slots:
+private Q_SLOTS:
     /** Get the process' output */
     virtual void processOutput();
 

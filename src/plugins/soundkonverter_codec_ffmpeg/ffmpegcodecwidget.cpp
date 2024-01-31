@@ -4,16 +4,15 @@
 #include "ffmpegcodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-#include <KLocale>
 #include <KComboBox>
 #include <KLineEdit>
-#include <QLayout>
-#include <QLabel>
-#include <QDoubleSpinBox>
-#include <QSlider>
 #include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
 #include <QLineEdit>
-
+#include <QLocale>
+#include <QSlider>
 
 FFmpegCodecWidget::FFmpegCodecWidget()
     : CodecWidget(),

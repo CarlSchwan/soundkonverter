@@ -46,7 +46,7 @@ private slots:
     void applyClicked();
     void defaultClicked();
 
-signals:
+Q_SIGNALS:
     void updateFileList();
 };
 

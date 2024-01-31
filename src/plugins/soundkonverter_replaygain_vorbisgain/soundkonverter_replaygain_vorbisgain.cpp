@@ -61,7 +61,7 @@ void soundkonverter_replaygain_vorbisgain::showInfo( QWidget *parent )
     Q_UNUSED(parent)
 }
 
-int soundkonverter_replaygain_vorbisgain::apply( const KUrl::List& fileList, ReplayGainPlugin::ApplyMode mode )
+int soundkonverter_replaygain_vorbisgain::apply(const QList<QUrl> &fileList, ReplayGainPlugin::ApplyMode mode)
 {
     if( fileList.count() <= 0 )
         return BackendPlugin::UnknownError;
@@ -90,8 +90,7 @@ int soundkonverter_replaygain_vorbisgain::apply( const KUrl::List& fileList, Rep
     {
         command += "--clean";
     }
-    foreach( const KUrl& file, fileList )
-    {
+    foreach (const QUrl &file, fileList) {
         command += "\"" + escapeUrl(file) + "\"";
     }
 

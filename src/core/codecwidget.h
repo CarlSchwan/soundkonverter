@@ -6,7 +6,6 @@
 
 #include <QWidget>
 
-#include <KGenericFactory>
 #include <QDomDocument>
 
 class FilterOptions;
@@ -28,7 +27,7 @@ public:
     virtual FilterOptions *currentFilterOptions() = 0;
     virtual bool setCurrentFilterOptions( const FilterOptions *_options ) = 0; // returns false if options are invalid (eg. different plugin)
 
-signals:
+Q_SIGNALS:
     void optionsChanged();
 };
 
@@ -52,7 +51,7 @@ public:
     virtual bool setCurrentProfile( const QString& profile ) = 0; // returns false if options are invalid (eg. plugin doesn't support hybrid)
     virtual int currentDataRate() = 0;
 
-signals:
+Q_SIGNALS:
     void optionsChanged();
 };
 

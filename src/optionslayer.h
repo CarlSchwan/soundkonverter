@@ -22,7 +22,7 @@ class Options;
 class ConversionOptions;
 
 class QFrame;
-class KPushButton;
+class QPushButton;
 
 /**
 	@author Daniel Faust <hessijames@gmail.com>
@@ -44,8 +44,8 @@ public:
 private:
     QFrame *frame;
     Options *options;
-    KPushButton *pOk;
-    KPushButton *pCancel;
+    QPushButton *pOk;
+    QPushButton *pCancel;
 
     QTimer fadeTimer;
     float fadeAlpha;
@@ -83,7 +83,7 @@ private slots:
     void abort();
     void ok();
 
-signals:
+Q_SIGNALS:
     void done( const QList<QUrl>& urls, ConversionOptions *options, const QString& command );
     void saveFileList();
 

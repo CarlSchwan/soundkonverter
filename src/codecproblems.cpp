@@ -1,24 +1,20 @@
 
 #include "codecproblems.h"
 
-#include <KLocale>
-#include <KIcon>
-#include <QLayout>
+#include <KLocalizedString>
+#include <QIcon>
 #include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QScrollArea>
 
-
-CodecProblems::CodecProblems( Mode mode, const QList<Problem>& problemList, QWidget* parent, Qt::WFlags f )
-    : KDialog( parent, f )
+CodecProblems::CodecProblems(Mode mode, const QList<Problem> &problemList, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
 {
-    setCaption( i18n("Solutions for backend problems") );
-    setWindowIcon( KIcon("help-about") );
-    setButtons( KDialog::Close );
-    setButtonFocus( KDialog::Close );
+    setWindowTitle(i18n("Solutions for backend problems"));
+    setWindowIcon(QIcon::fromTheme("help-about"));
 
-    QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
-    QVBoxLayout *box = new QVBoxLayout( widget );
+    QVBoxLayout *box = new QVBoxLayout(this);
 
     QString message;
     if( mode == Debug )

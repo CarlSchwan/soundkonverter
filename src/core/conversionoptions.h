@@ -4,11 +4,9 @@
 
 #include <kcoreaddons_export.h>
 
-#include <KGenericFactory>
-
-#include <QString>
 #include <QDomElement>
-
+#include <QList>
+#include <QString>
 
 /**
  * @short The options for the filter process can be stored here

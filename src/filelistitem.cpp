@@ -149,10 +149,9 @@ void FileListItemDelegate::paint( QPainter *painter, const QStyleOptionViewItem&
 
     painter->fillRect( option.rect, backgroundColor );
 
-    int m_left, m_top, m_right, m_bottom;
-    item->treeWidget()->getContentsMargins( &m_left, &m_top, &m_right, &m_bottom );
+    const auto margins = item->treeWidget()->contentsMargins();
     //QRect m_rect = QRect( option.rect.x()+m_left, option.rect.y()+m_top, option.rect.width()-m_left-m_right, option.rect.height()-m_top-m_bottom );
-    QRect m_rect = QRect( option.rect.x()+m_left, option.rect.y(), option.rect.width()-m_left-m_right, option.rect.height() );
+    QRect m_rect = QRect(option.rect.x() + margins.left(), option.rect.y(), option.rect.width() - margins.left() - margins.right(), option.rect.height());
 
     if( index.column() == 1 || index.column() == 2 )
     {

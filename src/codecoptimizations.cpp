@@ -1,33 +1,29 @@
 
 #include "codecoptimizations.h"
 
-#include <KLocale>
-#include <KIcon>
-#include <QLayout>
-#include <QLabel>
-#include <QScrollArea>
+#include <KLocalizedString>
 #include <QButtonGroup>
+#include <QDialogButtonBox>
+#include <QIcon>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QRadioButton>
+#include <QScrollArea>
 
-
-CodecOptimizations::CodecOptimizations( const QList<Optimization>& _optimizationList, QWidget* parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    optimizationList( _optimizationList )
+CodecOptimizations::CodecOptimizations(const QList<Optimization> &_optimizationList, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , optimizationList(_optimizationList)
 {
-    setCaption( i18n("Solutions for backend problems") );
-    setWindowIcon( KIcon("help-about") );
-    setButtons( KDialog::Ok | KDialog::Cancel );
-    setButtonFocus( KDialog::Cancel );
-    connect( this, SIGNAL(okClicked()), this, SLOT(okClicked()) );
+    setWindowTitle(i18nc("@title:window", "Solutions for backend problems"));
+    setWindowIcon(QIcon::fromTheme("help-about"));
 
-    QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
-    QVBoxLayout *box = new QVBoxLayout( widget );
+    QVBoxLayout *box = new QVBoxLayout(this);
 
     QLabel *messageLabel = new QLabel( i18n("You have installed or removed backends and your soundKonverter settings can be optimized."), this );
     box->addWidget( messageLabel );
 
-    QFrame *frame = new QFrame( widget );
+    QFrame *frame = new QFrame(this);
     frame->setFrameShape( QFrame::StyledPanel );
     frame->setFrameShadow( QFrame::Sunken );
     box->addWidget( frame );
@@ -78,6 +74,10 @@ CodecOptimizations::CodecOptimizations( const QList<Optimization>& _optimization
         solutionButtonGroup->addButton( solutionIgnore );
         solutionButtonGroup->addButton( solutionFix );
     }
+
+    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &CodecOptimizations::okClicked);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &CodecOptimizations::rejected);
 }
 
 CodecOptimizations::~CodecOptimizations()

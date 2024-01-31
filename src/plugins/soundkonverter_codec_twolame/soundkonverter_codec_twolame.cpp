@@ -4,17 +4,16 @@
 #include "soundkonverter_codec_twolame.h"
 #include "twolamecodecwidget.h"
 
-
-#include <QWidget>
-#include <QLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <KLocale>
 #include <KComboBox>
-#include <KDialog>
-#include <QSpinBox>
+#include <QCheckBox>
+#include <QDialog>
 #include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
+#include <QSpinBox>
+#include <QWidget>
 
 soundkonverter_codec_twolame::soundkonverter_codec_twolame( QObject *parent, const QVariantList& args  )
     : CodecPlugin( parent )
@@ -65,20 +64,19 @@ void soundkonverter_codec_twolame::showConfigDialog( ActionType action, const QS
     Q_UNUSED(codecName)
     Q_UNUSED(parent)
 
-//     KDialog *dialog = new KDialog( parent );
-//     dialog->setCaption( i18n("Configure %1",*global_plugin_name) );
-//     dialog->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Apply );
+    //     QDialog *dialog = new QDialog( parent );
+    //     dialog->setCaption( i18n("Configure %1",*global_plugin_name) );
+    //     dialog->setButtons( QDialog::Ok | QDialog::Cancel | QDialog::Apply );
 
-//     QWidget *widget = new QWidget( dialog );
+    //     QWidget *widget = new QWidget( dialog );
 
+    //     dialog->setMainWidget( widget );
+    //     connect( dialog, SIGNAL( applyClicked() ), widget, SLOT( save() ) );
+    //     connect( dialog, SIGNAL( okClicked() ), widget, SLOT( save() ) );
+    //     connect( widget, SIGNAL( changed( bool ) ), dialog, SLOT( enableButtonApply( bool ) ) );
 
-//     dialog->setMainWidget( widget );
-//     connect( dialog, SIGNAL( applyClicked() ), widget, SLOT( save() ) );
-//     connect( dialog, SIGNAL( okClicked() ), widget, SLOT( save() ) );
-//     connect( widget, SIGNAL( changed( bool ) ), dialog, SLOT( enableButtonApply( bool ) ) );
-
-//     dialog->enableButtonApply( false );
-//     dialog->show();
+    //     dialog->enableButtonApply( false );
+    //     dialog->show();
 }
 
 bool soundkonverter_codec_twolame::hasInfo()
@@ -88,9 +86,9 @@ bool soundkonverter_codec_twolame::hasInfo()
 
 void soundkonverter_codec_twolame::showInfo( QWidget *parent )
 {
-    KDialog *dialog = new KDialog( parent );
+    QDialog *dialog = new QDialog(parent);
     dialog->setCaption( i18n("About %1",*global_plugin_name) );
-    dialog->setButtons( KDialog::Ok );
+    dialog->setButtons(QDialog::Ok);
 
     QLabel *widget = new QLabel( dialog );
 
@@ -108,7 +106,13 @@ CodecWidget *soundkonverter_codec_twolame::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_twolame::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_twolame::convert(const QUrl &inputFile,
+                                          const QUrl &outputFile,
+                                          const QString &inputCodec,
+                                          const QString &outputCodec,
+                                          const ConversionOptions *_conversionOptions,
+                                          TagData *tags,
+                                          bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -131,7 +135,13 @@ int soundkonverter_codec_twolame::convert( const KUrl& inputFile, const KUrl& ou
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_twolame::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_twolame::convertCommand(const QUrl &inputFile,
+                                                         const QUrl &outputFile,
+                                                         const QString &inputCodec,
+                                                         const QString &outputCodec,
+                                                         const ConversionOptions *_conversionOptions,
+                                                         TagData *tags,
+                                                         bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)

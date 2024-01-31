@@ -6,16 +6,15 @@
 
 #include <math.h>
 
-#include <QApplication>
-#include <QLayout>
-#include <QLabel>
-#include <KLocale>
 #include <KComboBox>
-#include <QDoubleSpinBox>
-#include <QSlider>
+#include <QApplication>
 #include <QCheckBox>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
 #include <QLineEdit>
-
+#include <QLocale>
+#include <QSlider>
 
 NeroaacCodecWidget::NeroaacCodecWidget()
     : CodecWidget(),

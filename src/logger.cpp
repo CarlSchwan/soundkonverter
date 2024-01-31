@@ -1,25 +1,25 @@
 
 #include "logger.h"
 
-#include <KLocale>
-#include <KStandardDirs>
 #include <KConfigGroup>
+#include <KLocalizedString>
+#include <KSharedConfig>
+#include <QLocale>
+#include <QStandardPaths>
 
 #include <cstdlib>
 #include <ctime>
 
-#include <KGlobal>
-
-
 #define MAX_LOGS  20
 #define MAX_LINES 10000
 
+using namespace Qt::Literals::StringLiterals;
 
 LoggerItem::LoggerItem( int logId, const QString& logIdentifier )
 {
     id = logId;
     identifier = logIdentifier;
-    file.setFileName( KStandardDirs::locateLocal("data",QString("soundkonverter/log/%1.log").arg(id)) );
+    file.setFileName(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + u"/soundkonverter/log/%1.log"_s.arg(id));
     completed = false;
     succeeded = false;
 }
@@ -37,7 +37,7 @@ LoggerItem::~LoggerItem()
 Logger::Logger( QObject *parent)
     : QObject( parent )
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
     group = conf->group( "General" );
     writeLogFiles = group.readEntry( "writeLogFiles", false );

@@ -5,10 +5,10 @@
 
 #include "replaygainfilelistitem.h"
 
+#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
 #include <QTimer>
-#include <QTime>
 #include <QWeakPointer>
 
 class ReplayGainPlugin;
@@ -45,7 +45,7 @@ public:
 
     int time;
 
-    QTime progressedTime;
+    QElapsedTimer progressedTime;
 };
 
 
@@ -98,7 +98,7 @@ public slots:
     /** Stop the item with the file list item @p fileListItem in the item list and remove it */
     void kill( ReplayGainFileListItem *fileListItem );
 
-signals:
+Q_SIGNALS:
     // connected to FileList
     /** The conversion of an item has finished and the state is reported */
     void finished( ReplayGainFileListItem *fileListItem, ReplayGainFileListItem::ReturnCode returnCode );

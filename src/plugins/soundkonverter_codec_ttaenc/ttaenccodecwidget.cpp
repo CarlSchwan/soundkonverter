@@ -4,11 +4,10 @@
 #include "ttaenccodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-#include <QLayout>
-#include <QCheckBox>
 #include <KLineEdit>
-#include <KLocale>
-
+#include <QCheckBox>
+#include <QLayout>
+#include <QLocale>
 
 TTAEncCodecWidget::TTAEncCodecWidget()
     : CodecWidget(),

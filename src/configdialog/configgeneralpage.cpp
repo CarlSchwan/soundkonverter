@@ -13,18 +13,18 @@
 
 #include "../config.h"
 
-#include <KLocale>
 #include <KComboBox>
 #include <KLineEdit>
-#include <KPushButton>
-#include <KFileDialog>
-#include <KIntSpinBox>
-
-#include <QLayout>
+#include <KLocalizedString>
 #include <QBoxLayout>
-#include <QLabel>
 #include <QCheckBox>
 #include <QDir>
+#include <QFileDialog>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QPushButton>
+#include <QSpinBox>
 
 #include <solid/device.h>
 
@@ -133,7 +133,7 @@ ConfigGeneralPage::ConfigGeneralPage( Config *_config, QWidget *parent )
     box->addLayout( numFilesBox );
     QLabel *lNumFiles = new QLabel( i18n("Number of files to convert at once:"), this );
     numFilesBox->addWidget( lNumFiles );
-    iNumFiles = new KIntSpinBox( this );
+    iNumFiles = new QSpinBox(this);
     iNumFiles->setToolTip( i18n("You shouldn't set this number higher than the amount of installed processor cores.\nThere have been %1 processor cores detected.", processorsCount) );
     iNumFiles->setRange( 1, 100 );
     iNumFiles->setValue( config->data.general.numFiles );
@@ -192,7 +192,7 @@ ConfigGeneralPage::ConfigGeneralPage( Config *_config, QWidget *parent )
     box->addLayout( numReplayGainFilesBox );
     QLabel *lNumReplayGainFiles = new QLabel( i18n("Number of items to process at once:"), this );
     numReplayGainFilesBox->addWidget( lNumReplayGainFiles );
-    iNumReplayGainFiles = new KIntSpinBox( this );
+    iNumReplayGainFiles = new QSpinBox(this);
     iNumReplayGainFiles->setToolTip( i18n("You shouldn't set this number higher than the amount of installed processor cores.\nThere have been %1 processor cores detected.", processorsCount) );
     iNumReplayGainFiles->setRange( 1, 100 );
     iNumReplayGainFiles->setValue( config->data.general.numReplayGainFiles );

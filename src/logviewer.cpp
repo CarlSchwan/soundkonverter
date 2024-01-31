@@ -6,42 +6,35 @@
 #include <QLabel>
 #include <QApplication>
 
-#include <KLocale>
-#include <KIcon>
-#include <KPushButton>
 #include <KComboBox>
-#include <KTextEdit>
-#include <KFileDialog>
+#include <KLocalizedString>
 #include <KMessageBox>
+#include <KSharedConfig>
+#include <KWindowConfig>
+#include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QIcon>
+#include <QLocale>
+#include <QPushButton>
+#include <QTextEdit>
 
-#include <KGlobal>
+using namespace Qt::Literals::StringLiterals;
 
-
-LogViewer::LogViewer( Logger* _logger, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    logger( _logger )
+LogViewer::LogViewer(Logger *_logger, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , logger(_logger)
 {
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
     connect( logger, SIGNAL(removedProcess(int)), this, SLOT(processRemoved(int)) );
     connect( logger, SIGNAL(updateProcess(int)), this, SLOT(updateProcess(int)) );
 
-    setCaption( i18n("Log Viewer") );
-    setWindowIcon( KIcon("view-list-text") );
-    setButtons( KDialog::User1 | KDialog::User2 | KDialog::Close );
-    setButtonText( KDialog::User1, i18n("Update") );
-    setButtonIcon( KDialog::User1, KIcon("view-refresh") );
-    connect( this, SIGNAL(user1Clicked()), this, SLOT(refillLogs()) );
-    setButtonText( KDialog::User2, i18n("Save to file...") );
-    setButtonIcon( KDialog::User2, KIcon("document-save") );
-    connect( this, SIGNAL(user2Clicked()), this, SLOT(save()) );
-    setButtonFocus( KDialog::Close );
+    setWindowTitle(i18nc("@title:window", "Log Viewer"));
+    setWindowIcon(QIcon::fromTheme("view-list-text"));
 
-    QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
-    QVBoxLayout *box = new QVBoxLayout( widget );
+    QVBoxLayout *box = new QVBoxLayout(this);
 
-    QHBoxLayout *topBox = new QHBoxLayout( widget );
+    QHBoxLayout *topBox = new QHBoxLayout;
     box->addLayout( topBox );
     QLabel *lItem = new QLabel( i18n("Log file:") );
     topBox->addWidget( lItem );
@@ -51,24 +44,42 @@ LogViewer::LogViewer( Logger* _logger, QWidget *parent, Qt::WFlags f )
     topBox->setStretchFactor( cItem, 1 );
     connect( cItem, SIGNAL(activated(int)), this, SLOT(itemChanged()) );
 
-    kLog = new KTextEdit( this );
-    kLog->setTabStopWidth( kLog->tabStopWidth()/2 );
+    kLog = new QTextEdit(this);
     box->addWidget( kLog );
     kLog->setTextInteractionFlags( Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard );
 
     refillLogs();
 
-    setInitialSize( QSize(60*fontHeight,40*fontHeight) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "LogViewer" );
-    restoreDialogSize( group );
+    auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Close | QDialogButtonBox::Save, this);
+    box->addWidget(buttonBox);
+
+    auto updateButton = new QPushButton(i18nc("@action:button", "Update"), buttonBox);
+    updateButton->setIcon(QIcon::fromTheme(u"view-refresh-symbolic"_s));
+    connect(updateButton, &QPushButton::clicked, this, &LogViewer::refillLogs);
+    buttonBox->addButton(updateButton, QDialogButtonBox::ActionRole);
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &LogViewer::save);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &LogViewer::reject);
+
+    resize(QSize(60 * fontHeight, 40 * fontHeight));
+    readConfig();
 }
 
 LogViewer::~LogViewer()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "LogViewer" );
-    saveDialogSize( group );
+    writeConfig();
+}
+
+void LogViewer::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "LogViewer");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void LogViewer::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "LogViewer");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 void LogViewer::refillLogs()
@@ -113,8 +124,9 @@ void LogViewer::itemChanged()
     if( !item )
         return;
 
-    foreach( const QString& line, item->data )
+    for (const QString &line : std::as_const(item->data)) {
         kLog->append( line );
+    }
 
     QPalette currentPalette = kLog->palette();
     if( item->completed )
@@ -130,14 +142,19 @@ void LogViewer::itemChanged()
 
 void LogViewer::save()
 {
-    const QString fileName = KFileDialog::getSaveFileName( KUrl(), "*.txt\n*.log", this, i18n("Save log file") );
+    const QString fileName = QFileDialog::getSaveFileName(this, i18n("Save log file"), {}, "*.txt\n*.log");
     if( fileName.isEmpty() )
         return;
 
     QFile file( fileName );
     if( file.exists() )
     {
-        if( KMessageBox::questionYesNo(this,i18n("File already exists. Do you really want to overwrite it?")) == KMessageBox::No )
+        if (KMessageBox::questionTwoActions(this,
+                                            i18n("File already exists."),
+                                            i18n("Do you really want to overwrite it?"),
+                                            KStandardGuiItem::overwrite(),
+                                            KStandardGuiItem::cancel())
+            == KMessageBox::SecondaryAction)
             return;
     }
     if( !file.open(QIODevice::WriteOnly) )

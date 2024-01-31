@@ -4,13 +4,12 @@
 #include "aftencodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-#include <KLocale>
 #include <KComboBox>
-#include <QLayout>
 #include <QLabel>
-#include <QSpinBox>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
-
+#include <QSpinBox>
 
 AftenCodecWidget::AftenCodecWidget()
     : CodecWidget(),

@@ -6,10 +6,9 @@
 #include "opustoolscodecwidget.h"
 #include "opustoolsconversionoptions.h"
 
-#include <KDialog>
-#include <QCheckBox>
 #include <QBoxLayout>
-
+#include <QCheckBox>
+#include <QDialog>
 
 soundkonverter_codec_opustools::soundkonverter_codec_opustools( QObject *parent, const QVariantList& args  )
     : CodecPlugin( parent )
@@ -79,9 +78,9 @@ void soundkonverter_codec_opustools::showConfigDialog( ActionType action, const 
 
     if( !configDialog.data() )
     {
-        configDialog = new KDialog( parent );
+        configDialog = new QDialog(parent);
         configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
-        configDialog.data()->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Default );
+        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
         QWidget *configDialogWidget = new QWidget( configDialog.data() );
         QVBoxLayout *configDialogBox = new QVBoxLayout( configDialogWidget );
@@ -137,7 +136,13 @@ CodecWidget *soundkonverter_codec_opustools::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_opustools::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_opustools::convert(const QUrl &inputFile,
+                                            const QUrl &outputFile,
+                                            const QString &inputCodec,
+                                            const QString &outputCodec,
+                                            const ConversionOptions *_conversionOptions,
+                                            TagData *tags,
+                                            bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -160,7 +165,13 @@ int soundkonverter_codec_opustools::convert( const KUrl& inputFile, const KUrl& 
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_opustools::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_opustools::convertCommand(const QUrl &inputFile,
+                                                           const QUrl &outputFile,
+                                                           const QString &inputCodec,
+                                                           const QString &outputCodec,
+                                                           const ConversionOptions *_conversionOptions,
+                                                           TagData *tags,
+                                                           bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)

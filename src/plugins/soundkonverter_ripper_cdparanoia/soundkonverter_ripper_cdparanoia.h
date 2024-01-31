@@ -4,12 +4,12 @@
 
 #include "../../core/ripperplugin.h"
 
-#include <KUrl>
 #include <KProcess>
 #include <QList>
+#include <QUrl>
 #include <QWeakPointer>
 
-class KDialog;
+class QDialog;
 class QCheckBox;
 class QComboBox;
 class QSpinBox;
@@ -34,8 +34,8 @@ public:
     bool hasInfo();
     void showInfo( QWidget *parent );
 
-    int rip( const QString& device, int track, int tracks, const KUrl& outputFile );
-    QStringList ripCommand( const QString& device, int track, int tracks, const KUrl& outputFile );
+    int rip(const QString &device, int track, int tracks, const QUrl &outputFile);
+    QStringList ripCommand(const QString &device, int track, int tracks, const QUrl &outputFile);
     float parseOutput( const QString& output, int *fromSector, int *toSector );
     float parseOutput( const QString& output );
 
@@ -44,7 +44,7 @@ private slots:
     void processOutput();
 
 private:
-    QWeakPointer<KDialog> configDialog;
+    QWeakPointer<QDialog> configDialog;
     QCheckBox *configDialogForceReadSpeedCheckBox;
     QSpinBox *configDialogForceReadSpeedSpinBox;
     QComboBox *configDialogForceEndiannessComboBox;

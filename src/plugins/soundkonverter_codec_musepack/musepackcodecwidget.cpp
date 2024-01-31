@@ -6,17 +6,16 @@
 
 #include <math.h>
 
-#include <QApplication>
-#include <KLocale>
 #include <KComboBox>
 #include <KLineEdit>
-#include <QLayout>
-#include <QLabel>
+#include <QApplication>
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
-#include <QCheckBox>
-
 
 MusePackCodecWidget::MusePackCodecWidget()
     : CodecWidget(),

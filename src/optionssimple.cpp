@@ -12,15 +12,15 @@
 #include <QString>
 #include <QToolTip>
 
-#include <KLocale>
-#include <KIcon>
-#include <KMessageBox>
 #include <KComboBox>
+#include <KLocalizedString>
+#include <KMessageBox>
 #include <QCheckBox>
-#include <KPushButton>
 #include <QFile>
-#include <KStandardDirs>
-
+#include <QIcon>
+#include <QLocale>
+#include <QPushButton>
+#include <QStandardPaths>
 
 // FIXME when changing the output directory, check if the profile is a user defined and set it to 'User defined', if it is
 
@@ -31,9 +31,7 @@ OptionsSimple::OptionsSimple( Config *_config, /*OptionsDetailed* _optionsDetail
 {
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QGridLayout *grid = new QGridLayout( this );
-    grid->setMargin( fontHeight );
-    grid->setSpacing( fontHeight );
+    QGridLayout *grid = new QGridLayout(this);
 
     QLabel *lQuality = new QLabel( i18n("Quality:"), this );
     grid->addWidget( lQuality, 0, 0 );
@@ -44,12 +42,12 @@ OptionsSimple::OptionsSimple( Config *_config, /*OptionsDetailed* _optionsDetail
     topBoxQuality->addWidget( cProfile );
     connect( cProfile, SIGNAL(activated(int)), this, SLOT(profileChanged()) );
     topBoxQuality->addSpacing( 0.25*fontHeight );
-    pProfileRemove = new KPushButton( KIcon("edit-delete"), i18n("Remove"), this );
+    pProfileRemove = new QPushButton(QIcon::fromTheme("edit-delete"), i18n("Remove"), this);
     topBoxQuality->addWidget( pProfileRemove );
     pProfileRemove->setToolTip( i18n("Remove the selected profile") );
     pProfileRemove->hide();
     connect( pProfileRemove, SIGNAL(clicked()), this, SLOT(profileRemove()) );
-    pProfileInfo = new KPushButton( KIcon("dialog-information"), i18n("Info"), this );
+    pProfileInfo = new QPushButton(QIcon::fromTheme("dialog-information"), i18n("Info"), this);
     topBoxQuality->addWidget( pProfileInfo );
     pProfileInfo->setToolTip( i18n("Information about the selected profile") );
 //     cProfile->setFixedHeight( pProfileInfo->minimumSizeHint().height() );
@@ -68,7 +66,7 @@ OptionsSimple::OptionsSimple( Config *_config, /*OptionsDetailed* _optionsDetail
 //     connect( cFormat, SIGNAL(activated(int)), this, SLOT(formatChanged()) );
     connect( cFormat, SIGNAL(activated(int)), this, SLOT(somethingChanged()) );
     topBoxFormat->addSpacing( 0.25*fontHeight );
-    pFormatInfo = new KPushButton( KIcon("dialog-information"), i18n("Info"), this );
+    pFormatInfo = new QPushButton(QIcon::fromTheme("dialog-information"), i18n("Info"), this);
     topBoxFormat->addWidget( pFormatInfo );
     pFormatInfo->setToolTip( i18n("Information about the selected file format") );
 //     cFormat->setFixedHeight( pFormatInfo->minimumSizeHint().height() );
@@ -231,12 +229,15 @@ void OptionsSimple::profileRemove()
 {
     const QString profileName = cProfile->currentText();
 
-    const int ret = KMessageBox::questionYesNo( this, i18n("Do you really want to remove the profile: %1",profileName), i18n("Remove profile?") );
-    if( ret == KMessageBox::Yes )
-    {
+    const int ret = KMessageBox::questionTwoActions(this,
+                                                    i18n("Do you really want to remove the profile: %1", profileName),
+                                                    i18n("Remove profile?"),
+                                                    KStandardGuiItem::remove(),
+                                                    KStandardGuiItem::cancel());
+    if (ret == KMessageBox::PrimaryAction) {
         QDomDocument list("soundkonverter_profilelist");
 
-        QFile listFile( KStandardDirs::locateLocal("data","soundkonverter/profiles.xml") );
+        QFile listFile(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/profiles.xml");
         if( listFile.open( QIODevice::ReadOnly ) )
         {
             if( list.setContent( &listFile ) )

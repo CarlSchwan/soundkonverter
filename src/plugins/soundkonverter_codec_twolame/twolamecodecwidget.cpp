@@ -5,11 +5,11 @@
 
 #include "../../core/conversionoptions.h"
 
-#include <QLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <KLocale>
 #include <KComboBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSpinBox>
 // #include <QSlider>
 

@@ -4,8 +4,7 @@
 #include "fluidsynthcodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-#include <KLocale>
-
+#include <QLocale>
 
 FluidsynthCodecWidget::FluidsynthCodecWidget()
     : CodecWidget(),

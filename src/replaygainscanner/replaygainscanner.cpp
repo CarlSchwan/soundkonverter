@@ -10,34 +10,35 @@
 #include "codecproblems.h"
 #include "progressindicator.h"
 
-#include <KFileDialog>
-#include <KIcon>
-#include <KLocale>
-#include <KPushButton>
+#include <KLocalizedString>
 #include <KMessageBox>
-
+#include <KSharedConfig>
+#include <KWindowConfig>
 #include <QApplication>
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QFileDialog>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
-#include <QBoxLayout>
+#include <QLocale>
+#include <QPushButton>
 #include <QStringList>
 
-
-ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool showMainWindowButton, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    config( _config ),
-    logger( _logger )
+ReplayGainScanner::ReplayGainScanner(Config *_config, Logger *_logger, bool showMainWindowButton, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , config(_config)
+    , logger(_logger)
 {
-    setButtons( 0 );
+    auto layout = new QVBoxLayout(this);
 
-    setCaption( i18n("Replay Gain tool") );
-    setWindowIcon( KIcon("soundkonverter-replaygain") );
+    setWindowTitle(i18n("Replay Gain tool"));
+    setWindowIcon(QIcon::fromTheme("soundkonverter-replaygain"));
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
     QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
+    layout->addWidget(widget);
 
     QGridLayout* grid = new QGridLayout( widget );
 
@@ -45,14 +46,14 @@ ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool sho
     grid->addLayout( filterBox, 0, 0 );
 
     cAdd = new ComboButton( widget );
-    cAdd->insertItem( KIcon("folder"), i18n("Add folder...") );
-    cAdd->insertItem( KIcon("audio-x-generic"), i18n("Add files...") );
+    cAdd->insertItem(QIcon::fromTheme("folder"), i18n("Add folder..."));
+    cAdd->insertItem(QIcon::fromTheme("audio-x-generic"), i18n("Add files..."));
     filterBox->addWidget( cAdd );
     connect( cAdd, SIGNAL(clicked(int)), this, SLOT(addClicked(int)) );
 
     filterBox->addStretch();
 
-    pShowMainWindow = new KPushButton( KIcon("soundkonverter"), i18n("Show soundKonverter main window"), widget );
+    pShowMainWindow = new QPushButton(QIcon::fromTheme("soundkonverter"), i18n("Show soundKonverter main window"), widget);
     pShowMainWindow->setVisible( showMainWindowButton );
     filterBox->addWidget( pShowMainWindow );
     connect( pShowMainWindow, SIGNAL(clicked()), this, SLOT(showMainWindowClicked()) );
@@ -75,17 +76,17 @@ ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool sho
     QHBoxLayout* buttonBox = new QHBoxLayout();
     grid->addLayout( buttonBox, 3, 0 );
 
-    pTagVisible = new KPushButton( KIcon("list-add"), i18n("Tag untagged"), widget );
+    pTagVisible = new QPushButton(QIcon::fromTheme("list-add"), i18n("Tag untagged"), widget);
     pTagVisible->setToolTip( i18n("Calculate Replay Gain tags for all files in the file list without Replay Gain tags.") );
     buttonBox->addWidget( pTagVisible );
     connect( pTagVisible, SIGNAL(clicked()), this, SLOT(calcReplayGainClicked()) );
 
-    pRemoveTag = new KPushButton( KIcon("list-remove"), i18n("Untag tagged"), widget );
+    pRemoveTag = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Untag tagged"), widget);
     pRemoveTag->setToolTip( i18n("Remove the Replay Gain tags from all files in the file list.") );
     buttonBox->addWidget( pRemoveTag );
     connect( pRemoveTag, SIGNAL(clicked()), this, SLOT(removeReplayGainClicked()) );
 
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), widget);
     pCancel->hide();
     buttonBox->addWidget( pCancel );
     connect( pCancel, SIGNAL(clicked()), this, SLOT(cancelClicked()) );
@@ -96,7 +97,7 @@ ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool sho
     
     buttonBox->addStretch();
 
-    pClose = new KPushButton( KIcon("dialog-close"), i18n("Close"), widget );
+    pClose = new QPushButton(QIcon::fromTheme("dialog-close"), i18n("Close"), widget);
     pClose->setFocus();
     buttonBox->addWidget( pClose );
     connect( pClose, SIGNAL(clicked()), this, SLOT(closeClicked()) );
@@ -112,18 +113,25 @@ ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool sho
     connect( replayGainProcessor, SIGNAL(updateTime(float)), progressIndicator, SLOT(update(float)) );
     connect( replayGainProcessor, SIGNAL(timeFinished(float)), progressIndicator, SLOT(timeFinished(float)) );
 
-
-    setInitialSize( QSize(60*fontHeight,40*fontHeight) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "ReplayGainTool" );
-    restoreDialogSize( group );
+    resize(QSize(60 * fontHeight, 40 * fontHeight));
+    readConfig();
 }
 
 ReplayGainScanner::~ReplayGainScanner()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "ReplayGainTool" );
-    saveDialogSize( group );
+    writeConfig();
+}
+
+void ReplayGainScanner::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), u"ReplayGainTool"_s);
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
+}
+
+void ReplayGainScanner::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), u"ReplayGainTool"_s);
+    KWindowConfig::saveWindowSize(windowHandle(), group);
 }
 
 void ReplayGainScanner::addClicked( int index )
@@ -156,24 +164,12 @@ void ReplayGainScanner::showFileDialog()
     filterList += "*.*|" + i18n("All files");
 
     // add the control elements
-    QLabel *formatHelp = new QLabel( "<a href=\"format-help\">" + i18n("Are you missing some file formats?") + "</a>", this );
-    connect( formatHelp, SIGNAL(linkActivated(const QString&)), this, SLOT(showHelp()) );
+    auto urls = QFileDialog::getOpenFileUrls(this, i18n("Add Files"), QUrl("kfiledialog:///soundkonverter-add-media"), filterList.join("\n"));
 
-    fileDialog = new KFileDialog( KUrl("kfiledialog:///soundkonverter-add-media"), filterList.join("\n"), this, formatHelp );
-    fileDialog->setWindowTitle( i18n("Add Files") );
-    fileDialog->setMode( KFile::Files | KFile::ExistingOnly );
-    connect( fileDialog, SIGNAL(accepted()), this, SLOT(fileDialogAccepted()) );
-    fileDialog->exec();
-}
-
-void ReplayGainScanner::fileDialogAccepted()
-{
     QStringList errorList;
     //    codec    @0 files @1 solutions
     QMap< QString, QList<QStringList> > problems;
     QString fileName;
-
-    QList<QUrl> urls = fileDialog->selectedUrls();
 
     const bool canDecodeAac = config->pluginLoader()->canDecode( "m4a/aac" );
     const bool canDecodeAlac = config->pluginLoader()->canDecode( "m4a/alac" );
@@ -326,13 +322,14 @@ void ReplayGainScanner::closeClicked()
 {
     if( pCancel->isVisible() )
     {
-        const int ret = KMessageBox::questionYesNo( this, i18n("There are still Replay Gain jobs running.\nDo you really want to cancel them?") );
-        if( ret == KMessageBox::Yes )
-        {
+        const int ret = KMessageBox::questionTwoActions(this,
+                                                        i18n("There are still Replay Gain jobs running."),
+                                                        i18n("Do you really want to stop them?"),
+                                                        KStandardGuiItem::stop(),
+                                                        KStandardGuiItem::cancel());
+        if (ret == KMessageBox::PrimaryAction) {
             fileList->cancelProcess();
-        }
-        else
-        {
+        } else {
             return;
         }
     }
@@ -356,5 +353,5 @@ void ReplayGainScanner::processStopped()
 
 void ReplayGainScanner::progressChanged( const QString& progress )
 {
-    setCaption( progress + " - " + i18n("Replay Gain tool") );
+    setWindowTitle(progress + " - " + i18n("Replay Gain tool"));
 }

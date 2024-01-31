@@ -14,7 +14,7 @@
 
 // #include <KPageWidget>
 #include <KPageDialog>
-#include <qlayout.h>
+#include <QLayout>
 
 class Options;
 class Config;
@@ -23,9 +23,9 @@ class TagEngine;
 
 class KLineEdit;
 class KComboBox;
-class KIntSpinBox;
-class KTextEdit;
-class KPushButton;
+class QSpinBox;
+class QTextEdit;
+class QPushButton;
 class QLabel;
 class FileListItem;
 
@@ -52,59 +52,59 @@ private:
     /** A lineedit for entering the title of track */
     QLabel* lTitleLabel;
     KLineEdit* lTitle;
-    KPushButton* pTitleEdit;
+    QPushButton *pTitleEdit;
     /** A spinbox for entering or selecting the track number */
     QLabel* lTrackLabel;
-    KIntSpinBox* iTrack;
-    KPushButton* pTrackEdit;
+    QSpinBox *iTrack;
+    QPushButton *pTrackEdit;
     /** A spinbox for entering or selecting the total track number */
     QLabel* lTrackTotalLabel;
-    KIntSpinBox* iTrackTotal;
-    KPushButton* pTrackTotalEdit;
+    QSpinBox *iTrackTotal;
+    QPushButton *pTrackTotalEdit;
     /** A lineedit for entering the artist of a track */
     QLabel* lArtistLabel;
     KLineEdit* lArtist;
-    KPushButton* pArtistEdit;
+    QPushButton *pArtistEdit;
     /** A lineedit for entering the composer of a track */
     QLabel* lComposerLabel;
     KLineEdit* lComposer;
-    KPushButton* pComposerEdit;
+    QPushButton *pComposerEdit;
     /** A lineedit for entering the album artist */
     QLabel* lAlbumArtistLabel;
     KLineEdit* lAlbumArtist;
-    KPushButton* pAlbumArtistEdit;
+    QPushButton *pAlbumArtistEdit;
     /** A lineedit for entering the album name */
     QLabel* lAlbumLabel;
     KLineEdit* lAlbum;
-    KPushButton* pAlbumEdit;
+    QPushButton *pAlbumEdit;
     /** A spinbox for entering or selecting the disc number */
     QLabel* lDiscLabel;
-    KIntSpinBox* iDisc;
-    KPushButton* pDiscEdit;
+    QSpinBox *iDisc;
+    QPushButton *pDiscEdit;
     /** A spinbox for entering or selecting the total disc number */
     QLabel* lDiscTotalLabel;
-    KIntSpinBox* iDiscTotal;
-    KPushButton* pDiscTotalEdit;
+    QSpinBox *iDiscTotal;
+    QPushButton *pDiscTotalEdit;
     /** A spinbox for entering or selecting the year of the album */
     QLabel* lYearLabel;
-    KIntSpinBox* iYear;
-    KPushButton* pYearEdit;
+    QSpinBox *iYear;
+    QPushButton *pYearEdit;
     /** A combobox for entering or selecting the genre of the album */
     QLabel* lGenreLabel;
     KComboBox* cGenre;
-    KPushButton* pGenreEdit;
+    QPushButton *pGenreEdit;
     /** A textedit for entering a comment for a track */
     QLabel* lCommentLabel;
-    KTextEdit* tComment;
-    KPushButton* pCommentEdit;
+    QTextEdit *tComment;
+    QPushButton *pCommentEdit;
 
     /** When hitting this button, the options lock (when multiple files are selected) will be deactivated */
     QLabel* lEditOptions;
-    KPushButton* pEditOptions;
+    QPushButton *pEditOptions;
 
     /** When hitting this button, the tag lock (when reading tags failed) will be deactivated */
     QLabel* lEditTags;
-    KPushButton* pEditTags;
+    QPushButton *pEditTags;
 
     QList<FileListItem*> selectedItems;
 
@@ -139,7 +139,7 @@ private slots:
     void editGenreClicked();
     void editCommentClicked();
 
-signals:
+Q_SIGNALS:
     // connected to FileList
     void updateFileListItems( QList<FileListItem*> items );
 

@@ -2,7 +2,7 @@
 #ifndef DIRDIALOG_H
 #define DIRDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 class Config;
 class Options;
@@ -10,17 +10,17 @@ class ConversionOptions;
 
 class QLabel;
 class QCheckBox;
-class KPushButton;
+class QPushButton;
 class KUrlRequester;
-class KListWidget;
-
+class QListWidget;
+class QDialogButtonBox;
 
 /**
  * @short The Dir Opener
  * @author Daniel Faust <hessijames@gmail.com>
  * @version 0.3
  */
-class DirOpener : public KDialog
+class DirOpener : public QDialog
 {
     Q_OBJECT
 public:
@@ -35,7 +35,7 @@ public:
     };
 
     /** Constructor */
-    DirOpener( Config *config, Mode _mode, QWidget *parent, Qt::WFlags f=0 );
+    DirOpener(Config *config, Mode _mode, QWidget *parent, Qt::WindowFlags = {});
 
     /** Destructor */
     ~DirOpener();
@@ -51,6 +51,9 @@ private slots:
     void showHelp();
 
 private:
+    void readConfig();
+    void writeConfig();
+
     /** config pointer */
     Config *config;
 
@@ -67,12 +70,13 @@ private:
     QLabel *lOptions;
 
     KUrlRequester *uDirectory;
-    KListWidget *fileTypes;
-    KPushButton *pSelectAll;
-    KPushButton *pSelectNone;
+    QListWidget *fileTypes;
+    QPushButton *pSelectAll;
+    QPushButton *pSelectNone;
     QCheckBox *cRecursive;
+    QDialogButtonBox *const m_buttonBox;
 
-signals:
+Q_SIGNALS:
     void openFiles( const QUrl& directory, bool recursive, const QStringList& codecList, ConversionOptions *conversionOptions = 0 );
 };
 

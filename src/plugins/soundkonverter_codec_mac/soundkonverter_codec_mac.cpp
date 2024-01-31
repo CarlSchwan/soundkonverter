@@ -80,7 +80,13 @@ CodecWidget *soundkonverter_codec_mac::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_mac::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_mac::convert(const QUrl &inputFile,
+                                      const QUrl &outputFile,
+                                      const QString &inputCodec,
+                                      const QString &outputCodec,
+                                      const ConversionOptions *_conversionOptions,
+                                      TagData *tags,
+                                      bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
@@ -130,7 +136,13 @@ int soundkonverter_codec_mac::convert( const KUrl& inputFile, const KUrl& output
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_mac::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_mac::convertCommand(const QUrl &inputFile,
+                                                     const QUrl &outputFile,
+                                                     const QString &inputCodec,
+                                                     const QString &outputCodec,
+                                                     const ConversionOptions *_conversionOptions,
+                                                     TagData *tags,
+                                                     bool replayGain)
 {
     Q_UNUSED(inputFile)
     Q_UNUSED(outputFile)

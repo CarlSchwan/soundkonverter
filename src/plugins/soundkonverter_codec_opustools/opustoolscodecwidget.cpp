@@ -7,15 +7,14 @@
 
 #include <math.h>
 
-#include <QApplication>
-#include <KLocale>
 #include <KComboBox>
-#include <QLayout>
+#include <QApplication>
 #include <QBoxLayout>
-#include <QLabel>
 #include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
-
 
 OpusToolsCodecWidget::OpusToolsCodecWidget()
     : CodecWidget(),

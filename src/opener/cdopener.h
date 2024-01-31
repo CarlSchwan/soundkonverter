@@ -2,18 +2,12 @@
 #ifndef CDOPENER_H
 #define CDOPENER_H
 
-#include <KDialog>
+#include <QDialog>
 #include <QTimer>
 
-#include <KCddb/Kcddb>
-#include <KCddb/Client>
-#include <KCddb/Cdinfo>
-
-extern "C"
-{
-#include <cdda_interface.h>
-#include <cdda_paranoia.h>
-}
+#include <KCDDB/CDInfo>
+#include <KCDDB/Client>
+#include <KCDDB/KCDDB>
 
 #include <phonon/audiooutput.h>
 #include <phonon/seekslider.h>
@@ -22,17 +16,21 @@ extern "C"
 #include <phonon/backendcapabilities.h>
 #include <phonon/MediaController>
 
+extern "C" {
+#include <cdda_interface.h>
+#include <cdda_paranoia.h>
+}
 
 class TagEngine;
 class Config;
 class Options;
 class ConversionOptions;
 class QTreeWidget;
-class KPushButton;
+class QPushButton;
 class KLineEdit;
 class KComboBox;
-class KIntSpinBox;
-class KTextEdit;
+class QSpinBox;
+class QTextEdit;
 class QGroupBox;
 class QTreeWidgetItem;
 class QLabel;
@@ -44,7 +42,7 @@ class PlayerWidget : public QWidget
 {
      Q_OBJECT
 public:
-    PlayerWidget( Phonon::MediaObject *mediaObject, int _track, QTreeWidgetItem *_treeWidgetItem, QWidget *parent, Qt::WindowFlags f = 0 );
+    PlayerWidget(Phonon::MediaObject *mediaObject, int _track, QTreeWidgetItem *_treeWidgetItem, QWidget *parent, Qt::WindowFlags f = {});
     ~PlayerWidget();
 
     void trackChanged( int track );
@@ -56,15 +54,15 @@ private:
     bool playing;
     QTreeWidgetItem *m_treeWidgetItem;
 
-    KPushButton *pStartPlayback;
-    KPushButton *pStopPlayback;
+    QPushButton *pStartPlayback;
+    QPushButton *pStopPlayback;
     Phonon::SeekSlider *seekSlider;
 
 private slots:
     void startPlaybackClicked();
     void stopPlaybackClicked();
 
-signals:
+Q_SIGNALS:
     void startPlayback( int track );
     void stopPlayback();
 };
@@ -75,7 +73,7 @@ signals:
  * @author Daniel Faust <hessijames@gmail.com>
  * @version 1.0
  */
-class CDOpener : public KDialog
+class CDOpener : public QDialog
 {
      Q_OBJECT
 public:
@@ -95,7 +93,7 @@ public:
     };
 
     /** Constructor */
-    CDOpener( Config *_config, const QString& _device, QWidget *parent, Qt::WFlags f=0 );
+    CDOpener(Config *_config, const QString &_device, QWidget *parent, Qt::WindowFlags = {});
 
     /** Destructor */
     ~CDOpener();
@@ -117,6 +115,9 @@ public slots:
     void setCommand( const QString& _command );
 
 private:
+    void writeConfig();
+    void readConfig();
+
     /** returns a list of devices holding audio cds plus a short description (track count) */
     QMap<QString,QString> cdDevices();
     bool openCdDevice( const QString& _device );
@@ -142,11 +143,11 @@ private:
     /** A lineedit for entering the album name */
     KLineEdit *lAlbum;
     /** A spinbox for entering or selecting the disc number */
-    KIntSpinBox *iDisc;
+    QSpinBox *iDisc;
     /** A spinbox for entering or selecting the total disc number */
-    KIntSpinBox *iDiscTotal;
+    QSpinBox *iDiscTotal;
     /** A spinbox for entering or selecting the year of the album */
-    KIntSpinBox *iYear;
+    QSpinBox *iYear;
     /** A combobox for entering or selecting the genre of the album */
     KComboBox *cGenre;
 
@@ -154,22 +155,22 @@ private:
     QGroupBox *tagGroupBox;
 
     /** Set the focus of the tag editor to the track over it */
-    KPushButton *pTrackUp;
+    QPushButton *pTrackUp;
     /** Set the focus of the tag editor to the track under it */
-    KPushButton *pTrackDown;
+    QPushButton *pTrackDown;
 
     /** A lineedit for entering the title of track */
     KLineEdit *lTrackTitle;
-    KPushButton *pTrackTitleEdit;
+    QPushButton *pTrackTitleEdit;
     /** A lineedit for entering the artist of a track */
     KLineEdit *lTrackArtist;
-    KPushButton *pTrackArtistEdit;
+    QPushButton *pTrackArtistEdit;
     /** A lineedit for entering the composer of a track */
     KLineEdit *lTrackComposer;
-    KPushButton *pTrackComposerEdit;
+    QPushButton *pTrackComposerEdit;
     /** A textedit for entering a comment for a track */
-    KTextEdit *tTrackComment;
-    KPushButton *pTrackCommentEdit;
+    QTextEdit *tTrackComment;
+    QPushButton *pTrackCommentEdit;
 
     Phonon::AudioOutput *audioOutput;
     Phonon::MediaObject *mediaObject;
@@ -179,17 +180,17 @@ private:
     QList<PlayerWidget*> playerWidgets;
 
     /** Save the tag information to a cue file */
-    KPushButton *pSaveCue;
+    QPushButton *pSaveCue;
     /** Request CDDB information */
-    KPushButton *pCDDB;
+    QPushButton *pCDDB;
     /** Rip enitre CD as one track */
     QCheckBox *cEntireCd;
     /** Add selected tracks to the file list and quit the dialog */
-    KPushButton *pAdd;
+    QPushButton *pAdd;
     /** proceed to select conversion options */
-    KPushButton *pProceed;
+    QPushButton *pProceed;
     /** Quit the dialog */
-    KPushButton *pCancel;
+    QPushButton *pCancel;
 
     Config *config;
 
@@ -266,7 +267,7 @@ private slots:
 
     void fadeAnim();
 
-signals:
+Q_SIGNALS:
     void addTracks( const QString& device, QList<int> trackList, int tracks, QList<TagData*> tagList, ConversionOptions *conversionOptions, const QString& command );
     void addDisc( const QString& device, ConversionOptions *conversionOptions );
     //void openCuesheetEditor( const QString& content );

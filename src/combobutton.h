@@ -7,7 +7,7 @@
 
 class QString;
 class KIcon;
-class KPushButton;
+class QPushButton;
 class KComboBox;
 
 /**
@@ -36,7 +36,7 @@ public:
     /** Insert a new item with @p text at position @p index */
     void insertItem( const QString &text, int index = -1 );
     /** Insert a new item with an icon @p pixmap and @p text at position @p index */
-    void insertItem( const KIcon &icon, const QString &text, int index = -1 );
+    void insertItem(const QIcon &icon, const QString &text, int index = -1);
 
     /** Increase the combobutton's height by @p height */
     void increaseHeight( int height );
@@ -55,7 +55,7 @@ public:
 
 private:
     /** A pointer to the button */
-    KPushButton *m_button;
+    QPushButton *m_button;
     /** A pointer to the combobox */
     KComboBox *m_box;
 
@@ -80,7 +80,7 @@ private slots:
     /** Is called when the user clicks the button */
     void buttonClicked();
 
-signals:
+Q_SIGNALS:
     /** The signal clicked is emitted, when the user selects an item */
     void clicked( int index );
 

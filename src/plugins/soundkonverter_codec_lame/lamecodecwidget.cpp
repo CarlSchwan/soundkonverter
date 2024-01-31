@@ -4,13 +4,13 @@
 #include "lamecodecwidget.h"
 #include "lameconversionoptions.h"
 
-#include <QApplication>
-#include <QLayout>
-#include <QBoxLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <KLocale>
 #include <KComboBox>
+#include <QApplication>
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 #include <QSpinBox>
 
 #include <KLineEdit>

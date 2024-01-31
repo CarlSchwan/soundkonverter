@@ -9,5 +9,9 @@ ecm_install_icons(ICONS
     32-apps-soundkonverter-replaygain.png
     48-apps-soundkonverter-replaygain.png
     64-apps-soundkonverter-replaygain.png
-    DESTINATION ${ICON_INSTALL_DIR}
+    DESTINATION
+        ${KDE_INSTALL_ICONDIR}
+    THEME
+        hicolor
+
 )

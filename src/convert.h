@@ -119,7 +119,7 @@ public slots:
     /** Change the process priorities */
 //     void priorityChanged( int );
 
-signals:
+Q_SIGNALS:
     // connected to FileList
     /** The conversion of an item has finished and the state is reported */
     void finished( FileListItem *fileListItem, FileListItem::ReturnCode returnCode, bool waitingForAlbumGain = false );

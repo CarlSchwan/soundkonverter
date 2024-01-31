@@ -17,7 +17,7 @@
 #include <QGroupBox>
 
 class KComboBox;
-class KPushButton;
+class QPushButton;
 class QCheckBox;
 class QListWidget;
 class QToolButton;
@@ -64,7 +64,7 @@ private slots:
     void configure();
     void info();
 
-signals:
+Q_SIGNALS:
     void orderChanged();
 };
 
@@ -90,14 +90,14 @@ private:
     KComboBox *cSelectorFormat;
 
     QList<QCheckBox*> filterCheckBoxes;
-    QList<KPushButton*> filterConfigButtons;
+    QList<QPushButton *> filterConfigButtons;
 
     BackendsListWidget *decoderList;
     BackendsListWidget *encoderList;
     BackendsListWidget *replaygainList;
 
-    KPushButton *pConfigureRipper;
-    KPushButton *pShowOptimizations;
+    QPushButton *pConfigureRipper;
+    QPushButton *pShowOptimizations;
 
     QString currentFormat;
 

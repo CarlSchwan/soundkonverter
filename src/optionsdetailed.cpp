@@ -11,17 +11,18 @@
 #include <QBoxLayout>
 #include <QLabel>
 
-#include <KLocale>
-#include <QFrame>
-#include <QChar>
-#include <KIcon>
 #include <KComboBox>
-#include <KPushButton>
-#include <KInputDialog>
+#include <KLocalizedString>
 #include <KMessageBox>
+#include <QChar>
 #include <QFile>
-#include <KStandardDirs>
+#include <QFrame>
+#include <QIcon>
+#include <QInputDialog>
+#include <QLocale>
 #include <QMenu>
+#include <QPushButton>
+#include <QStandardPaths>
 #include <QToolButton>
 
 #define setShown setVisible
@@ -60,7 +61,7 @@ OptionsDetailed::OptionsDetailed( Config* _config, QWidget* parent )
     cPlugin->setSizeAdjustPolicy( QComboBox::AdjustToContents );
     connect( cPlugin, SIGNAL(activated(const QString&)), this, SLOT(encoderChanged(const QString&)) );
     connect( cPlugin, SIGNAL(activated(const QString&)), this, SLOT(somethingChanged()) );
-    pConfigurePlugin = new KPushButton( KIcon("configure"), "", this );
+    pConfigurePlugin = new QPushButton(QIcon::fromTheme("configure"), "", this);
     pConfigurePlugin->setFixedSize( cPlugin->sizeHint().height(), cPlugin->sizeHint().height() );
     pConfigurePlugin->setFlat( true );
     topBox->addWidget( pConfigurePlugin );
@@ -133,14 +134,14 @@ OptionsDetailed::OptionsDetailed( Config* _config, QWidget* parent )
     lEstimSize = new QLabel( QString(QChar(8776))+"? B / min." );
     lEstimSize->hide(); // hide for now because most plugins report inaccurate data
     bottomBox->addWidget( lEstimSize );
-    pProfileSave = new KPushButton( KIcon("document-save"), "", this );
+    pProfileSave = new QPushButton(QIcon::fromTheme("document-save"), "", this);
     bottomBox->addWidget( pProfileSave );
     pProfileSave->setFixedWidth( pProfileSave->height() );
     pProfileSave->setToolTip( i18n("Save current options as a profile") );
     connect( pProfileSave, SIGNAL(clicked()), this, SLOT(saveCustomProfile()) );
     pProfileLoad = new QToolButton( this );
     bottomBox->addWidget( pProfileLoad );
-    pProfileLoad->setIcon( KIcon("document-open") );
+    pProfileLoad->setIcon(QIcon::fromTheme("document-open"));
     pProfileLoad->setPopupMode( QToolButton::InstantPopup );
     pProfileLoad->setFixedWidth( pProfileLoad->height() );
     pProfileLoad->setToolTip( i18n("Load saved profiles") );
@@ -456,7 +457,7 @@ bool OptionsDetailed::saveCustomProfile( bool lastUsed )
         else
         {
             bool ok;
-            profileName = KInputDialog::getText( i18n("New profile"), i18n("Enter a name for the new profile:"), "", &ok );
+            profileName = QInputDialog::getText(this, i18n("New profile"), i18n("Enter a name for the new profile:"), QLineEdit::Normal, {}, &ok);
             if( !ok )
                 return false;
         }
@@ -491,7 +492,7 @@ bool OptionsDetailed::saveCustomProfile( bool lastUsed )
         QDomElement root;
         bool profileFound = false;
 
-        QFile listFile( KStandardDirs::locateLocal("data","soundkonverter/profiles.xml") );
+        QFile listFile(QStandardPaths::locate(QStandardPaths::AppLocalDataLocation, "profiles.xml"));
         if( listFile.open( QIODevice::ReadOnly ) )
         {
             if( list.setContent( &listFile ) )
@@ -506,12 +507,16 @@ bool OptionsDetailed::saveCustomProfile( bool lastUsed )
                         {
                             int ret;
                             if( lastUsed )
-                                ret = KMessageBox::Yes;
+                                ret = KMessageBox::PrimaryAction;
                             else
-                                ret = KMessageBox::questionYesNo( this, i18n("A profile with this name already exists.\n\nDo you want to overwrite the existing one?"), i18n("Profile already exists") );
+                                ret = KMessageBox::questionTwoActions(
+                                    this,
+                                    i18n("A profile with this name already exists.\n\nDo you want to overwrite the existing one?"),
+                                    i18n("Profile already exists"),
+                                    KStandardGuiItem::overwrite(),
+                                    KStandardGuiItem::cancel());
 
-                            if( ret == KMessageBox::Yes )
-                            {
+                            if (ret == KMessageBox::PrimaryAction) {
                                 ConversionOptions *conversionOptions = currentConversionOptions( false );
                                 delete config->data.profiles[profileName];
                                 config->data.profiles[profileName] = conversionOptions;
@@ -521,9 +526,7 @@ bool OptionsDetailed::saveCustomProfile( bool lastUsed )
                                 root.appendChild(profileElement);
                                 profileFound = true;
                                 break;
-                            }
-                            else
-                            {
+                            } else {
                                 return false;
                             }
                         }

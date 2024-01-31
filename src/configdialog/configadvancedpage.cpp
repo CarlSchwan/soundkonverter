@@ -13,16 +13,17 @@
 
 #include "../config.h"
 
-#include <KLocale>
-#include <KIntSpinBox>
+#include <QLocale>
+#include <QSpinBox>
 
-#include <QLayout>
-#include <QBoxLayout>
-#include <QLabel>
-#include <QCheckBox>
 #include <KComboBox>
-#include <KStandardDirs>
-
+#include <KLocalizedString>
+#include <QBoxLayout>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QSpinBox>
+#include <QStandardPaths>
 
 ConfigAdvancedPage::ConfigAdvancedPage( Config *_config, QWidget *parent )
     : ConfigPageBase( parent ),
@@ -142,7 +143,10 @@ ConfigAdvancedPage::ConfigAdvancedPage( Config *_config, QWidget *parent )
     writeLogFilesBox->addSpacing( spacingOffset );
     box->addLayout( writeLogFilesBox );
     cWriteLogFiles = new QCheckBox( i18n("Write log files to disc"), this );
-    cWriteLogFiles->setToolTip( i18n("Write log files to the hard drive while converting.\nThis can be useful if a crash occurs and you can't access the log file using the log viewer.\nLog files will be written to %1",KStandardDirs::locateLocal("data","soundkonverter/log/")) );
+    cWriteLogFiles->setToolTip(
+        i18n("Write log files to the hard drive while converting.\nThis can be useful if a crash occurs and you can't access the log file using the log "
+             "viewer.\nLog files will be written to %1",
+             QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/soundkonverter/log/"));
     cWriteLogFiles->setChecked( config->data.general.writeLogFiles );
     writeLogFilesBox->addWidget( cWriteLogFiles );
     connect( cWriteLogFiles, SIGNAL(toggled(bool)), this, SLOT(somethingChanged()) );
@@ -162,7 +166,9 @@ ConfigAdvancedPage::ConfigAdvancedPage( Config *_config, QWidget *parent )
     cUseSharedMemoryForTempFiles->setToolTip( i18n("Don't store files that are expected to be bigger than this value in memory to avoid swapping") );
     cUseSharedMemoryForTempFiles->setChecked( config->data.advanced.useSharedMemoryForTempFiles );
     useSharedMemoryForTempFilesBox->addWidget( cUseSharedMemoryForTempFiles );
-    iMaxSizeForSharedMemoryTempFiles = new KIntSpinBox( 1, config->data.advanced.sharedMemorySize, 1, config->data.advanced.sharedMemorySize / 2, this );
+    iMaxSizeForSharedMemoryTempFiles = new QSpinBox(this);
+    iMaxSizeForSharedMemoryTempFiles->setRange(1, config->data.advanced.sharedMemorySize);
+    iMaxSizeForSharedMemoryTempFiles->setValue(config->data.advanced.sharedMemorySize / 2);
     iMaxSizeForSharedMemoryTempFiles->setToolTip( i18n("Don't store files that are expected to be bigger than this value in memory to avoid swapping") );
     iMaxSizeForSharedMemoryTempFiles->setSuffix( " " + i18nc("mega in bytes","MiB") );
     iMaxSizeForSharedMemoryTempFiles->setValue( config->data.advanced.maxSizeForSharedMemoryTempFiles );

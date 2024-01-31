@@ -3,15 +3,15 @@
 #ifndef OUTPUTDIRECTORY_H
 #define OUTPUTDIRECTORY_H
 
+#include <QUrl>
 #include <QWidget>
-#include <KUrl>
 
 class FileListItem;
 
 class Config;
 class KComboBox;
 class KLineEdit;
-class KPushButton;
+class QPushButton;
 
 /**
  * @short The input area for the output directory
@@ -41,10 +41,10 @@ public:
     void setDirectory( const QString& directory );
     QString filesystem();
 
-    static KUrl calcPath( FileListItem *fileListItem, Config *config, const QStringList& usedOutputNames = QStringList() );
-    static KUrl changeExtension( const KUrl& url, const QString& extension );
-    static KUrl uniqueFileName( const KUrl& url, const QStringList& usedOutputNames );
-    static KUrl makePath( const KUrl& url );
+    static QUrl calcPath(FileListItem *fileListItem, Config *config, const QStringList &usedOutputNames = QStringList());
+    static QUrl changeExtension(const QUrl &url, const QString &extension);
+    static QUrl uniqueFileName(const QUrl &url, const QStringList &usedOutputNames);
+    static QUrl makePath(const QUrl &url);
     static QString vfatPath( const QString& path );
     static QString ntfsPath( const QString& path );
 
@@ -66,12 +66,12 @@ private:
 
     KComboBox *cMode;
     KComboBox *cDir;
-    KPushButton *pDirSelect;
-    KPushButton *pDirGoto;
+    QPushButton *pDirSelect;
+    QPushButton *pDirGoto;
 
     Config *config;
 
-signals:
+Q_SIGNALS:
     void modeChanged( int );
     void directoryChanged( const QString& );
 };

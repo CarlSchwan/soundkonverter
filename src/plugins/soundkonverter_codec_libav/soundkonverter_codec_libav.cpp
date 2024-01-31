@@ -7,11 +7,10 @@
 #include "../../metadata/tagengine.h"
 
 #include <KMessageBox>
-#include <KDialog>
 #include <QCheckBox>
-#include <QHBoxLayout>
+#include <QDialog>
 #include <QFileInfo>
-
+#include <QHBoxLayout>
 
 // TODO check for decoders at runtime, too
 
@@ -364,9 +363,9 @@ void soundkonverter_codec_libav::showConfigDialog( ActionType action, const QStr
 
     if( !configDialog.data() )
     {
-        configDialog = new KDialog( parent );
+        configDialog = new QDialog(parent);
         configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
-        configDialog.data()->setButtons( KDialog::Ok | KDialog::Cancel | KDialog::Default );
+        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
         QWidget *configDialogWidget = new QWidget( configDialog.data() );
         QHBoxLayout *configDialogBox = new QHBoxLayout( configDialogWidget );
@@ -426,7 +425,13 @@ CodecWidget *soundkonverter_codec_libav::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_libav::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_libav::convert(const QUrl &inputFile,
+                                        const QUrl &outputFile,
+                                        const QString &inputCodec,
+                                        const QString &outputCodec,
+                                        const ConversionOptions *_conversionOptions,
+                                        TagData *tags,
+                                        bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
@@ -493,7 +498,13 @@ int soundkonverter_codec_libav::convert( const KUrl& inputFile, const KUrl& outp
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_libav::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_libav::convertCommand(const QUrl &inputFile,
+                                                       const QUrl &outputFile,
+                                                       const QString &inputCodec,
+                                                       const QString &outputCodec,
+                                                       const ConversionOptions *_conversionOptions,
+                                                       TagData *tags,
+                                                       bool replayGain)
 {
     Q_UNUSED(inputFile)
     Q_UNUSED(outputFile)

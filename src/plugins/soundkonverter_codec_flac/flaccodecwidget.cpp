@@ -4,14 +4,11 @@
 #include "flaccodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-
-
-#include <QLayout>
 #include <QLabel>
-#include <KLocale>
-#include <QSpinBox>
+#include <QLayout>
+#include <QLocale>
 #include <QSlider>
-
+#include <QSpinBox>
 
 FlacCodecWidget::FlacCodecWidget()
     : CodecWidget(),

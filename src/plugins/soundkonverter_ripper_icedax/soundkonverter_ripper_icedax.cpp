@@ -3,7 +3,7 @@
 
 #include "soundkonverter_ripper_icedax.h"
 
-#include <KLocale>
+#include <QLocale>
 
 soundkonverter_ripper_icedax::soundkonverter_ripper_icedax( QObject *parent, const QVariantList& args  )
     : RipperPlugin( parent )
@@ -62,7 +62,7 @@ void soundkonverter_ripper_icedax::showInfo( QWidget *parent )
     Q_UNUSED(parent)
 }
 
-int soundkonverter_ripper_icedax::rip( const QString& device, int track, int tracks, const KUrl& outputFile )
+int soundkonverter_ripper_icedax::rip(const QString &device, int track, int tracks, const QUrl &outputFile)
 {
     QStringList command;
 
@@ -100,7 +100,7 @@ int soundkonverter_ripper_icedax::rip( const QString& device, int track, int tra
     return newItem->id;
 }
 
-QStringList soundkonverter_ripper_icedax::ripCommand( const QString& device, int track, int tracks, const KUrl& outputFile )
+QStringList soundkonverter_ripper_icedax::ripCommand(const QString &device, int track, int tracks, const QUrl &outputFile)
 {
     Q_UNUSED(device)
     Q_UNUSED(track)

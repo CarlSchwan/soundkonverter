@@ -3,12 +3,11 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QStringList>
-#include <QTime>
 #include <QFile>
+#include <QStringList>
 #include <QTextStream>
-#include <KUrl>
-
+#include <QTime>
+#include <QUrl>
 
 /**
  * @short An item for every process that is logged
@@ -71,7 +70,7 @@ public slots:
     // connected to config
     void updateWriteSetting( bool _writeLogFiles );
 
-signals:
+Q_SIGNALS:
     void removedProcess( int id );
     void updateProcess( int id );
 

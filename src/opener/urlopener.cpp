@@ -14,51 +14,48 @@
 #include "../options.h"
 #include "../config.h"
 
+#include <KLocalizedString>
+#include <KMessageBox>
+#include <KSharedConfig>
+#include <KUrlRequester>
+#include <KWindowConfig>
 #include <QApplication>
-#include <KLocale>
-#include <KPushButton>
+#include <QDir>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
-#include <KMessageBox>
-
-#include <KUrlRequester>
-#include <QDir>
-#include <KIcon>
-
+#include <QLocale>
+#include <QPushButton>
 
 // TODO enable proceed button only if at least one file got selected // copy'n'paste error ???
 
 // TODO message box if url can't be added -> maybe in file list
 
-UrlOpener::UrlOpener( Config *_config, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    config( _config )
+UrlOpener::UrlOpener(Config *_config, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , config(_config)
 {
-    setCaption( i18n("Add url") );
-    setWindowIcon( KIcon("network-workgroup") );
-    setButtons( 0 );
+    setWindowTitle(i18nc("@title:window", "Add url"));
+    setWindowIcon(QIcon::fromTheme("network-workgroup"));
 
     page = FileOpenPage;
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QWidget *widget = new QWidget();
-    setMainWidget( widget );
-
-    QGridLayout *mainGrid = new QGridLayout( widget );
-    QGridLayout *topGrid = new QGridLayout( widget );
+    QGridLayout *mainGrid = new QGridLayout(this);
+    QGridLayout *topGrid = new QGridLayout;
     mainGrid->addLayout( topGrid, 0, 0 );
 
-    lSelector = new QLabel( i18n("1. Enter url"), widget );
+    lSelector = new QLabel(i18n("1. Enter url"), this);
     QFont font;
     font.setBold( true );
     lSelector->setFont( font );
     topGrid->addWidget( lSelector, 0, 0 );
-    lOptions = new QLabel( i18n("2. Set conversion options"), widget );
+    lOptions = new QLabel(i18n("2. Set conversion options"), this);
     topGrid->addWidget( lOptions, 0, 1 );
 
     // draw a horizontal line
-    QFrame *lineFrame = new QFrame( widget );
+    QFrame *lineFrame = new QFrame(this);
     lineFrame->setFrameShape( QFrame::HLine );
     lineFrame->setFrameShadow( QFrame::Sunken );
     mainGrid->addWidget( lineFrame, 1, 0 );
@@ -66,12 +63,12 @@ UrlOpener::UrlOpener( Config *_config, QWidget *parent, Qt::WFlags f )
     QVBoxLayout *urlBox = new QVBoxLayout();
     mainGrid->addLayout( urlBox, 2, 0 );
     urlBox->addSpacing( 6*fontHeight );
-    urlRequester = new KUrlRequester( widget );
+    urlRequester = new KUrlRequester(this);
     urlRequester->setMode( KFile::File | KFile::ExistingOnly );
     urlBox->addWidget( urlRequester );
     urlBox->addStretch();
 
-    options = new Options( config, i18n("Select your desired output options and click on \"Ok\"."), widget );
+    options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
     mainGrid->addWidget( options, 2, 0 );
     adjustSize();
     options->hide();
@@ -82,31 +79,39 @@ UrlOpener::UrlOpener( Config *_config, QWidget *parent, Qt::WFlags f )
     mainGrid->addLayout( controlBox, 5, 0 );
     controlBox->addStretch();
 
-    pProceed = new KPushButton( KIcon("go-next"), i18n("Proceed"), widget );
+    pProceed = new QPushButton(QIcon::fromTheme("go-next"), i18n("Proceed"), this);
     controlBox->addWidget( pProceed );
     connect( pProceed, SIGNAL(clicked()), this, SLOT(proceedClickedSlot()) );
-    pAdd = new KPushButton( KIcon("dialog-ok"), i18n("Ok"), widget );
+    pAdd = new QPushButton(QIcon::fromTheme("dialog-ok"), i18n("Ok"), this);
     controlBox->addWidget( pAdd );
     pAdd->hide();
     connect( pAdd, SIGNAL(clicked()), this, SLOT(okClickedSlot()) );
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), this);
     controlBox->addWidget( pCancel );
     connect( pCancel, SIGNAL(clicked()), this, SLOT(reject()) );
 
 
         // Prevent the dialog from beeing too wide because of the directory history
     if( parent && width() > parent->width() )
-        setInitialSize( QSize(parent->width()-fontHeight,sizeHint().height()) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "UrlOpener" );
-    restoreDialogSize( group );
+        resize(QSize(parent->width() - fontHeight, sizeHint().height()));
+    readConfig();
 }
 
 UrlOpener::~UrlOpener()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "UrlOpener" );
-    saveDialogSize( group );
+    writeConfig();
+}
+
+void UrlOpener::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "UrlOpener");
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void UrlOpener::readConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), "UrlOpener");
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
 }
 
 void UrlOpener::proceedClickedSlot()

@@ -6,15 +6,14 @@
 
 #include <math.h>
 
-#include <QApplication>
-#include <KLocale>
 #include <KComboBox>
-#include <QLayout>
-#include <QLabel>
-#include <QDoubleSpinBox>
-#include <QSlider>
+#include <QApplication>
 #include <QCheckBox>
-
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QSlider>
 
 VorbisToolsCodecWidget::VorbisToolsCodecWidget()
     : CodecWidget(),

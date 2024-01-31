@@ -4,15 +4,12 @@
 #include "wavpackcodecwidget.h"
 #include "../../core/conversionoptions.h"
 
-
-
-#include <QLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <KLineEdit>
-#include <KLocale>
 #include <KComboBox>
-
+#include <KLineEdit>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
 
 WavPackCodecWidget::WavPackCodecWidget()
     : CodecWidget(),

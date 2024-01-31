@@ -3,16 +3,15 @@
 
 #include "soxeffectwidget.h"
 
-#include <KLocale>
-#include <QLayout>
 #include <QBoxLayout>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QLayout>
+#include <QLocale>
 
 #include <KComboBox>
-#include <KPushButton>
-#include <KIcon>
-
+#include <QIcon>
+#include <QPushButton>
 
 SoxEffectWidget::SoxEffectWidget( QWidget *parent )
     : QWidget( parent )
@@ -99,12 +98,12 @@ SoxEffectWidget::SoxEffectWidget( QWidget *parent )
 
     box->addStretch();
 
-    pRemove = new KPushButton( KIcon("list-remove"), i18n("Remove"), this );
+    pRemove = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Remove"), this);
     pRemove->setToolTip( i18n("Remove this effect") );
     box->addWidget( pRemove );
     connect( pRemove, SIGNAL(clicked()), this, SLOT(removeClicked()) );
 
-    pAdd = new KPushButton( KIcon("list-add"), i18n("Add"), this );
+    pAdd = new QPushButton(QIcon::fromTheme("list-add"), i18n("Add"), this);
     pAdd->setToolTip( i18n("Add another effect") );
     box->addWidget( pAdd );
     connect( pAdd, SIGNAL(clicked()), SIGNAL(addEffectWidgetClicked()) );

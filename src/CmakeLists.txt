@@ -1,7 +1,3 @@
-
-# include directories
-include_directories(${CDPARANOIA_INCLUDE_DIR})
-
 # soundkonvertercore
 set(soundkonvertercore_SRCS
    core/backendplugin.cpp
@@ -14,7 +10,7 @@ set(soundkonvertercore_SRCS
 )
 
 add_library(soundkonvertercore SHARED ${soundkonvertercore_SRCS})
-target_link_libraries(soundkonvertercore KF6::WidgetsAddons KF6::KIOFileWidgets KF6::KIOCore KF6::I18n KF6::StatusNotifierItem)
+target_link_libraries(soundkonvertercore KF6::WidgetsAddons KF6::KIOFileWidgets KF6::KIOCore)
 
 install(TARGETS soundkonvertercore DESTINATION ${LIB_INSTALL_DIR})
 
@@ -40,6 +36,7 @@ set(soundkonverter_SRCS
    global.cpp
    main.cpp
    soundkonverter.cpp
+   soundkonverterapp.cpp
    soundkonverterview.cpp
    codecproblems.cpp
    codecoptimizations.cpp
@@ -70,10 +67,8 @@ target_link_libraries(soundkonverter
         KF6::KIOFileWidgets
         KF6::KIOCore
         KF6::Solid
-        KF6::I18n
-        KF6::XmlGui
-        KCddb6
-        Phonon::phonon4qt6
+        KF6::Cddb
+        Phonon::phonon4qt5
         Taglib::Taglib
         ${CDPARANOIA_LIBRARIES}
         soundkonvertercore
@@ -83,6 +78,7 @@ install(TARGETS soundkonverter DESTINATION ${BIN_INSTALL_DIR})
 
 
 # install directories
+install(FILES soundkonverter.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 install(FILES soundkonverterui.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/soundkonverter)
 
 #install(FILES soundkonverter_codecplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
@@ -91,6 +87,7 @@ install(FILES soundkonverterui.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/soundkonver
 #install(FILES soundkonverter_ripperplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 #install(FILES soundkonverter-rip-audiocd.desktop DESTINATION ${DATA_INSTALL_DIR}/solid/actions)
 
+install(FILES soundkonverter.appdata.xml DESTINATION ${SHARE_INSTALL_PREFIX}/metainfo)
 
 add_subdirectory(icons)
 add_subdirectory(images)

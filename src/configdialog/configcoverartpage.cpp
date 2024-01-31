@@ -3,14 +3,14 @@
 
 #include "../config.h"
 
-#include <KLocale>
 #include <KLineEdit>
+#include <QLocale>
 
-#include <QLayout>
-#include <QLabel>
-#include <QRadioButton>
+#include <KLocalizedString>
 #include <QButtonGroup>
-
+#include <QLabel>
+#include <QLayout>
+#include <QRadioButton>
 
 ConfigCoverArtPage::ConfigCoverArtPage( Config *_config, QWidget *parent )
     : ConfigPageBase( parent ),

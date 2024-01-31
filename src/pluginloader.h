@@ -18,34 +18,30 @@
 #include "core/ripperplugin.h"
 
 #include <QStringList>
-#include <KUrl>
+#include <QUrl>
 
-class Logger;
-class Config;
-class QFile;
+ class Logger;
+ class Config;
+ class QFile;
 
+ struct ConversionPipe {
+     QList<ConversionPipeTrunk> trunks;
 
-struct ConversionPipe
-{
-    QList<ConversionPipeTrunk> trunks;
+     bool operator==(const ConversionPipe &other)
+     {
+         if (trunks.count() != other.trunks.count())
+             return false;
 
-    bool operator==( const ConversionPipe& other )
-    {
-        if( trunks.count() != other.trunks.count() )
-            return false;
+         for (int i = 0; i < trunks.count(); i++) {
+             ConversionPipeTrunk a = trunks.at(i);
+             ConversionPipeTrunk b = other.trunks.at(i);
+             if (!(a == b))
+                 return false;
+         }
 
-        for( int i=0; i<trunks.count(); i++ )
-        {
-            ConversionPipeTrunk a = trunks.at(i);
-            ConversionPipeTrunk b = other.trunks.at(i);
-            if( !(a == b) )
-                return false;
-        }
-
-        return true;
-    }
-};
-
+         return true;
+     }
+ };
 
 /**
 	@author Daniel Faust <hessijames@gmail.com>
@@ -86,7 +82,7 @@ public:
 //     QList<RipperInfo> getRipperInfos( bool mustRipEntireCd = false, const QString& preferredPlugin = "" );
 
     QString getCodecFromM4aFile( QFile *file );
-    QString getCodecFromFile( const KUrl& filename, QString *mimeType = 0, bool checkM4a = true );
+    QString getCodecFromFile(const QUrl &filename, QString *mimeType = 0, bool checkM4a = true);
 
     bool canDecode( const QString& codecName, QStringList *errorList = 0 );
     bool canReplayGain( const QString& codecName, CodecPlugin *plugin, QStringList *errorList = 0 );

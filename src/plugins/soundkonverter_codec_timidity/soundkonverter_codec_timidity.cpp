@@ -81,7 +81,13 @@ CodecWidget *soundkonverter_codec_timidity::newCodecWidget()
     return qobject_cast<CodecWidget*>(widget);
 }
 
-int soundkonverter_codec_timidity::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_timidity::convert(const QUrl &inputFile,
+                                           const QUrl &outputFile,
+                                           const QString &inputCodec,
+                                           const QString &outputCodec,
+                                           const ConversionOptions *_conversionOptions,
+                                           TagData *tags,
+                                           bool replayGain)
 {
     QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
     if( command.isEmpty() )
@@ -104,7 +110,13 @@ int soundkonverter_codec_timidity::convert( const KUrl& inputFile, const KUrl& o
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_timidity::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_timidity::convertCommand(const QUrl &inputFile,
+                                                          const QUrl &outputFile,
+                                                          const QString &inputCodec,
+                                                          const QString &outputCodec,
+                                                          const ConversionOptions *_conversionOptions,
+                                                          TagData *tags,
+                                                          bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(_conversionOptions)

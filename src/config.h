@@ -147,7 +147,7 @@ public slots:
     /// Optimize backend settings according to the user input
     void doOptimizations( const QList<CodecOptimizations::Optimization>& optimizationList );
 
-signals:
+Q_SIGNALS:
     /// connected to logger
     void updateWriteLogFilesSetting( bool writeLogFiles );
 

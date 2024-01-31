@@ -13,12 +13,10 @@
 #include "logger.h"
 #include "config.h"
 
-#include <QSet>
+#include <QElapsedTimer>
 #include <QFile>
-
-#include <KServiceTypeTrader>
-#include <KMimeType>
-
+#include <QMimeDatabase>
+#include <QSet>
 
 bool moreThanConversionPipe( const ConversionPipe& pipe1, const ConversionPipe& pipe2 )
 {
@@ -109,12 +107,13 @@ void PluginLoader::addFormatInfo( const QString& codecName, BackendPlugin *plugi
 
 void PluginLoader::load()
 {
-    QTime overallTime;
+    QElapsedTimer overallTime;
     overallTime.start();
     QTime createInstanceTime;
 
     int createInstanceTimeSum = 0;
 
+    /*
     KService::List offers;
 
     logger->log( 1000, "\nloading plugins ..." );
@@ -157,7 +156,8 @@ void PluginLoader::load()
                     {
                         QString spaces;
                         spaces.fill( ' ', 12 - encodeCodecs.keys().at(j).length() );
-                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(encodeCodecs.keys().at(j)).arg(spaces).arg(encodeCodecs.values().at(j) ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
+                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(encodeCodecs.keys().at(j)).arg(spaces).arg(encodeCodecs.values().at(j) ?
+    "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
                     }
                 }
                 if( decodeCodecs.count() > 0 )
@@ -167,7 +167,8 @@ void PluginLoader::load()
                     {
                         QString spaces;
                         spaces.fill( ' ', 12 - decodeCodecs.keys().at(j).length() );
-                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(decodeCodecs.keys().at(j)).arg(spaces).arg(decodeCodecs.values().at(j) ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
+                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(decodeCodecs.keys().at(j)).arg(spaces).arg(decodeCodecs.values().at(j) ?
+    "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
                     }
                 }
                 logger->log( 1000, "" );
@@ -218,7 +219,8 @@ void PluginLoader::load()
                     {
                         QString spaces;
                         spaces.fill( ' ', 12 - encodeCodecs.keys().at(j).length() );
-                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(encodeCodecs.keys().at(j)).arg(spaces).arg(encodeCodecs.values().at(j) ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
+                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(encodeCodecs.keys().at(j)).arg(spaces).arg(encodeCodecs.values().at(j) ?
+    "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
                     }
                 }
                 if( decodeCodecs.count() > 0 )
@@ -228,7 +230,8 @@ void PluginLoader::load()
                     {
                         QString spaces;
                         spaces.fill( ' ', 12 - decodeCodecs.keys().at(j).length() );
-                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(decodeCodecs.keys().at(j)).arg(spaces).arg(decodeCodecs.values().at(j) ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
+                        logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(decodeCodecs.keys().at(j)).arg(spaces).arg(decodeCodecs.values().at(j) ?
+    "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
                     }
                 }
                 // TODO filters
@@ -266,8 +269,8 @@ void PluginLoader::load()
                     replaygainPipes.append( codecTable.at(j) );
                     QString spaces;
                     spaces.fill( ' ', 12 - codecTable.at(j).codecName.length() );
-                    logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(codecTable.at(j).codecName).arg(spaces).arg(codecTable.at(j).enabled ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" );
-                    addFormatInfo( codecTable.at(j).codecName, plugin );
+                    logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3)").arg(codecTable.at(j).codecName).arg(spaces).arg(codecTable.at(j).enabled ? "<span
+    style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>") + "</pre>" ); addFormatInfo( codecTable.at(j).codecName, plugin );
                 }
                 logger->log( 1000, "" );
             }
@@ -302,7 +305,9 @@ void PluginLoader::load()
                     conversionPipeTrunks.append( codecTable.at(j) );
                     QString spaces;
                     spaces.fill( ' ', 12 - codecTable.at(j).codecTo.length() );
-                    logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3, %4)").arg(codecTable.at(j).codecTo).arg(spaces).arg(codecTable.at(j).enabled ? "<span style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>").arg(codecTable.at(j).data.canRipEntireCd ? "<span style=\"color:green\">can rip to single file</span>" : "<span style=\"color:red\">can't rip to single file</span>") + "</pre>" );
+                    logger->log( 1000, "<pre>\t\t\t" + QString("%1%2(%3, %4)").arg(codecTable.at(j).codecTo).arg(spaces).arg(codecTable.at(j).enabled ? "<span
+    style=\"color:green\">enabled</span>" : "<span style=\"color:red\">disabled</span>").arg(codecTable.at(j).data.canRipEntireCd ? "<span
+    style=\"color:green\">can rip to single file</span>" : "<span style=\"color:red\">can't rip to single file</span>") + "</pre>" );
                 }
                 logger->log( 1000, "" );
             }
@@ -314,6 +319,7 @@ void PluginLoader::load()
     }
 
     conversionFilterPipeTrunks = conversionPipeTrunks + filterPipeTrunks;
+    */
 
     logger->log( 1000, QString("... all plugins loaded (took %1 ms, creating instances: %2 ms)").arg(overallTime.elapsed()).arg(createInstanceTimeSum) + "\n" );
 }
@@ -365,7 +371,7 @@ QStringList PluginLoader::formatList( Possibilities possibilities, CompressionTy
         }
     }
 
-    list = set.toList();
+    list = QList<QString>(set.begin(), set.end());
     list.sort();
 
     QStringList importantCodecs;
@@ -395,15 +401,15 @@ QList<CodecPlugin*> PluginLoader::encodersForCodec( const QString& codecName )
 {
     QSet<CodecPlugin*> encoders;
 
-    foreach( const ConversionPipeTrunk& pipeTrunk, conversionFilterPipeTrunks )
-    {
+    for (const ConversionPipeTrunk &pipeTrunk : std::as_const(conversionFilterPipeTrunks)) {
         if( pipeTrunk.codecTo == codecName && pipeTrunk.enabled )
         {
             encoders += qobject_cast<CodecPlugin*>(pipeTrunk.plugin);
         }
     }
 
-    return encoders.toList();
+    QList<CodecPlugin *> list(encoders.begin(), encoders.end());
+    return list;
 }
 
 // QList<CodecPlugin*> PluginLoader::decodersForCodec( const QString& codecName )
@@ -662,7 +668,7 @@ QList<ConversionPipe> PluginLoader::getConversionPipes( const QString& codecFrom
         }
     }
 
-    qSort( list.begin(), list.end(), moreThanConversionPipe );
+    std::sort(list.begin(), list.end(), moreThanConversionPipe);
 
     return list;
 }
@@ -698,7 +704,7 @@ QList<ReplayGainPipe> PluginLoader::getReplayGainPipes( const QString& codecName
         }
     }
 
-    qSort( list.begin(), list.end(), moreThanReplayGainPipe );
+    std::sort(list.begin(), list.end(), moreThanReplayGainPipe);
 
     return list;
 }
@@ -771,11 +777,12 @@ QString PluginLoader::getCodecFromM4aFile( QFile *file )
     return "";
 }
 
-QString PluginLoader::getCodecFromFile( const KUrl& filename, QString *mimeType, bool checkM4a )
+QString PluginLoader::getCodecFromFile(const QUrl &filename, QString *mimeType, bool checkM4a)
 {
     QString codec = "";
     short rating = 0;
-    const QString mime = KMimeType::findByUrl(filename)->name();
+    QMimeDatabase db;
+    const QString mime = db.mimeTypeForFile(filename.toLocalFile()).name();
 
     if( mimeType )
         *mimeType = mime;

@@ -9,28 +9,25 @@
 #include "outputdirectory.h"
 #include "codecproblems.h"
 
-#include <KApplication>
-#include <KIcon>
-#include <KAction>
-// #include <kactioncollection.h>
+#include <KLocalizedString>
 #include <KMessageBox>
-#include <KStandardDirs>
-// #include <KDiskFreeSpaceInfo>
-#include <kmountpoint.h>
-// #include <KIO/Job>
-#include <solid/device.h>
-#include <solid/block.h>
-#include <solid/opticaldrive.h>
-
-#include <QLayout>
-#include <QGridLayout>
-#include <QStringList>
-#include <QMenu>
-#include <QFile>
-#include <QResizeEvent>
+#include <QAction>
+#include <QApplication>
 #include <QDir>
+#include <QFile>
+#include <QGridLayout>
+#include <QIcon>
+#include <QLayout>
+#include <QMenu>
+#include <QMimeData>
 #include <QProgressBar>
-
+#include <QResizeEvent>
+#include <QStandardPaths>
+#include <QStringList>
+#include <Solid/Block>
+#include <Solid/Device>
+#include <Solid/OpticalDrive>
+#include <kmountpoint.h>
 
 FileList::FileList( Logger *_logger, Config *_config, QWidget *parent )
     : QTreeWidget( parent ),
@@ -75,23 +72,23 @@ FileList::FileList( Logger *_logger, Config *_config, QWidget *parent )
     grid->setColumnStretch( 1, 2 );
 
     // we haven't got access to the action collection of soundKonverter, so let's create a new one
-//     actionCollection = new KActionCollection( this );
+    //     actionCollection = new KActionCollection( this );
 
-    editAction = new KAction( KIcon("view-list-text"), i18n("Edit options..."), this );
+    editAction = new QAction(QIcon::fromTheme("view-list-text"), i18n("Edit options..."), this);
     connect( editAction, SIGNAL(triggered()), this, SLOT(showOptionsEditorDialog()) );
-    startAction = new KAction( KIcon("system-run"), i18n("Start conversion"), this );
+    startAction = new QAction(QIcon::fromTheme("system-run"), i18n("Start conversion"), this);
     connect( startAction, SIGNAL(triggered()), this, SLOT(convertSelectedItems()) );
-    stopAction = new KAction( KIcon("process-stop"), i18n("Stop conversion"), this );
+    stopAction = new QAction(QIcon::fromTheme("process-stop"), i18n("Stop conversion"), this);
     connect( stopAction, SIGNAL(triggered()), this, SLOT(killSelectedItems()) );
-    removeAction = new KAction( KIcon("edit-delete"), i18n("Remove"), this );
+    removeAction = new QAction(QIcon::fromTheme("edit-delete"), i18n("Remove"), this);
     removeAction->setShortcut( QKeySequence::Delete );
     connect( removeAction, SIGNAL(triggered()), this, SLOT(removeSelectedItems()) );
     addAction( removeAction );
-//     KAction *removeActionGlobal = new KAction( KIcon("edit-delete"), i18n("Remove"), this );
-//     removeActionGlobal->setShortcut( QKeySequence::Delete );
-//     connect( removeActionGlobal, SIGNAL(triggered()), this, SLOT(removeSelectedItems()) );
-//     addAction( removeActionGlobal );
-//     paste = new KAction( i18n("Paste"), "editpaste", 0, this, 0, actionCollection, "paste" );  // TODO paste
+    //     QAction *removeActionGlobal = new QAction( QIcon::fromTheme("edit-delete"), i18n("Remove"), this );
+    //     removeActionGlobal->setShortcut( QKeySequence::Delete );
+    //     connect( removeActionGlobal, SIGNAL(triggered()), this, SLOT(removeSelectedItems()) );
+    //     addAction( removeActionGlobal );
+    //     paste = new QAction( i18n("Paste"), "editpaste", 0, this, 0, actionCollection, "paste" );  // TODO paste
 
     contextMenu = new QMenu( this );
 
@@ -105,11 +102,11 @@ FileList::~FileList()
 {
     // NOTE no cleanup needed since it all gets cleaned up in other classes
 
-    if( !KApplication::kApplication()->sessionSaving() )
-    {
-        QFile listFile( KStandardDirs::locateLocal("data","soundkonverter/filelist_autosave.xml") );
+    /*
+    if (!QApplication::sessionSaving()) {
+        QFile listFile( QStandardPaths::locate(QStandardsPaths::AppLocalDataDir, "filelist_autosave.xml") );
         listFile.remove();
-    }
+    }*/
 }
 
 void FileList::dragEnterEvent( QDragEnterEvent *event )
@@ -121,7 +118,7 @@ void FileList::dragEnterEvent( QDragEnterEvent *event )
 void FileList::dropEvent( QDropEvent *event )
 {
     QList<QUrl> q_urls = event->mimeData()->urls();
-    KUrl::List k_urls;
+    QList<QUrl> k_urls;
     QStringList errorList;
     //    codec    @0 files @1 solutions
     QMap< QString, QList<QStringList> > problems;
@@ -157,7 +154,7 @@ void FileList::dropEvent( QDropEvent *event )
             )
                 continue;
 
-            fileName = KUrl(q_urls.at(i)).pathOrUrl();
+            fileName = QUrl(q_urls.at(i)).toDisplayString(QUrl::PreferLocalFile);
 
             if( codecName.isEmpty() )
                 codecName = mimeType;
@@ -256,7 +253,7 @@ int FileList::countDir( const QString& directory, bool recursive, int count )
     if( tScanStatus.elapsed() > ConfigUpdateDelay * 10 )
     {
         pScanStatus->setMaximum( count );
-        kapp->processEvents();
+        qApp->processEvents();
         tScanStatus.start();
     }
 
@@ -342,7 +339,7 @@ void FileList::addFiles( const QList<QUrl>& fileList, ConversionOptions *convers
                 {
                     optionsLayerHidden = true;
                     optionsLayer->hide();
-                    kapp->processEvents();
+                    qApp->processEvents();
                 }
 
                 //             debug
@@ -386,7 +383,7 @@ void FileList::addFiles( const QList<QUrl>& fileList, ConversionOptions *convers
         newItem->codecName = codecName;
         newItem->track = -1;
         newItem->url = fileName;
-        newItem->local = ( newItem->url.isLocalFile() || newItem->url.protocol() == "file" );
+        newItem->local = (newItem->url.isLocalFile() || newItem->url.scheme() == "file");
         newItem->tags = tagEngine->readTags( newItem->url );
         if( !newItem->tags && newItem->codecName == "wav" && newItem->local )
         {
@@ -406,7 +403,7 @@ void FileList::addFiles( const QList<QUrl>& fileList, ConversionOptions *convers
         batchNumber++;
 
         if( batchNumber % 50 == 0 )
-            kapp->processEvents();
+            qApp->processEvents();
     }
 
     if( !pScanStatus->isVisible() )
@@ -436,7 +433,7 @@ void FileList::addDir( const QUrl& directory, bool recursive, const QStringList&
     const int count = countDir( directory.toLocalFile(), recursive );
 
     pScanStatus->setMaximum( count );
-    kapp->processEvents();
+    qApp->processEvents();
 
     listDir( directory.toLocalFile(), codecList, recursive, conversionOptionsId );
 
@@ -504,7 +501,7 @@ void FileList::updateItem( FileListItem *item )
     item->setToolTip( Column_Output, "" );
     item->setToolTip( Column_Quality, "" );
 
-    // KUrl outputUrl;
+    // QUrl outputUrl;
     // if( !item->outputUrl.toLocalFile().isEmpty() )
     // {
     //     outputUrl = item->outputUrl;
@@ -513,7 +510,7 @@ void FileList::updateItem( FileListItem *item )
     // {
     //     outputUrl = OutputDirectory::calcPath( item, config );
     // }
-    const KUrl outputUrl = OutputDirectory::calcPath( item, config );
+    const QUrl outputUrl = OutputDirectory::calcPath(item, config);
     item->setText( Column_Output, outputUrl.toLocalFile() );
 
     removeItemWidget( item, Column_State );
@@ -645,7 +642,7 @@ void FileList::updateItem( FileListItem *item )
     {
         if( item->tags )
         {
-            item->setText( Column_Input, QString().sprintf("%02i",item->tags->track) + " - " + item->tags->artist + " - " + item->tags->title );
+            item->setText(Column_Input, QString().asprintf("%02i", item->tags->track) + " - " + item->tags->artist + " - " + item->tags->title);
         }
         else // shouldn't be possible
         {
@@ -654,7 +651,7 @@ void FileList::updateItem( FileListItem *item )
     }
     else
     {
-        item->setText( Column_Input, item->url.pathOrUrl() );
+        item->setText(Column_Input, item->url.toDisplayString(QUrl::PreferLocalFile));
     }
 }
 
@@ -1331,16 +1328,19 @@ void FileList::itemsSelected()
 void FileList::load( bool user )
 {
     const QString fileListPath = user ? "filelist.xml" : "filelist_autosave.xml";
-    load( KStandardDirs::locateLocal("data","soundkonverter/"+fileListPath) );
+    load(QStandardPaths::locate(QStandardPaths::AppLocalDataLocation, fileListPath));
 }
 
 void FileList::load( const QString& fileListPath )
 {
     if( topLevelItemCount() > 0 )
     {
-        const int ret = KMessageBox::questionYesNo( this, i18n("Do you want to overwrite the current file list?\n\nIf not, the saved file list will be appended.") );
-        if( ret == KMessageBox::Yes )
-        {
+        const int ret = KMessageBox::questionTwoActions(this,
+                                                        i18n("Do you want to overwrite the current file list?"),
+                                                        i18n("If not, the saved file list will be appended."),
+                                                        KStandardGuiItem::save(),
+                                                        KStandardGuiItem::cancel());
+        if (ret == KMessageBox::PrimaryAction) {
             for( int i=0; i<topLevelItemCount(); i++ )
             {
                 FileListItem *item = topLevelItem(i);
@@ -1431,8 +1431,8 @@ void FileList::load( const QString& fileListPath )
                 {
                     QDomElement file = files.at(i).toElement();
                     FileListItem *item = new FileListItem( this );
-                    item->url = KUrl(file.attribute("url"));
-                    // item->outputUrl = KUrl(file.attribute("outputUrl"));
+                    item->url = QUrl(file.attribute("url"));
+                    // item->outputUrl = QUrl(file.attribute("outputUrl"));
                     item->codecName = file.attribute("codecName");
                     item->conversionOptionsId = conversionOptionsIds[file.attribute("conversionOptionsId").toInt()]; // TODO check if id exists
                     item->local = file.attribute("local").toInt();
@@ -1489,7 +1489,7 @@ void FileList::save( bool user )
     if( user && topLevelItemCount() == 0 )
         return;
 
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     QDomDocument list("soundkonverter_filelist");
@@ -1516,8 +1516,8 @@ void FileList::save( bool user )
         const FileListItem *item = topLevelItem(i);
 
         QDomElement file = list.createElement("file");
-        file.setAttribute("url",item->url.pathOrUrl());
-        // file.setAttribute("outputUrl",item->outputUrl.pathOrUrl());
+        file.setAttribute("url", item->url.toDisplayString(QUrl::PreferLocalFile));
+        // file.setAttribute("outputUrl",item->outputUrl.toDisplayString(QUrl::PreferLocalFile));
         file.setAttribute("codecName",item->codecName);
         file.setAttribute("conversionOptionsId",item->conversionOptionsId);
         file.setAttribute("local",item->local);
@@ -1552,7 +1552,7 @@ void FileList::save( bool user )
     }
 
     const QString fileName = user ? "filelist.xml" : "filelist_autosave.xml";
-    QFile listFile( KStandardDirs::locateLocal("data","soundkonverter/"+fileName) );
+    QFile listFile(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + u'/' + fileName);
     if( listFile.open( QIODevice::WriteOnly ) )
     {
         QTextStream stream(&listFile);
