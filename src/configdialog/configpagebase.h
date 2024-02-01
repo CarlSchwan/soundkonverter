@@ -17,13 +17,13 @@
 class Config;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class ConfigPageBase : public QWidget
 {
     Q_OBJECT
 public:
-    explicit ConfigPageBase( QWidget *parent );
+    explicit ConfigPageBase(QWidget *parent);
     virtual ~ConfigPageBase();
 
     int spacingOffset;
@@ -36,8 +36,7 @@ public slots:
     virtual void saveSettings();
 
 Q_SIGNALS:
-    void configChanged( bool state = true );
-
+    void configChanged(bool state = true);
 };
 
 #endif

@@ -16,10 +16,10 @@ public:
     ~WavPackCodecWidget();
 
     ConversionOptions *currentConversionOptions();
-    bool setCurrentConversionOptions( const ConversionOptions *_options );
-    void setCurrentFormat( const QString& format );
+    bool setCurrentConversionOptions(const ConversionOptions *_options);
+    void setCurrentFormat(const QString &format);
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     int currentDataRate();
 
 private:

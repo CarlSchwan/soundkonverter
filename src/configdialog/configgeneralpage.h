@@ -22,14 +22,14 @@ class KLineEdit;
 class QPushButton;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class ConfigGeneralPage : public ConfigPageBase
 {
     Q_OBJECT
 public:
     /** Default Constructor */
-    ConfigGeneralPage( Config *_config, QWidget *parent );
+    ConfigGeneralPage(Config *_config, QWidget *parent);
 
     /** Default Destructor */
     ~ConfigGeneralPage();
@@ -38,8 +38,8 @@ private:
     KComboBox *cStartTab;
     KComboBox *cDefaultProfile;
     KComboBox *cDefaultFormat;
-//     KComboBox *cPriority;
-//     QStringList sPriority;
+    //     KComboBox *cPriority;
+    //     QStringList sPriority;
     KComboBox *cConflictHandling;
     QSpinBox *iNumFiles;
     QCheckBox *cWaitForAlbumGain;
@@ -49,8 +49,8 @@ private:
 
     Config *config;
 
-//     int profileIndex( const QString& string );
-//     int formatIndex( const QString& string );
+    //     int profileIndex( const QString& string );
+    //     int formatIndex( const QString& string );
 
 public slots:
     void resetDefaults();
@@ -58,10 +58,8 @@ public slots:
 
 private slots:
     void somethingChanged();
-//     void selectDir();
+    //     void selectDir();
     void profileChanged();
-
-
 };
 
 #endif

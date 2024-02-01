@@ -1,9 +1,8 @@
 
 #include "replaygainplugin.h"
 
-
-ReplayGainPluginItem::ReplayGainPluginItem( QObject *parent )
-    : BackendPluginItem( parent )
+ReplayGainPluginItem::ReplayGainPluginItem(QObject *parent)
+    : BackendPluginItem(parent)
 {
     data.fileCount = 0;
     data.processedFiles = 0;
@@ -11,18 +10,19 @@ ReplayGainPluginItem::ReplayGainPluginItem( QObject *parent )
 }
 
 ReplayGainPluginItem::~ReplayGainPluginItem()
-{}
+{
+}
 
-
-ReplayGainPlugin::ReplayGainPlugin( QObject *parent )
-    : BackendPlugin( parent )
-{}
+ReplayGainPlugin::ReplayGainPlugin(QObject *parent)
+    : BackendPlugin(parent)
+{
+}
 
 ReplayGainPlugin::~ReplayGainPlugin()
-{}
+{
+}
 
 QString ReplayGainPlugin::type() const
 {
     return "replaygain";
 }
-

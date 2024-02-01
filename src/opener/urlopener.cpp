@@ -11,8 +11,8 @@
 //
 
 #include "urlopener.h"
-#include "../options.h"
 #include "../config.h"
+#include "../options.h"
 
 #include <KLocalizedString>
 #include <KMessageBox>
@@ -44,55 +44,53 @@ UrlOpener::UrlOpener(Config *_config, QWidget *parent, Qt::WindowFlags f)
 
     QGridLayout *mainGrid = new QGridLayout(this);
     QGridLayout *topGrid = new QGridLayout;
-    mainGrid->addLayout( topGrid, 0, 0 );
+    mainGrid->addLayout(topGrid, 0, 0);
 
     lSelector = new QLabel(i18n("1. Enter url"), this);
     QFont font;
-    font.setBold( true );
-    lSelector->setFont( font );
-    topGrid->addWidget( lSelector, 0, 0 );
+    font.setBold(true);
+    lSelector->setFont(font);
+    topGrid->addWidget(lSelector, 0, 0);
     lOptions = new QLabel(i18n("2. Set conversion options"), this);
-    topGrid->addWidget( lOptions, 0, 1 );
+    topGrid->addWidget(lOptions, 0, 1);
 
     // draw a horizontal line
     QFrame *lineFrame = new QFrame(this);
-    lineFrame->setFrameShape( QFrame::HLine );
-    lineFrame->setFrameShadow( QFrame::Sunken );
-    mainGrid->addWidget( lineFrame, 1, 0 );
+    lineFrame->setFrameShape(QFrame::HLine);
+    lineFrame->setFrameShadow(QFrame::Sunken);
+    mainGrid->addWidget(lineFrame, 1, 0);
 
     QVBoxLayout *urlBox = new QVBoxLayout();
-    mainGrid->addLayout( urlBox, 2, 0 );
-    urlBox->addSpacing( 6*fontHeight );
+    mainGrid->addLayout(urlBox, 2, 0);
+    urlBox->addSpacing(6 * fontHeight);
     urlRequester = new KUrlRequester(this);
-    urlRequester->setMode( KFile::File | KFile::ExistingOnly );
-    urlBox->addWidget( urlRequester );
+    urlRequester->setMode(KFile::File | KFile::ExistingOnly);
+    urlBox->addWidget(urlRequester);
     urlBox->addStretch();
 
     options = new Options(config, i18n("Select your desired output options and click on \"Ok\"."), this);
-    mainGrid->addWidget( options, 2, 0 );
+    mainGrid->addWidget(options, 2, 0);
     adjustSize();
     options->hide();
 
-
     // add a horizontal box layout for the control elements
     QHBoxLayout *controlBox = new QHBoxLayout();
-    mainGrid->addLayout( controlBox, 5, 0 );
+    mainGrid->addLayout(controlBox, 5, 0);
     controlBox->addStretch();
 
     pProceed = new QPushButton(QIcon::fromTheme("go-next"), i18n("Proceed"), this);
-    controlBox->addWidget( pProceed );
-    connect( pProceed, SIGNAL(clicked()), this, SLOT(proceedClickedSlot()) );
+    controlBox->addWidget(pProceed);
+    connect(pProceed, SIGNAL(clicked()), this, SLOT(proceedClickedSlot()));
     pAdd = new QPushButton(QIcon::fromTheme("dialog-ok"), i18n("Ok"), this);
-    controlBox->addWidget( pAdd );
+    controlBox->addWidget(pAdd);
     pAdd->hide();
-    connect( pAdd, SIGNAL(clicked()), this, SLOT(okClickedSlot()) );
+    connect(pAdd, SIGNAL(clicked()), this, SLOT(okClickedSlot()));
     pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), this);
-    controlBox->addWidget( pCancel );
-    connect( pCancel, SIGNAL(clicked()), this, SLOT(reject()) );
+    controlBox->addWidget(pCancel);
+    connect(pCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
-
-        // Prevent the dialog from beeing too wide because of the directory history
-    if( parent && width() > parent->width() )
+    // Prevent the dialog from beeing too wide because of the directory history
+    if (parent && width() > parent->width())
         resize(QSize(parent->width() - fontHeight, sizeHint().height()));
     readConfig();
 }
@@ -116,11 +114,9 @@ void UrlOpener::readConfig()
 
 void UrlOpener::proceedClickedSlot()
 {
-    if( page == FileOpenPage )
-    {
-        if( !urlRequester->url().isValid() )
-        {
-            KMessageBox::information( this, i18n("The Url you entered is invalid. Please try again.") );
+    if (page == FileOpenPage) {
+        if (!urlRequester->url().isValid()) {
+            KMessageBox::information(this, i18n("The Url you entered is invalid. Please try again."));
             return;
         }
 
@@ -130,10 +126,10 @@ void UrlOpener::proceedClickedSlot()
         options->show();
         page = ConversionOptionsPage;
         QFont font;
-        font.setBold( false );
-        lSelector->setFont( font );
-        font.setBold( true );
-        lOptions->setFont( font );
+        font.setBold(false);
+        lSelector->setFont(font);
+        font.setBold(true);
+        lOptions->setFont(font);
         pProceed->hide();
         pAdd->show();
     }
@@ -141,18 +137,14 @@ void UrlOpener::proceedClickedSlot()
 
 void UrlOpener::okClickedSlot()
 {
-    if( page == ConversionOptionsPage )
-    {
+    if (page == ConversionOptionsPage) {
         ConversionOptions *conversionOptions = options->currentConversionOptions();
-        if( conversionOptions )
-        {
+        if (conversionOptions) {
             options->accepted();
-            emit openFiles( urls, conversionOptions );
+            emit openFiles(urls, conversionOptions);
             accept();
-        }
-        else
-        {
-            KMessageBox::error( this, i18n("No conversion options selected.") );
+        } else {
+            KMessageBox::error(this, i18n("No conversion options selected."));
         }
     }
 }

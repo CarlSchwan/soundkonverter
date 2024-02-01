@@ -10,21 +10,14 @@ public:
     LameConversionOptions();
     ~LameConversionOptions();
 
-    bool equals( ConversionOptions *_other );
-    QDomElement toXml( QDomDocument document ) const;
-    bool fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0 );
+    bool equals(ConversionOptions *_other);
+    QDomElement toXml(QDomDocument document) const;
+    bool fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
-    ConversionOptions* copy() const;
+    ConversionOptions *copy() const;
 
     struct Data {
-        enum Preset {
-            Medium = 0,
-            Standard = 1,
-            Extreme = 2,
-            Insane = 3,
-            SpecifyBitrate = 4,
-            UserDefined = 5
-        } preset;
+        enum Preset { Medium = 0, Standard = 1, Extreme = 2, Insane = 3, SpecifyBitrate = 4, UserDefined = 5 } preset;
         int presetBitrate;
         bool presetBitrateCbr;
         bool presetFast;

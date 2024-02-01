@@ -1,8 +1,8 @@
 
 #include "outputdirectory.h"
-#include "filelistitem.h"
-#include "core/conversionoptions.h"
 #include "config.h"
+#include "core/conversionoptions.h"
+#include "filelistitem.h"
 
 #include <KComboBox>
 #include <KLineEdit>
@@ -23,56 +23,57 @@
 #include <QStringList>
 #include <kmountpoint.h>
 
-OutputDirectory::OutputDirectory( Config *_config, QWidget *parent )
-    : QWidget( parent ),
-    config( _config )
+OutputDirectory::OutputDirectory(Config *_config, QWidget *parent)
+    : QWidget(parent)
+    , config(_config)
 {
-    QGridLayout *grid = new QGridLayout( this );
+    QGridLayout *grid = new QGridLayout(this);
     grid->setContentsMargins({});
 
-    QHBoxLayout *box = new QHBoxLayout( );
-    grid->addLayout( box, 0, 0 );
+    QHBoxLayout *box = new QHBoxLayout();
+    grid->addLayout(box, 0, 0);
 
-    cMode = new KComboBox( this );
-    cMode->addItem( i18n("By meta data") );
-    cMode->addItem( i18n("Source directory") );
-    cMode->addItem( i18n("Specify output directory") );
-    cMode->addItem( i18n("Copy directory structure") );
-    box->addWidget( cMode );
-    connect( cMode, SIGNAL(activated(int)), this, SLOT(modeChangedSlot(int)) );
+    cMode = new KComboBox(this);
+    cMode->addItem(i18n("By meta data"));
+    cMode->addItem(i18n("Source directory"));
+    cMode->addItem(i18n("Specify output directory"));
+    cMode->addItem(i18n("Copy directory structure"));
+    box->addWidget(cMode);
+    connect(cMode, SIGNAL(activated(int)), this, SLOT(modeChangedSlot(int)));
 
-    cDir = new KComboBox( true, this );
-    box->addWidget( cDir, 1 );
-    connect( cDir, SIGNAL(editTextChanged(const QString&)),  this, SLOT(directoryChangedSlot(const QString&)) );
+    cDir = new KComboBox(true, this);
+    box->addWidget(cDir, 1);
+    connect(cDir, SIGNAL(editTextChanged(const QString &)), this, SLOT(directoryChangedSlot(const QString &)));
 
     pDirSelect = new QPushButton(QIcon::fromTheme("folder"), "", this);
-    box->addWidget( pDirSelect );
-    pDirSelect->setFixedWidth( pDirSelect->height() );
-    pDirSelect->setToolTip( i18n("Choose an output directory") );
-    connect( pDirSelect, SIGNAL(clicked()), this, SLOT(selectDir()) );
+    box->addWidget(pDirSelect);
+    pDirSelect->setFixedWidth(pDirSelect->height());
+    pDirSelect->setToolTip(i18n("Choose an output directory"));
+    connect(pDirSelect, SIGNAL(clicked()), this, SLOT(selectDir()));
     pDirGoto = new QPushButton(QIcon::fromTheme("system-file-manager"), "", this);
-    box->addWidget( pDirGoto );
-    pDirGoto->setFixedWidth( pDirGoto->height() );
-    pDirGoto->setToolTip( i18n("Open the output directory with Dolphin") );
-    connect( pDirGoto, SIGNAL(clicked()), this, SLOT(gotoDir()) );
+    box->addWidget(pDirGoto);
+    pDirGoto->setFixedWidth(pDirGoto->height());
+    pDirGoto->setToolTip(i18n("Open the output directory with Dolphin"));
+    connect(pDirGoto, SIGNAL(clicked()), this, SLOT(gotoDir()));
 
-    setMode( (OutputDirectory::Mode)config->data.general.lastOutputDirectoryMode );
+    setMode((OutputDirectory::Mode)config->data.general.lastOutputDirectoryMode);
 }
 
 OutputDirectory::~OutputDirectory()
-{}
+{
+}
 
 void OutputDirectory::disable()
 {
-    cMode->setEnabled( false );
-    cDir->setEnabled( false );
-    pDirSelect->setEnabled( false );
+    cMode->setEnabled(false);
+    cDir->setEnabled(false);
+    pDirSelect->setEnabled(false);
 }
 
 void OutputDirectory::enable()
 {
-    cMode->setEnabled( true );
-    modeChangedSlot( cMode->currentIndex() );
+    cMode->setEnabled(true);
+    modeChangedSlot(cMode->currentIndex());
 }
 
 OutputDirectory::Mode OutputDirectory::mode()
@@ -80,38 +81,38 @@ OutputDirectory::Mode OutputDirectory::mode()
     return (Mode)cMode->currentIndex();
 }
 
-void OutputDirectory::setMode( OutputDirectory::Mode mode )
+void OutputDirectory::setMode(OutputDirectory::Mode mode)
 {
-    cMode->setCurrentIndex( (int)mode );
-    updateMode( mode );
+    cMode->setCurrentIndex((int)mode);
+    updateMode(mode);
 }
 
 QString OutputDirectory::directory()
 {
-    if( (Mode)cMode->currentIndex() != Source )
+    if ((Mode)cMode->currentIndex() != Source)
         return cDir->currentText();
     else
         return "";
 }
 
-void OutputDirectory::setDirectory( const QString& directory )
+void OutputDirectory::setDirectory(const QString &directory)
 {
-    if( (Mode)cMode->currentIndex() != Source )
-        cDir->setEditText( directory );
+    if ((Mode)cMode->currentIndex() != Source)
+        cDir->setEditText(directory);
 }
 
 QString OutputDirectory::filesystem()
 {
-    return filesystemForDirectory( directory() );
+    return filesystemForDirectory(directory());
 }
 
-QString OutputDirectory::filesystemForDirectory( const QString& dir )
+QString OutputDirectory::filesystemForDirectory(const QString &dir)
 {
-    if( dir.isEmpty() )
+    if (dir.isEmpty())
         return QString();
 
-    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath( dir );
-    if( !mp )
+    KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(dir);
+    if (!mp)
         return QString();
 
     return mp->mountType();
@@ -122,65 +123,59 @@ QUrl OutputDirectory::calcPath(FileListItem *fileListItem, Config *config, const
     QRegularExpression regEx("%[abcdfgnpsty]{1,1}", QRegularExpression::CaseInsensitiveOption);
 
     const ConversionOptions *options = config->conversionOptionsManager()->getConversionOptions(fileListItem->conversionOptionsId);
-    if( !options )
+    if (!options)
         return QUrl();
 
     QString path;
     QUrl url;
 
     QString extension;
-    if( config->pluginLoader()->codecExtensions(options->codecName).count() > 0 )
+    if (config->pluginLoader()->codecExtensions(options->codecName).count() > 0)
         extension = config->pluginLoader()->codecExtensions(options->codecName).first();
 
-    if( extension.isEmpty() )
+    if (extension.isEmpty())
         extension = options->codecName;
 
     QString fileName;
-    if( fileListItem->track == -1 )
+    if (fileListItem->track == -1)
         fileName = fileListItem->url.fileName();
     else
         fileName =
             QString().asprintf("%02i", fileListItem->tags->track) + " - " + fileListItem->tags->artist + " - " + fileListItem->tags->title + "." + extension;
 
-    if( options->outputDirectoryMode == Specify )
-    {
-        path = options->outputDirectory+"/"+fileName;
+    if (options->outputDirectoryMode == Specify) {
+        path = options->outputDirectory + "/" + fileName;
 
-        if( config->data.general.useVFATNames || options->outputFilesystem == "vfat" )
-            path = vfatPath( path );
+        if (config->data.general.useVFATNames || options->outputFilesystem == "vfat")
+            path = vfatPath(path);
 
-        if( options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk" )
-            path = ntfsPath( path );
+        if (options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk")
+            path = ntfsPath(path);
 
         url = changeExtension(QUrl(path), extension);
 
-        if( config->data.general.conflictHandling == Config::Data::General::NewFileName )
-            url = uniqueFileName( url, usedOutputNames );
+        if (config->data.general.conflictHandling == Config::Data::General::NewFileName)
+            url = uniqueFileName(url, usedOutputNames);
 
         return url;
-    }
-    else if( options->outputDirectoryMode == MetaData )
-    {
+    } else if (options->outputDirectoryMode == MetaData) {
         path = options->outputDirectory;
 
         // TODO a little bit redundant, adding %f if file name wasn't set properly
         // TODO these restrictions could be a little bit over the top
-        if( path.right(1) == "/" )
+        if (path.right(1) == "/")
             path += "%f";
-        else if( path.lastIndexOf(regEx) < path.lastIndexOf("/") )
+        else if (path.lastIndexOf(regEx) < path.lastIndexOf("/"))
             path += "/%f";
 
         const int fileNameBegin = path.lastIndexOf("/");
-        if( fileListItem->tags == 0 ||
-            ( path.mid(fileNameBegin).contains("%n") && fileListItem->tags->track == 0 ) ||
-            ( path.mid(fileNameBegin).contains("%t") && fileListItem->tags->title.isEmpty() )
-          )
-        {
-            path = path.left( fileNameBegin ) + "/%f";
+        if (fileListItem->tags == 0 || (path.mid(fileNameBegin).contains("%n") && fileListItem->tags->track == 0)
+            || (path.mid(fileNameBegin).contains("%t") && fileListItem->tags->title.isEmpty())) {
+            path = path.left(fileNameBegin) + "/%f";
         }
 
-        path.replace( "\\[", "$quared_bracket_open$" );
-        path.replace( "\\]", "$quared_bracket_close$" );
+        path.replace("\\[", "$quared_bracket_open$");
+        path.replace("\\]", "$quared_bracket_close$");
 
         QRegularExpression reg("\\[(.*)%([abcdfgnpsty])(.*)\\]", QRegularExpression::CaseInsensitiveOption | QRegularExpression::InvertedGreedinessOption);
         QRegularExpressionMatch match;
@@ -193,132 +188,126 @@ QUrl OutputDirectory::calcPath(FileListItem *fileListItem, Config *config, const
                     || (match.captured(2) == "g" && !fileListItem->tags->genre.isEmpty()) || (match.captured(2) == "n" && fileListItem->tags->track != 0)
                     || (match.captured(2) == "p" && !fileListItem->tags->composer.isEmpty())
                     || (match.captured(2) == "t" && !fileListItem->tags->title.isEmpty()) || (match.captured(2) == "y" && fileListItem->tags->year != 0))) {
-                path.replace( reg, "\\1%\\2\\3" );
+                path.replace(reg, "\\1%\\2\\3");
             } else {
-                path.replace( reg, "" );
+                path.replace(reg, "");
             }
         }
 
-        path.replace( "$quared_bracket_open$", "[" );
-        path.replace( "$quared_bracket_close$", "]" );
+        path.replace("$quared_bracket_open$", "[");
+        path.replace("$quared_bracket_close$", "]");
 
-        while( path.contains("//") )
-            path.replace( "//", "/" );
+        while (path.contains("//"))
+            path.replace("//", "/");
 
-        path.replace( "%a", "$replace_by_artist$" );
-        path.replace( "%z", "$replace_by_albumartist$" );
-        path.replace( "%b", "$replace_by_album$" );
-        path.replace( "%c", "$replace_by_comment$" );
-        path.replace( "%d", "$replace_by_disc$" );
-        path.replace( "%g", "$replace_by_genre$" );
-        path.replace( "%n", "$replace_by_track$" );
-        path.replace( "%p", "$replace_by_composer$" );
-        path.replace( "%t", "$replace_by_title$" );
-        path.replace( "%y", "$replace_by_year$" );
-        path.replace( "%f", "$replace_by_filename$" );
-        path.replace( "%s", "$replace_by_sourcedir$" );
+        path.replace("%a", "$replace_by_artist$");
+        path.replace("%z", "$replace_by_albumartist$");
+        path.replace("%b", "$replace_by_album$");
+        path.replace("%c", "$replace_by_comment$");
+        path.replace("%d", "$replace_by_disc$");
+        path.replace("%g", "$replace_by_genre$");
+        path.replace("%n", "$replace_by_track$");
+        path.replace("%p", "$replace_by_composer$");
+        path.replace("%t", "$replace_by_title$");
+        path.replace("%y", "$replace_by_year$");
+        path.replace("%f", "$replace_by_filename$");
+        path.replace("%s", "$replace_by_sourcedir$");
 
-        QString artist = ( fileListItem->tags == 0 || fileListItem->tags->artist.isEmpty() ) ? i18n("Unknown Artist") : fileListItem->tags->artist;
-        artist.replace("/",",");
-        path.replace( "$replace_by_artist$", artist );
+        QString artist = (fileListItem->tags == 0 || fileListItem->tags->artist.isEmpty()) ? i18n("Unknown Artist") : fileListItem->tags->artist;
+        artist.replace("/", ",");
+        path.replace("$replace_by_artist$", artist);
 
         QString albumArtist;
-        if( fileListItem->tags )
-        {
+        if (fileListItem->tags) {
             albumArtist = fileListItem->tags->albumArtist.isEmpty() ? fileListItem->tags->artist : fileListItem->tags->albumArtist;
         }
-        if( albumArtist.isEmpty() )
-        {
+        if (albumArtist.isEmpty()) {
             albumArtist = i18n("Unknown Artist");
         }
-        albumArtist.replace("/",",");
-        path.replace( "$replace_by_albumartist$", albumArtist );
+        albumArtist.replace("/", ",");
+        path.replace("$replace_by_albumartist$", albumArtist);
 
-        QString album = ( fileListItem->tags == 0 || fileListItem->tags->album.isEmpty() ) ? i18n("Unknown Album") : fileListItem->tags->album;
-        album.replace("/",",");
-        path.replace( "$replace_by_album$", album );
+        QString album = (fileListItem->tags == 0 || fileListItem->tags->album.isEmpty()) ? i18n("Unknown Album") : fileListItem->tags->album;
+        album.replace("/", ",");
+        path.replace("$replace_by_album$", album);
 
-        QString comment = ( fileListItem->tags == 0 || fileListItem->tags->comment.isEmpty() ) ? i18n("No Comment") : fileListItem->tags->comment;
-        comment.replace("/",",");
-        path.replace( "$replace_by_comment$", comment );
+        QString comment = (fileListItem->tags == 0 || fileListItem->tags->comment.isEmpty()) ? i18n("No Comment") : fileListItem->tags->comment;
+        comment.replace("/", ",");
+        path.replace("$replace_by_comment$", comment);
 
         QString disc = (fileListItem->tags == 0) ? "0" : QString().asprintf("%i", fileListItem->tags->disc);
-        path.replace( "$replace_by_disc$", disc );
+        path.replace("$replace_by_disc$", disc);
 
-        QString genre = ( fileListItem->tags == 0 || fileListItem->tags->genre.isEmpty() ) ? i18n("Unknown Genre") : fileListItem->tags->genre;
-        genre.replace("/",",");
-        path.replace( "$replace_by_genre$", genre );
+        QString genre = (fileListItem->tags == 0 || fileListItem->tags->genre.isEmpty()) ? i18n("Unknown Genre") : fileListItem->tags->genre;
+        genre.replace("/", ",");
+        path.replace("$replace_by_genre$", genre);
 
         QString track = (fileListItem->tags == 0) ? "00" : QString().asprintf("%02i", fileListItem->tags->track);
-        path.replace( "$replace_by_track$", track );
+        path.replace("$replace_by_track$", track);
 
-        QString composer = ( fileListItem->tags == 0 || fileListItem->tags->composer.isEmpty() ) ? i18n("Unknown Composer") : fileListItem->tags->composer;
-        composer.replace("/",",");
-        path.replace( "$replace_by_composer$", composer );
+        QString composer = (fileListItem->tags == 0 || fileListItem->tags->composer.isEmpty()) ? i18n("Unknown Composer") : fileListItem->tags->composer;
+        composer.replace("/", ",");
+        path.replace("$replace_by_composer$", composer);
 
-        QString title = ( fileListItem->tags == 0 || fileListItem->tags->title.isEmpty() ) ? i18n("Unknown Title") : fileListItem->tags->title;
-        title.replace("/",",");
-        path.replace( "$replace_by_title$", title );
+        QString title = (fileListItem->tags == 0 || fileListItem->tags->title.isEmpty()) ? i18n("Unknown Title") : fileListItem->tags->title;
+        title.replace("/", ",");
+        path.replace("$replace_by_title$", title);
 
         QString year = (fileListItem->tags == 0) ? "0000" : QString().asprintf("%04i", fileListItem->tags->year);
-        path.replace( "$replace_by_year$", year );
+        path.replace("$replace_by_year$", year);
 
-        QString filename = fileName.left( fileName.lastIndexOf(".") );
-        filename.replace("/",",");
-        path.replace( "$replace_by_filename$", filename );
+        QString filename = fileName.left(fileName.lastIndexOf("."));
+        filename.replace("/", ",");
+        path.replace("$replace_by_filename$", filename);
 
         QString sourcedir = fileListItem->url.adjusted(QUrl::RemoveFilename).path();
-        path.replace( "$replace_by_sourcedir$", sourcedir );
+        path.replace("$replace_by_sourcedir$", sourcedir);
 
-        if( config->data.general.useVFATNames || options->outputFilesystem == "vfat" )
-            path = vfatPath( path );
+        if (config->data.general.useVFATNames || options->outputFilesystem == "vfat")
+            path = vfatPath(path);
 
-        if( options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk" )
-            path = ntfsPath( path );
+        if (options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk")
+            path = ntfsPath(path);
 
         url = QUrl(path + "." + extension);
 
-        if( config->data.general.conflictHandling == Config::Data::General::NewFileName )
-            url = uniqueFileName( url, usedOutputNames );
+        if (config->data.general.conflictHandling == Config::Data::General::NewFileName)
+            url = uniqueFileName(url, usedOutputNames);
 
         return url;
-    }
-    else if( options->outputDirectoryMode == CopyStructure )
-    {
+    } else if (options->outputDirectoryMode == CopyStructure) {
         QString basePath = options->outputDirectory;
         QString originalPath = fileListItem->url.toDisplayString(QUrl::PreferLocalFile);
         int cutpos = basePath.length();
-        while( basePath.left(cutpos) != originalPath.left(cutpos) )
-        {
-            cutpos = basePath.lastIndexOf( '/', cutpos - 1 );
+        while (basePath.left(cutpos) != originalPath.left(cutpos)) {
+            cutpos = basePath.lastIndexOf('/', cutpos - 1);
         }
         // At this point, basePath and originalPath overlap on the left for cutpos characters (which might be 0).
-        path = basePath+originalPath.mid(cutpos);
+        path = basePath + originalPath.mid(cutpos);
 
-        if( config->data.general.useVFATNames || options->outputFilesystem == "vfat" )
-            path = vfatPath( path );
+        if (config->data.general.useVFATNames || options->outputFilesystem == "vfat")
+            path = vfatPath(path);
 
-        if( options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk" )
-            path = ntfsPath( path );
+        if (options->outputFilesystem == "ntfs" || options->outputFilesystem == "fuseblk")
+            path = ntfsPath(path);
 
         url = changeExtension(QUrl(path), extension);
 
-        if( config->data.general.conflictHandling == Config::Data::General::NewFileName )
-            url = uniqueFileName( url, usedOutputNames );
+        if (config->data.general.conflictHandling == Config::Data::General::NewFileName)
+            url = uniqueFileName(url, usedOutputNames);
 
         return url;
-    }
-    else // SourceDirectory
+    } else // SourceDirectory
     {
         path = fileListItem->url.toLocalFile();
 
-        if( config->data.general.useVFATNames )
-            path = vfatPath( path );
+        if (config->data.general.useVFATNames)
+            path = vfatPath(path);
 
         url = changeExtension(QUrl(path), extension);
 
-        if( config->data.general.conflictHandling == Config::Data::General::NewFileName )
-            url = uniqueFileName( url, usedOutputNames );
+        if (config->data.general.conflictHandling == Config::Data::General::NewFileName)
+            url = uniqueFileName(url, usedOutputNames);
 
         return url;
     }
@@ -329,7 +318,7 @@ QUrl OutputDirectory::changeExtension(const QUrl &url, const QString &extension)
     QUrl changedUrl = url;
 
     const QString urlFileName = url.fileName();
-    const QString fileName = urlFileName.left( urlFileName.lastIndexOf(".")+1 ) + extension;
+    const QString fileName = urlFileName.left(urlFileName.lastIndexOf(".") + 1) + extension;
     changedUrl = changedUrl.adjusted(QUrl::RemoveFilename);
     changedUrl.setPath(changedUrl.path() + fileName);
 
@@ -340,11 +329,10 @@ QUrl OutputDirectory::uniqueFileName(const QUrl &url, const QStringList &usedOut
 {
     QUrl uniqueUrl = url;
 
-    while( QFile::exists(uniqueUrl.toLocalFile()) || usedOutputNames.contains(uniqueUrl.toLocalFile()) )
-    {
-        const QString newString = i18nc("will be appended to the filename if a file with the same name already exists","new");
+    while (QFile::exists(uniqueUrl.toLocalFile()) || usedOutputNames.contains(uniqueUrl.toLocalFile())) {
+        const QString newString = i18nc("will be appended to the filename if a file with the same name already exists", "new");
         const QString urlFileName = uniqueUrl.fileName();
-        const QString fileName = urlFileName.left( urlFileName.lastIndexOf(".")+1 ) + newString + urlFileName.mid( urlFileName.lastIndexOf(".") );
+        const QString fileName = urlFileName.left(urlFileName.lastIndexOf(".") + 1) + newString + urlFileName.mid(urlFileName.lastIndexOf("."));
         uniqueUrl = uniqueUrl.adjusted(QUrl::RemoveFilename);
         uniqueUrl.setPath(uniqueUrl.path() + fileName);
     }
@@ -354,19 +342,16 @@ QUrl OutputDirectory::uniqueFileName(const QUrl &url, const QStringList &usedOut
 
 QUrl OutputDirectory::makePath(const QUrl &url)
 {
-    QFileInfo fileInfo( url.toLocalFile() );
+    QFileInfo fileInfo(url.toLocalFile());
 
-    QStringList directories = fileInfo.absoluteDir().absolutePath().split( "/" );
+    QStringList directories = fileInfo.absoluteDir().absolutePath().split("/");
     QString mkDir;
     QDir dir;
-    foreach( const QString& directory, directories )
-    {
+    foreach (const QString &directory, directories) {
         mkDir += "/" + directory;
-        dir.setPath( mkDir );
-        if( !dir.exists() )
-        {
-            if( !dir.mkdir(mkDir) )
-            {
+        dir.setPath(mkDir);
+        if (!dir.exists()) {
+            if (!dir.mkdir(mkDir)) {
                 return QUrl();
             }
         }
@@ -378,50 +363,44 @@ QUrl OutputDirectory::makePath(const QUrl &url)
 // from amarok 2.3.0
 // copyright            : (C) 2010 by Amarok developers
 // web                  : amarok.kde.org
-QString OutputDirectory::vfatPath( const QString& path )
+QString OutputDirectory::vfatPath(const QString &path)
 {
     QString s = path;
 
-    if( QDir::separator() == '/' ) // we are on *nix, \ is a valid character in file or directory names, NOT the dir separator
-        s.replace( '\\', '_' );
+    if (QDir::separator() == '/') // we are on *nix, \ is a valid character in file or directory names, NOT the dir separator
+        s.replace('\\', '_');
     else
-        s.replace( '/', '_' ); // on windows we have to replace / instead
+        s.replace('/', '_'); // on windows we have to replace / instead
 
-    for( int i = 0; i < s.length(); i++ )
-    {
-        QChar c = s[ i ];
-        if( c < QChar(0x20) || c == QChar(0x7F) // 0x7F = 127 = DEL control character
-            || c=='*' || c=='?' || c=='<' || c=='>'
-            || c=='|' || c=='"' || c==':' )
+    for (int i = 0; i < s.length(); i++) {
+        QChar c = s[i];
+        if (c < QChar(0x20) || c == QChar(0x7F) // 0x7F = 127 = DEL control character
+            || c == '*' || c == '?' || c == '<' || c == '>' || c == '|' || c == '"' || c == ':')
             c = '_';
-        else if( c == '[' )
+        else if (c == '[')
             c = '(';
-        else if ( c == ']' )
+        else if (c == ']')
             c = ')';
-        s[ i ] = c;
+        s[i] = c;
     }
 
     /* beware of reserved device names */
     uint len = s.length();
-    if( len == 3 || (len > 3 && s[3] == '.') )
-    {
+    if (len == 3 || (len > 3 && s[3] == '.')) {
         QString l = s.left(3).toLower();
-        if( l=="aux" || l=="con" || l=="nul" || l=="prn" )
+        if (l == "aux" || l == "con" || l == "nul" || l == "prn")
             s = '_' + s;
-    }
-    else if( len == 4 || (len > 4 && s[4] == '.') )
-    {
+    } else if (len == 4 || (len > 4 && s[4] == '.')) {
         QString l = s.left(3).toLower();
-        QString d = s.mid(3,1);
-        if( (l=="com" || l=="lpt") &&
-                (d=="0" || d=="1" || d=="2" || d=="3" || d=="4" ||
-                    d=="5" || d=="6" || d=="7" || d=="8" || d=="9") )
+        QString d = s.mid(3, 1);
+        if ((l == "com" || l == "lpt")
+            && (d == "0" || d == "1" || d == "2" || d == "3" || d == "4" || d == "5" || d == "6" || d == "7" || d == "8" || d == "9"))
             s = '_' + s;
     }
 
     // "clock$" is only allowed WITH extension, according to:
     // http://en.wikipedia.org/w/index.php?title=Filename&oldid=303934888#Comparison_of_file_name_limitations
-    if( QString::compare( s, "clock$", Qt::CaseInsensitive ) == 0 )
+    if (QString::compare(s, "clock$", Qt::CaseInsensitive) == 0)
         s = '_' + s;
 
     /* max path length of Windows API */
@@ -429,38 +408,37 @@ QString OutputDirectory::vfatPath( const QString& path )
 
     /* whitespace at the end of folder/file names or extensions are bad */
     len = s.length();
-    if( s[len-1] == ' ' )
-        s[len-1] = '_';
+    if (s[len - 1] == ' ')
+        s[len - 1] = '_';
 
-    int extensionIndex = s.lastIndexOf( '.' ); // correct trailing spaces in file name itself
-    if( ( s.length() > 1 ) &&  ( extensionIndex > 0 ) )
-        if( s.at( extensionIndex - 1 ) == ' ' )
+    int extensionIndex = s.lastIndexOf('.'); // correct trailing spaces in file name itself
+    if ((s.length() > 1) && (extensionIndex > 0))
+        if (s.at(extensionIndex - 1) == ' ')
             s[extensionIndex - 1] = '_';
 
-    for( int i = 1; i < s.length(); i++ ) // correct trailing whitespace in folder names
+    for (int i = 1; i < s.length(); i++) // correct trailing whitespace in folder names
     {
-        if( ( s.at( i ) == QDir::separator() ) && ( s.at( i - 1 ) == ' ' ) )
+        if ((s.at(i) == QDir::separator()) && (s.at(i - 1) == ' '))
             s[i - 1] = '_';
     }
 
     return s;
 }
 
-QString OutputDirectory::ntfsPath( const QString& path )
+QString OutputDirectory::ntfsPath(const QString &path)
 {
     QString s = path;
 
-    if( QDir::separator() == '/' ) // we are on *nix, \ is a valid character in file or directory names, NOT the dir separator
-        s.replace( '\\', '_' );
+    if (QDir::separator() == '/') // we are on *nix, \ is a valid character in file or directory names, NOT the dir separator
+        s.replace('\\', '_');
     else
-        s.replace( '/', '_' ); // on windows we have to replace / instead
+        s.replace('/', '_'); // on windows we have to replace / instead
 
-    for( int i = 0; i < s.length(); i++ )
-    {
-        QChar c = s[ i ];
-        if( c=='*' || c=='?' || c=='<' || c=='>' || c=='|' || c=='"' || c==':' )
+    for (int i = 0; i < s.length(); i++) {
+        QChar c = s[i];
+        if (c == '*' || c == '?' || c == '<' || c == '>' || c == '|' || c == '"' || c == ':')
             c = '_';
-        s[ i ] = c;
+        s[i] = c;
     }
 
     /* max path length of Windows API */
@@ -476,26 +454,21 @@ void OutputDirectory::selectDir()
     QString dir = cDir->currentText();
     QString startDir = dir;
     QString params;
-    int i = dir.indexOf( regEx );
-    if( i != -1 && cMode->currentIndex() == 0 )
-    {
-        i = dir.lastIndexOf( "/", i );
-        startDir = dir.left( i );
-        params = dir.mid( i );
+    int i = dir.indexOf(regEx);
+    if (i != -1 && cMode->currentIndex() == 0) {
+        i = dir.lastIndexOf("/", i);
+        startDir = dir.left(i);
+        params = dir.mid(i);
     }
 
     QString directory = QFileDialog::getExistingDirectory(this, startDir, i18n("Choose an output directory"));
-    if( !directory.isEmpty() )
-    {
-        if( i != -1 && cMode->currentIndex() == 0 )
-        {
-            cDir->setEditText( directory + params );
+    if (!directory.isEmpty()) {
+        if (i != -1 && cMode->currentIndex() == 0) {
+            cDir->setEditText(directory + params);
+        } else {
+            cDir->setEditText(directory);
         }
-        else
-        {
-            cDir->setEditText( directory );
-        }
-        emit directoryChanged( cDir->currentText() );
+        emit directoryChanged(cDir->currentText());
     }
 }
 
@@ -504,97 +477,92 @@ void OutputDirectory::gotoDir()
     static QRegularExpression regEx("%[abcdfgnpsty]{1,1}", QRegularExpression::CaseInsensitiveOption);
 
     QString startDir = cDir->currentText();
-    int i = startDir.indexOf( regEx );
-    if( i != -1 )
-    {
-        i = startDir.lastIndexOf( "/", i );
-        startDir = startDir.left( i );
+    int i = startDir.indexOf(regEx);
+    if (i != -1) {
+        i = startDir.lastIndexOf("/", i);
+        startDir = startDir.left(i);
     }
 
-    QProcess::startDetached( "dolphin", QStringList(startDir) );
+    QProcess::startDetached("dolphin", QStringList(startDir));
 }
 
-void OutputDirectory::modeChangedSlot( int mode )
+void OutputDirectory::modeChangedSlot(int mode)
 {
     config->data.general.lastOutputDirectoryMode = mode;
 
-    disconnect( cDir, SIGNAL(editTextChanged(const QString&)), 0, 0 );
+    disconnect(cDir, SIGNAL(editTextChanged(const QString &)), 0, 0);
 
-    updateMode( (Mode)mode );
+    updateMode((Mode)mode);
 
-    connect( cDir, SIGNAL(editTextChanged(const QString&)),  this, SLOT(directoryChangedSlot(const QString&)) );
+    connect(cDir, SIGNAL(editTextChanged(const QString &)), this, SLOT(directoryChangedSlot(const QString &)));
 
-    emit modeChanged( mode );
+    emit modeChanged(mode);
 }
 
-void OutputDirectory::updateMode( Mode mode )
+void OutputDirectory::updateMode(Mode mode)
 {
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    if( mode == MetaData )
-    {
+    if (mode == MetaData) {
         cDir->clear();
-        cDir->addItems( config->data.general.lastMetaDataOutputDirectoryPaths );
-        cDir->setEditText( config->data.general.metaDataOutputDirectory );
-        cDir->setEnabled( true );
-        pDirSelect->setEnabled( true );
-        pDirGoto->setEnabled( true );
-        cMode->setToolTip( i18n("Name all converted files according to the specified pattern") );
-        cDir->setToolTip( i18n("The following strings are wildcards that will be replaced\nby the information in the meta data:\n\n"
-                "%a - Artist\n%z - Album artist\n%b - Album\n%c - Comment\n%d - Disc number\n%g - Genre\n%n - Track number\n%p - Composer\n%t - Title\n%y - Year\n%f - Original file name\n%s - Path to the source directory\n\n"
-                "You may parenthesize these wildcards and surrounding characters with squared brackets ('[' and ']')\nso they will be ignored if the replacement value is empty.\n"
-                "In order to use squared brackets you will have to escape them with a backslash ('\\[' and '\\]').") );
-    }
-    else if( mode == Source )
-    {
+        cDir->addItems(config->data.general.lastMetaDataOutputDirectoryPaths);
+        cDir->setEditText(config->data.general.metaDataOutputDirectory);
+        cDir->setEnabled(true);
+        pDirSelect->setEnabled(true);
+        pDirGoto->setEnabled(true);
+        cMode->setToolTip(i18n("Name all converted files according to the specified pattern"));
+        cDir->setToolTip(
+            i18n("The following strings are wildcards that will be replaced\nby the information in the meta data:\n\n"
+                 "%a - Artist\n%z - Album artist\n%b - Album\n%c - Comment\n%d - Disc number\n%g - Genre\n%n - Track number\n%p - Composer\n%t - Title\n%y - "
+                 "Year\n%f - Original file name\n%s - Path to the source directory\n\n"
+                 "You may parenthesize these wildcards and surrounding characters with squared brackets ('[' and ']')\nso they will be ignored if the "
+                 "replacement value is empty.\n"
+                 "In order to use squared brackets you will have to escape them with a backslash ('\\[' and '\\]')."));
+    } else if (mode == Source) {
         cDir->clear();
-        cDir->setEditText( "" );
-        cDir->setEnabled( false );
-        pDirSelect->setEnabled( false );
-        pDirGoto->setEnabled( false );
-        cMode->setToolTip( i18n("Output all converted files into the same directory as the original files") );
+        cDir->setEditText("");
+        cDir->setEnabled(false);
+        pDirSelect->setEnabled(false);
+        pDirGoto->setEnabled(false);
+        cMode->setToolTip(i18n("Output all converted files into the same directory as the original files"));
         cDir->setToolTip("");
-    }
-    else if( mode == Specify )
-    {
+    } else if (mode == Specify) {
         cDir->clear();
-        cDir->addItems( config->data.general.lastNormalOutputDirectoryPaths );
-        cDir->setEditText( config->data.general.specifyOutputDirectory );
-        cDir->setEnabled( true );
-        pDirSelect->setEnabled( true );
-        pDirGoto->setEnabled( true );
-        cMode->setToolTip( i18n("Output all converted files into the specified output directory") );
+        cDir->addItems(config->data.general.lastNormalOutputDirectoryPaths);
+        cDir->setEditText(config->data.general.specifyOutputDirectory);
+        cDir->setEnabled(true);
+        pDirSelect->setEnabled(true);
+        pDirGoto->setEnabled(true);
+        cMode->setToolTip(i18n("Output all converted files into the specified output directory"));
         cDir->setToolTip("");
-    }
-    else if( mode == CopyStructure )
-    {
+    } else if (mode == CopyStructure) {
         cDir->clear();
-        cDir->addItems( config->data.general.lastNormalOutputDirectoryPaths );
-        cDir->setEditText( config->data.general.copyStructureOutputDirectory );
-        cDir->setEnabled( true );
-        pDirSelect->setEnabled( true );
-        pDirGoto->setEnabled( true );
-        cMode->setToolTip( i18n("Copy the whole directory structure for all converted files") );
+        cDir->addItems(config->data.general.lastNormalOutputDirectoryPaths);
+        cDir->setEditText(config->data.general.copyStructureOutputDirectory);
+        cDir->setEnabled(true);
+        pDirSelect->setEnabled(true);
+        pDirGoto->setEnabled(true);
+        cMode->setToolTip(i18n("Copy the whole directory structure for all converted files"));
         cDir->setToolTip("");
     }
 
     // Prevent the directory combo box from beeing too wide because of the directory history
-    cDir->setMinimumWidth( 20*fontHeight );
-    cDir->view()->setMinimumWidth( cDir->view()->sizeHintForColumn(0) );
+    cDir->setMinimumWidth(20 * fontHeight);
+    cDir->view()->setMinimumWidth(cDir->view()->sizeHintForColumn(0));
 }
 
-void OutputDirectory::directoryChangedSlot( const QString& directory )
+void OutputDirectory::directoryChangedSlot(const QString &directory)
 {
     Mode mode = (Mode)cMode->currentIndex();
 
-    if( mode == MetaData )
+    if (mode == MetaData)
         config->data.general.metaDataOutputDirectory = directory;
-    else if( mode == Specify )
+    else if (mode == Specify)
         config->data.general.specifyOutputDirectory = directory;
-    else if( mode == CopyStructure )
+    else if (mode == CopyStructure)
         config->data.general.copyStructureOutputDirectory = directory;
 
-    emit directoryChanged( directory );
+    emit directoryChanged(directory);
 }
 
 /*void OutputDirectory::modeInfo()
@@ -619,13 +587,13 @@ void OutputDirectory::directoryChangedSlot( const QString& directory )
     }
     else if( (Mode)mode == MetaData ) {
         KMessageBox::information( this,
-            i18n("This will output each file into a directory, which is created based on the metadata in the audio files. Select a directory, where the new directories should be created."),
-            QString(i18n("Mode")+": ").append(sModeString) );
+            i18n("This will output each file into a directory, which is created based on the metadata in the audio files. Select a directory, where the new
+directories should be created."), QString(i18n("Mode")+": ").append(sModeString) );
     }
     else if( (Mode)mode == CopyStructure ) {
         KMessageBox::information( this,
-            i18n("This will output each file into a directory, which is created based on the name of the original directory. So you can copy a whole directory structure, in one you have the original files, in the other the converted."),
-            QString(i18n("Mode")+": ").append(sModeString) );
+            i18n("This will output each file into a directory, which is created based on the name of the original directory. So you can copy a whole directory
+structure, in one you have the original files, in the other the converted."), QString(i18n("Mode")+": ").append(sModeString) );
     }
     else {
         KMessageBox::error( this,
@@ -633,4 +601,3 @@ void OutputDirectory::directoryChangedSlot( const QString& directory )
             QString(i18n("Mode")+": ").append(sModeString) );
     }
 }*/
-

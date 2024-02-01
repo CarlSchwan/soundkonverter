@@ -16,42 +16,35 @@
 #include <QLocale>
 
 Global::Global()
-{}
+{
+}
 
 Global::~Global()
-{}
+{
+}
 
-QString Global::prettyNumber( double num, QString unit, short digits )
+QString Global::prettyNumber(double num, QString unit, short digits)
 {
     QString prettyString;
-    if( unit == "%" && digits == 3 )
-    {
-        if( num < 10 )
+    if (unit == "%" && digits == 3) {
+        if (num < 10)
             prettyString.asprintf("%.2f %%", num);
-        else if( num < 100 )
+        else if (num < 100)
             prettyString.asprintf("%.1f %%", num);
         else
             prettyString.asprintf("%.0f %%", num);
-    }
-    else if( unit == "%" && digits == 2 )
-    {
-        if( num < 10 )
+    } else if (unit == "%" && digits == 2) {
+        if (num < 10)
             prettyString.asprintf("%.1f %%", num);
         else
             prettyString.asprintf("%.0f %%", num);
-    }
-    else if( unit == "B" )
-    {
+    } else if (unit == "B") {
         KFormat format;
         prettyString = format.formatValue(num, KFormat::Unit::Bit);
-    }
-    else if( unit == "ms" )
-    {
+    } else if (unit == "ms") {
         KFormat format;
         prettyString = format.formatDuration(num, KFormat::DurationFormatOption::ShowMilliseconds);
-    }
-    else if( unit == "s" )
-    {
+    } else if (unit == "s") {
         KFormat format;
         prettyString = format.formatDuration(num);
     }

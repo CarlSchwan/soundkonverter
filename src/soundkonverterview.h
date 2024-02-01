@@ -40,16 +40,19 @@ class soundKonverterView : public QWidget
     Q_OBJECT
 public:
     /** Default constructor */
-    soundKonverterView( Logger *_logger, Config *_config, CDManager *_cdManager, QWidget *parent );
+    soundKonverterView(Logger *_logger, Config *_config, CDManager *_cdManager, QWidget *parent);
 
     /** Destructor */
     ~soundKonverterView();
 
     void addConvertFiles(const QList<QUrl> &urls, QString _profile, QString _format, const QString &directory, const QString &notifyCommand = "");
     void loadAutosaveFileList();
-    void loadFileList(const QString& fileListPath);
+    void loadFileList(const QString &fileListPath);
 
-    QAction *start() { return startAction; }
+    QAction *start()
+    {
+        return startAction;
+    }
     QMenu *stopMenu()
     {
         return stopActionMenu;
@@ -60,19 +63,20 @@ public:
 
 Q_SIGNALS:
     /** Use this signal to change the content of the statusbar */
-//     void signalChangeStatusbar(const QString& text);
+    //     void signalChangeStatusbar(const QString& text);
 
     /** Use this signal to change the content of the caption */
-//     void signalChangeCaption( const QString& text );
+    //     void signalChangeCaption( const QString& text );
 
 public slots:
-    bool showCdDialog( const QString& device = "", QString _profile = "", QString _format = "", const QString& directory = "", const QString& notifyCommand = "" );
-    void loadFileList( bool user = true );
-    void saveFileList( bool user = true );
+    bool
+    showCdDialog(const QString &device = "", QString _profile = "", QString _format = "", const QString &directory = "", const QString &notifyCommand = "");
+    void loadFileList(bool user = true);
+    void saveFileList(bool user = true);
     void updateFileList();
 
 private slots:
-    void addClicked( int index );
+    void addClicked(int index);
     void showFileDialog();
     void showDirDialog();
     void showUrlDialog();
@@ -80,13 +84,13 @@ private slots:
 
     // connected to fileList
     /** The count of items in the file list has changed to @p count */
-    void fileCountChanged( int count );
+    void fileCountChanged(int count);
     /** The conversion has started */
     void conversionStarted();
     /** The conversion has stopped */
-    void conversionStopped( bool failed );
+    void conversionStopped(bool failed);
     /** Conversion will continue/stop after current files have been converted */
-    void queueModeChanged( bool enabled );
+    void queueModeChanged(bool enabled);
 
 private:
     Config *config;
@@ -115,13 +119,13 @@ private:
     /** Displays the current progress */
     ProgressIndicator *progressIndicator;
 
-    void cleanupParameters( QString *profile, QString *format );
+    void cleanupParameters(QString *profile, QString *format);
 
 Q_SIGNALS:
-    void progressChanged( const QString& progress );
+    void progressChanged(const QString &progress);
     void signalConversionStarted();
-    void signalConversionStopped( bool failed );
-    void showLog( const int logId );
+    void signalConversionStopped(bool failed);
+    void showLog(const int logId);
 };
 
 #endif // _soundKonverterVIEW_H_

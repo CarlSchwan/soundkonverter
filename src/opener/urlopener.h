@@ -26,21 +26,21 @@ class QPushButton;
 class KUrlRequester;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class UrlOpener : public QDialog
 {
     Q_OBJECT
 public:
-    enum DialogPage {
-        FileOpenPage,
-        ConversionOptionsPage
-    };
+    enum DialogPage { FileOpenPage, ConversionOptionsPage };
 
     UrlOpener(Config *_config, QWidget *parent, Qt::WindowFlags = {});
     ~UrlOpener();
 
-    DialogPage currentPage() { return page; }
+    DialogPage currentPage()
+    {
+        return page;
+    }
 
 private:
     void readConfig();
@@ -63,8 +63,7 @@ private slots:
     void okClickedSlot();
 
 Q_SIGNALS:
-    void openFiles( const QList<QUrl>& files, ConversionOptions *conversionOptions );
-
+    void openFiles(const QList<QUrl> &files, ConversionOptions *conversionOptions);
 };
 
 #endif

@@ -6,13 +6,12 @@
 
 class FilterOptions;
 
-
 class soundkonverter_filter_normalize : public FilterPlugin
 {
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_filter_normalize( QObject *parent, const QVariantList& args );
+    soundkonverter_filter_normalize(QObject *parent, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_filter_normalize();
@@ -21,10 +20,10 @@ public:
 
     QList<ConversionPipeTrunk> codecTable();
 
-    bool isConfigSupported( ActionType action, const QString& codecName );
-    void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent );
+    bool isConfigSupported(ActionType action, const QString &codecName);
+    void showConfigDialog(ActionType action, const QString &codecName, QWidget *parent);
     bool hasInfo();
-    void showInfo( QWidget *parent );
+    void showInfo(QWidget *parent);
 
     CodecWidget *newCodecWidget();
     FilterWidget *newFilterWidget();
@@ -43,9 +42,9 @@ public:
                                const ConversionOptions *_conversionOptions,
                                TagData *tags = 0,
                                bool replayGain = false);
-    float parseOutput( const QString& output );
+    float parseOutput(const QString &output);
 
-    FilterOptions *filterOptionsFromXml( QDomElement filterOptions );
+    FilterOptions *filterOptionsFromXml(QDomElement filterOptions);
 };
 
 #endif // SOUNDKONVERTER_FILTER_NORMALIZE_H

@@ -1,17 +1,17 @@
 
 #include "opustoolscodecglobal.h"
 
-#include "soundkonverter_codec_opustools.h"
 #include "../../core/conversionoptions.h"
 #include "opustoolscodecwidget.h"
 #include "opustoolsconversionoptions.h"
+#include "soundkonverter_codec_opustools.h"
 
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QDialog>
 
-soundkonverter_codec_opustools::soundkonverter_codec_opustools( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_opustools::soundkonverter_codec_opustools(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -26,13 +26,14 @@ soundkonverter_codec_opustools::soundkonverter_codec_opustools( QObject *parent,
     KSharedConfig::Ptr conf = KGlobal::config();
     KConfigGroup group;
 
-    group = conf->group( "Plugin-"+name() );
-    configVersion = group.readEntry( "configVersion", 0 );
-    uncoupledChannels = group.readEntry( "uncoupledChannels", false );
+    group = conf->group("Plugin-" + name());
+    configVersion = group.readEntry("configVersion", 0);
+    uncoupledChannels = group.readEntry("uncoupledChannels", false);
 }
 
 soundkonverter_codec_opustools::~soundkonverter_codec_opustools()
-{}
+{
+}
 
 QString soundkonverter_codec_opustools::name() const
 {
@@ -47,23 +48,25 @@ QList<ConversionPipeTrunk> soundkonverter_codec_opustools::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "opus";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["opusenc"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "opus", "opusenc" ) + "\n" + i18n( "'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("opusenc"), QString("opus-tools") );
+    newTrunk.enabled = (binaries["opusenc"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "opus", "opusenc") + "\n"
+        + i18n("'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("opusenc"), QString("opus-tools"));
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "opus";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["opusdec"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "opus", "opusdec" ) + "\n" + i18n( "'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("opusdec"), QString("opus-tools") );
+    newTrunk.enabled = (binaries["opusdec"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "opus", "opusdec") + "\n"
+        + i18n("'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("opusdec"), QString("opus-tools"));
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_opustools::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_opustools::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -71,42 +74,40 @@ bool soundkonverter_codec_opustools::isConfigSupported( ActionType action, const
     return true;
 }
 
-void soundkonverter_codec_opustools::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_opustools::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
 
-    if( !configDialog.data() )
-    {
+    if (!configDialog.data()) {
         configDialog = new QDialog(parent);
-        configDialog.data()->setCaption( i18n("Configure %1",*global_plugin_name) );
+        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
         configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
-        QWidget *configDialogWidget = new QWidget( configDialog.data() );
-        QVBoxLayout *configDialogBox = new QVBoxLayout( configDialogWidget );
-        configDialogUncoupledChannelsCheckBox = new QCheckBox( i18n("Uncoupled channels"), configDialogWidget );
-        configDialogUncoupledChannelsCheckBox->setToolTip( i18n("Use one mono stream per channel") );
-        configDialogBox->addWidget( configDialogUncoupledChannelsCheckBox );
+        QWidget *configDialogWidget = new QWidget(configDialog.data());
+        QVBoxLayout *configDialogBox = new QVBoxLayout(configDialogWidget);
+        configDialogUncoupledChannelsCheckBox = new QCheckBox(i18n("Uncoupled channels"), configDialogWidget);
+        configDialogUncoupledChannelsCheckBox->setToolTip(i18n("Use one mono stream per channel"));
+        configDialogBox->addWidget(configDialogUncoupledChannelsCheckBox);
 
-        configDialog.data()->setMainWidget( configDialogWidget );
-        connect( configDialog.data(), SIGNAL( okClicked() ), this, SLOT( configDialogSave() ) );
-        connect( configDialog.data(), SIGNAL( defaultClicked() ), this, SLOT( configDialogDefault() ) );
+        configDialog.data()->setMainWidget(configDialogWidget);
+        connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
+        connect(configDialog.data(), SIGNAL(defaultClicked()), this, SLOT(configDialogDefault()));
     }
-    configDialogUncoupledChannelsCheckBox->setChecked( uncoupledChannels );
+    configDialogUncoupledChannelsCheckBox->setChecked(uncoupledChannels);
     configDialog.data()->show();
 }
 
 void soundkonverter_codec_opustools::configDialogSave()
 {
-    if( configDialog.data() )
-    {
+    if (configDialog.data()) {
         uncoupledChannels = configDialogUncoupledChannelsCheckBox->isChecked();
 
         KSharedConfig::Ptr conf = KGlobal::config();
         KConfigGroup group;
 
-        group = conf->group( "Plugin-"+name() );
-        group.writeEntry( "uncoupledChannels", uncoupledChannels );
+        group = conf->group("Plugin-" + name());
+        group.writeEntry("uncoupledChannels", uncoupledChannels);
 
         configDialog.data()->deleteLater();
     }
@@ -114,9 +115,8 @@ void soundkonverter_codec_opustools::configDialogSave()
 
 void soundkonverter_codec_opustools::configDialogDefault()
 {
-    if( configDialog.data() )
-    {
-        configDialogUncoupledChannelsCheckBox->setChecked( false );
+    if (configDialog.data()) {
+        configDialogUncoupledChannelsCheckBox->setChecked(false);
     }
 }
 
@@ -125,7 +125,7 @@ bool soundkonverter_codec_opustools::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_opustools::showInfo( QWidget *parent )
+void soundkonverter_codec_opustools::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -133,7 +133,7 @@ void soundkonverter_codec_opustools::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_opustools::newCodecWidget()
 {
     OpusToolsCodecWidget *widget = new OpusToolsCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
 int soundkonverter_codec_opustools::convert(const QUrl &inputFile,
@@ -144,24 +144,24 @@ int soundkonverter_codec_opustools::convert(const QUrl &inputFile,
                                             TagData *tags,
                                             bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
@@ -177,50 +177,38 @@ QStringList soundkonverter_codec_opustools::convertCommand(const QUrl &inputFile
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
     const OpusToolsConversionOptions *opusToolsConversionOptions = 0;
-    if( conversionOptions->pluginName == name() )
-    {
-        opusToolsConversionOptions = dynamic_cast<const OpusToolsConversionOptions*>(conversionOptions);
+    if (conversionOptions->pluginName == name()) {
+        opusToolsConversionOptions = dynamic_cast<const OpusToolsConversionOptions *>(conversionOptions);
     }
 
-    if( outputCodec == "opus" )
-    {
+    if (outputCodec == "opus") {
         command += binaries["opusenc"];
         command += "--bitrate";
-        if( opusToolsConversionOptions )
-        {
+        if (opusToolsConversionOptions) {
             command += QString::number(opusToolsConversionOptions->data.floatBitrate);
-        }
-        else
-        {
+        } else {
             command += QString::number(conversionOptions->bitrate);
         }
-        if( conversionOptions->bitrateMode == ConversionOptions::Abr )
-        {
+        if (conversionOptions->bitrateMode == ConversionOptions::Abr) {
             command += "--vbr";
-        }
-        else if( conversionOptions->bitrateMode == ConversionOptions::Cbr )
-        {
+        } else if (conversionOptions->bitrateMode == ConversionOptions::Cbr) {
             command += "--hard-cbr";
         }
         // TODO --comp Encoding computational complexity (0-10, default: 10)
-        if( uncoupledChannels )
-        {
+        if (uncoupledChannels) {
             command += "--uncoupled";
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "\"" + escapeUrl(outputFile) + "\"";
-    }
-    else
-    {
+    } else {
         command += binaries["opusdec"];
-        if( outputFile.isEmpty() )
-        {
+        if (outputFile.isEmpty()) {
             command += "--quiet";
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
@@ -230,7 +218,7 @@ QStringList soundkonverter_codec_opustools::convertCommand(const QUrl &inputFile
     return command;
 }
 
-float soundkonverter_codec_opustools::parseOutput( const QString& output )
+float soundkonverter_codec_opustools::parseOutput(const QString &output)
 {
     Q_UNUSED(output)
 
@@ -239,13 +227,13 @@ float soundkonverter_codec_opustools::parseOutput( const QString& output )
     return -1;
 }
 
-ConversionOptions *soundkonverter_codec_opustools::conversionOptionsFromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements )
+ConversionOptions *soundkonverter_codec_opustools::conversionOptionsFromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements)
 {
     OpusToolsConversionOptions *options = new OpusToolsConversionOptions();
-    options->fromXml( conversionOptions, filterOptionsElements );
+    options->fromXml(conversionOptions, filterOptionsElements);
     return options;
 }
 
-K_PLUGIN_FACTORY( codec_opustools, registerPlugin<soundkonverter_codec_opustools>(); )
+K_PLUGIN_FACTORY(codec_opustools, registerPlugin<soundkonverter_codec_opustools>();)
 
 #include "soundkonverter_codec_opustools.moc"

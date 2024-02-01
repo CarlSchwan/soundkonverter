@@ -27,10 +27,10 @@ public:
     ReplayGainScanner(Config *, Logger *, bool showMainWindowButton, QWidget *parent, Qt::WindowFlags f = {});
     ~ReplayGainScanner();
 
-    void addFiles( QList<QUrl> urls );
+    void addFiles(QList<QUrl> urls);
 
 private slots:
-    void addClicked( int );
+    void addClicked(int);
     void showDirDialog();
     void showFileDialog();
     void showMainWindowClicked();
@@ -41,7 +41,7 @@ private slots:
     void closeClicked();
     void processStarted();
     void processStopped();
-    void progressChanged( const QString& progress );
+    void progressChanged(const QString &progress);
 
 private:
     void readConfig();
@@ -61,9 +61,9 @@ private:
     Logger *logger;
 
 Q_SIGNALS:
-    void addFile( const QString& );
-    void addDir( const QString&, const QStringList& filter = QStringList(), bool recursive = true );
-    void calcAllReplayGain( bool force );
+    void addFile(const QString &);
+    void addDir(const QString &, const QStringList &filter = QStringList(), bool recursive = true);
+    void calcAllReplayGain(bool force);
     void removeAllReplayGain();
     void cancelProcess();
     void showMainWindow();

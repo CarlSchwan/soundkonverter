@@ -10,7 +10,6 @@ class QCheckBox;
 class KComboBox;
 class QVBoxLayout;
 
-
 class SoxFilterWidget : public FilterWidget
 {
     Q_OBJECT
@@ -19,7 +18,7 @@ public:
     ~SoxFilterWidget();
 
     FilterOptions *currentFilterOptions();
-    bool setCurrentFilterOptions( const FilterOptions *_options );
+    bool setCurrentFilterOptions(const FilterOptions *_options);
 
 private:
     QCheckBox *chSampleSize;
@@ -29,11 +28,11 @@ private:
     QCheckBox *chChannels;
     KComboBox *cChannels;
     QVBoxLayout *effectWidgetsBox;
-    QList<SoxEffectWidget*> effectWidgets;
+    QList<SoxEffectWidget *> effectWidgets;
 
 private slots:
     void addEffectWidgetClicked();
-    void removeEffectWidgetClicked( SoxEffectWidget *widget );
+    void removeEffectWidgetClicked(SoxEffectWidget *widget);
 };
 
 #endif // SOXFILTERWIDGET_H

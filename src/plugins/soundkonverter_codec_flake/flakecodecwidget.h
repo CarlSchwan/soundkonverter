@@ -18,10 +18,10 @@ public:
     ~FlakeCodecWidget();
 
     ConversionOptions *currentConversionOptions();
-    bool setCurrentConversionOptions( const ConversionOptions *_options );
-    void setCurrentFormat( const QString& format );
+    bool setCurrentConversionOptions(const ConversionOptions *_options);
+    void setCurrentFormat(const QString &format);
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     int currentDataRate();
 
 private:
@@ -33,8 +33,8 @@ private:
     QString currentFormat; // holds the current output file format
 
 private slots:
-    void compressionLevelSliderChanged( int quality );
-    void compressionLevelSpinBoxChanged( int quality );
+    void compressionLevelSliderChanged(int quality);
+    void compressionLevelSpinBoxChanged(int quality);
 };
 
 #endif // FLAKECODECWIDGET_H

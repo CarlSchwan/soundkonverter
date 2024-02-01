@@ -2,8 +2,8 @@
 #ifndef REPLAYGAINPLUGIN_H
 #define REPLAYGAINPLUGIN_H
 
-#include <kcoreaddons_export.h>
 #include <QVariantList>
+#include <kcoreaddons_export.h>
 
 #include "backendplugin.h"
 
@@ -12,9 +12,7 @@
 
 class ReplayGainPlugin;
 
-
-struct ReplayGainPipe
-{
+struct ReplayGainPipe {
     QString codecName;
 
     ReplayGainPlugin *plugin;
@@ -23,12 +21,11 @@ struct ReplayGainPipe
     QString problemInfo; // howto message, if a backend is missing
 };
 
-
 class KCOREADDONS_EXPORT ReplayGainPluginItem : public BackendPluginItem
 {
     Q_OBJECT
 public:
-    explicit ReplayGainPluginItem( QObject *parent );
+    explicit ReplayGainPluginItem(QObject *parent);
     virtual ~ReplayGainPluginItem();
 
     struct Data // additional data
@@ -39,19 +36,14 @@ public:
     } data;
 };
 
-
 /** @author Daniel Faust <hessijames@gmail.com> */
 class KCOREADDONS_EXPORT ReplayGainPlugin : public BackendPlugin
 {
     Q_OBJECT
 public:
-    enum ApplyMode {
-        Add = 0,
-        Remove = 1,
-        Force = 2
-    };
+    enum ApplyMode { Add = 0, Remove = 1, Force = 2 };
 
-    explicit ReplayGainPlugin( QObject *parent );
+    explicit ReplayGainPlugin(QObject *parent);
     virtual ~ReplayGainPlugin();
 
     virtual QString type() const;

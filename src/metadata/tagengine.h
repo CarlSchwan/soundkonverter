@@ -14,52 +14,52 @@ class CoverData
 {
 public:
     /*!
-    * This describes the function or content of the picture.
-    * copyright: (C) 2002 - 2008 by Scott Wheeler <wheeler@kde.org>
-    */
+     * This describes the function or content of the picture.
+     * copyright: (C) 2002 - 2008 by Scott Wheeler <wheeler@kde.org>
+     */
     enum Role {
         //! A type not enumerated below
-        Other              = 0x00,
+        Other = 0x00,
         //! 32x32 PNG image that should be used as the file icon
-        FileIcon           = 0x01,
+        FileIcon = 0x01,
         //! File icon of a different size or format
-        OtherFileIcon      = 0x02,
+        OtherFileIcon = 0x02,
         //! Front cover image of the album
-        FrontCover         = 0x03,
+        FrontCover = 0x03,
         //! Back cover image of the album
-        BackCover          = 0x04,
+        BackCover = 0x04,
         //! Inside leaflet page of the album
-        LeafletPage        = 0x05,
+        LeafletPage = 0x05,
         //! Image from the album itself
-        Media              = 0x06,
+        Media = 0x06,
         //! Picture of the lead artist or soloist
-        LeadArtist         = 0x07,
+        LeadArtist = 0x07,
         //! Picture of the artist or performer
-        Artist             = 0x08,
+        Artist = 0x08,
         //! Picture of the conductor
-        Conductor          = 0x09,
+        Conductor = 0x09,
         //! Picture of the band or orchestra
-        Band               = 0x0A,
+        Band = 0x0A,
         //! Picture of the composer
-        Composer           = 0x0B,
+        Composer = 0x0B,
         //! Picture of the lyricist or text writer
-        Lyricist           = 0x0C,
+        Lyricist = 0x0C,
         //! Picture of the recording location or studio
-        RecordingLocation  = 0x0D,
+        RecordingLocation = 0x0D,
         //! Picture of the artists during recording
-        DuringRecording    = 0x0E,
+        DuringRecording = 0x0E,
         //! Picture of the artists during performance
-        DuringPerformance  = 0x0F,
+        DuringPerformance = 0x0F,
         //! Picture from a movie or video related to the track
         MovieScreenCapture = 0x10,
         //! Picture of a large, coloured fish
-        ColouredFish       = 0x11,
+        ColouredFish = 0x11,
         //! Illustration related to the track
-        Illustration       = 0x12,
+        Illustration = 0x12,
         //! Logo of the band or performer
-        BandLogo           = 0x13,
+        BandLogo = 0x13,
         //! Logo of the publisher (record company)
-        PublisherLogo      = 0x14
+        PublisherLogo = 0x14
     };
 
     CoverData(const QByteArray &_data = {}, const QString &_mimyType = {}, Role _role = Other, const QString &_description = {});
@@ -70,9 +70,8 @@ public:
     Role role;
     QString description;
 
-    static QString roleName( Role role );
+    static QString roleName(Role role);
 };
-
 
 class TagData
 {
@@ -100,13 +99,9 @@ public:
     QString musicBrainzReleaseId;
 
     /** Covers */
-    QList<CoverData*> covers;
+    QList<CoverData *> covers;
 
-    enum TagsRead {
-        TrackGain = 0x01,
-        AlbumGain = 0x02,
-        Covers    = 0x04
-    } tagsRead;
+    enum TagsRead { TrackGain = 0x01, AlbumGain = 0x02, Covers = 0x04 } tagsRead;
 
     /** The technical information */
     int length;
@@ -114,13 +109,12 @@ public:
     bool isEncrypted;
 };
 
-
 class TagEngine : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TagEngine( Config *_config );
+    explicit TagEngine(Config *_config);
     ~TagEngine();
 
     /** A list of all genre */
@@ -131,7 +125,7 @@ public:
 
     QList<CoverData *> readCovers(const QUrl &fileName);
     bool writeCovers(const QUrl &fileName, QList<CoverData *> covers);
-    bool writeCoversToDirectory( const QString& directoryName, TagData *tags );
+    bool writeCoversToDirectory(const QString &directoryName, TagData *tags);
 
 private:
     Config *config;

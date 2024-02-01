@@ -1,13 +1,12 @@
 
 #include "timiditycodecglobal.h"
 
-#include "soundkonverter_codec_timidity.h"
 #include "../../core/conversionoptions.h"
+#include "soundkonverter_codec_timidity.h"
 #include "timiditycodecwidget.h"
 
-
-soundkonverter_codec_timidity::soundkonverter_codec_timidity( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_timidity::soundkonverter_codec_timidity(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -19,7 +18,8 @@ soundkonverter_codec_timidity::soundkonverter_codec_timidity( QObject *parent, c
 }
 
 soundkonverter_codec_timidity::~soundkonverter_codec_timidity()
-{}
+{
+}
 
 QString soundkonverter_codec_timidity::name() const
 {
@@ -34,23 +34,23 @@ QList<ConversionPipeTrunk> soundkonverter_codec_timidity::codecTable()
     newTrunk.codecFrom = "midi";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 90;
-    newTrunk.enabled = ( binaries["timidity"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "midi", "timidity" ) + "\n" + standardMessage( "install_opensource_backend", "timidity" );
+    newTrunk.enabled = (binaries["timidity"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "midi", "timidity") + "\n" + standardMessage("install_opensource_backend", "timidity");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "mod";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 90;
-    newTrunk.enabled = ( binaries["timidity"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "mod", "timidity" ) + "\n" + standardMessage( "install_opensource_backend", "timidity" );
+    newTrunk.enabled = (binaries["timidity"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "mod", "timidity") + "\n" + standardMessage("install_opensource_backend", "timidity");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_timidity::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_timidity::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -58,7 +58,7 @@ bool soundkonverter_codec_timidity::isConfigSupported( ActionType action, const 
     return false;
 }
 
-void soundkonverter_codec_timidity::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_timidity::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -70,7 +70,7 @@ bool soundkonverter_codec_timidity::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_timidity::showInfo( QWidget *parent )
+void soundkonverter_codec_timidity::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -78,7 +78,7 @@ void soundkonverter_codec_timidity::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_timidity::newCodecWidget()
 {
     TimidityCodecWidget *widget = new TimidityCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
 int soundkonverter_codec_timidity::convert(const QUrl &inputFile,
@@ -89,24 +89,24 @@ int soundkonverter_codec_timidity::convert(const QUrl &inputFile,
                                            TagData *tags,
                                            bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
@@ -125,8 +125,7 @@ QStringList soundkonverter_codec_timidity::convertCommand(const QUrl &inputFile,
 
     QStringList command;
 
-    if( outputCodec == "wav" )
-    {
+    if (outputCodec == "wav") {
         command += binaries["timidity"];
         command += "-Ow";
         command += "-o";
@@ -137,7 +136,7 @@ QStringList soundkonverter_codec_timidity::convertCommand(const QUrl &inputFile,
     return command;
 }
 
-float soundkonverter_codec_timidity::parseOutput( const QString& output )
+float soundkonverter_codec_timidity::parseOutput(const QString &output)
 {
     Q_UNUSED(output)
 

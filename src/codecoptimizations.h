@@ -7,7 +7,6 @@
 
 class QRadioButton;
 
-
 /**
  * @short Shows a message box with suggestions for optimizing the backend order
  * @author Daniel Faust <hessijames@gmail.com>
@@ -19,18 +18,10 @@ class CodecOptimizations : public QDialog
 public:
     struct Optimization {
         QString codecName;
-        enum Mode {
-            Encode,
-            Decode,
-            ReplayGain
-        } mode;
+        enum Mode { Encode, Decode, ReplayGain } mode;
         QString currentBackend;
         QString betterBackend;
-        enum Solution {
-            Fix,
-            Ignore,
-            Undecided
-        } solution;
+        enum Solution { Fix, Ignore, Undecided } solution;
     };
 
     /** Default Constructor */
@@ -41,13 +32,13 @@ public:
 
 private:
     QList<Optimization> optimizationList;
-    QList<QRadioButton*> solutionFixButtons;
+    QList<QRadioButton *> solutionFixButtons;
 
 private slots:
     void okClicked();
 
 Q_SIGNALS:
-    void solutions( const QList<CodecOptimizations::Optimization>& solutions );
+    void solutions(const QList<CodecOptimizations::Optimization> &solutions);
 };
 
 #endif // CODECOPTIMIZATIONS_H

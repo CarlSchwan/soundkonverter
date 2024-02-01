@@ -1,7 +1,7 @@
 
 
-#include "soundkonverter.h"
 #include "global.h"
+#include "soundkonverter.h"
 
 #include <KAboutData>
 #include <KLocalizedString>

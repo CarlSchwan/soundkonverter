@@ -1,13 +1,12 @@
 
 #include "maccodecglobal.h"
 
-#include "soundkonverter_codec_mac.h"
 #include "../../core/conversionoptions.h"
 #include "maccodecwidget.h"
+#include "soundkonverter_codec_mac.h"
 
-
-soundkonverter_codec_mac::soundkonverter_codec_mac( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_mac::soundkonverter_codec_mac(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +17,8 @@ soundkonverter_codec_mac::soundkonverter_codec_mac( QObject *parent, const QVari
 }
 
 soundkonverter_codec_mac::~soundkonverter_codec_mac()
-{}
+{
+}
 
 QString soundkonverter_codec_mac::name() const
 {
@@ -33,23 +33,25 @@ QList<ConversionPipeTrunk> soundkonverter_codec_mac::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "ape";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["mac"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "ape", "mac" ) + "\n" + standardMessage( "install_website_backend,url", "mac", "http://www.monkeysaudio.com" );
+    newTrunk.enabled = (binaries["mac"] != "");
+    newTrunk.problemInfo =
+        standardMessage("encode_codec,backend", "ape", "mac") + "\n" + standardMessage("install_website_backend,url", "mac", "http://www.monkeysaudio.com");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "ape";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["mac"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "ape", "mac" ) + "\n" + standardMessage( "install_website_backend,url", "mac", "http://www.monkeysaudio.com" );
+    newTrunk.enabled = (binaries["mac"] != "");
+    newTrunk.problemInfo =
+        standardMessage("decode_codec,backend", "ape", "mac") + "\n" + standardMessage("install_website_backend,url", "mac", "http://www.monkeysaudio.com");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_mac::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_mac::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -57,7 +59,7 @@ bool soundkonverter_codec_mac::isConfigSupported( ActionType action, const QStri
     return false;
 }
 
-void soundkonverter_codec_mac::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_mac::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -69,7 +71,7 @@ bool soundkonverter_codec_mac::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_mac::showInfo( QWidget *parent )
+void soundkonverter_codec_mac::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -77,7 +79,7 @@ void soundkonverter_codec_mac::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_mac::newCodecWidget()
 {
     MacCodecWidget *widget = new MacCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
 int soundkonverter_codec_mac::convert(const QUrl &inputFile,
@@ -92,47 +94,43 @@ int soundkonverter_codec_mac::convert(const QUrl &inputFile,
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return BackendPlugin::UnknownError;
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "ape" )
-    {
+    if (outputCodec == "ape") {
         command += binaries["mac"];
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "\"" + escapeUrl(outputFile) + "\"";
-        if( conversionOptions->pluginName == global_plugin_name )
-        {
-            command += "-c"+QString::number((int)conversionOptions->compressionLevel);
+        if (conversionOptions->pluginName == global_plugin_name) {
+            command += "-c" + QString::number((int)conversionOptions->compressionLevel);
         }
-    }
-    else
-    {
+    } else {
         command += binaries["mac"];
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "\"" + escapeUrl(outputFile) + "\"";
         command += "-d";
     }
 
-    if( command.isEmpty() )
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
@@ -155,13 +153,12 @@ QStringList soundkonverter_codec_mac::convertCommand(const QUrl &inputFile,
     return QStringList();
 }
 
-float soundkonverter_codec_mac::parseOutput( const QString& output )
+float soundkonverter_codec_mac::parseOutput(const QString &output)
 {
     // Progress: 55.2% (1.0 seconds remaining, 1.2 seconds total)
 
     QRegExp regEnc("Progress:\\s+(\\d+.\\d)%");
-    if( output.contains(regEnc) )
-    {
+    if (output.contains(regEnc)) {
         return regEnc.cap(1).toFloat();
     }
 

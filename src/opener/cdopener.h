@@ -9,12 +9,12 @@
 #include <KCDDB/Client>
 #include <KCDDB/KCDDB>
 
-#include <phonon/audiooutput.h>
-#include <phonon/seekslider.h>
-#include <phonon/mediaobject.h>
-#include <phonon/volumeslider.h>
-#include <phonon/backendcapabilities.h>
 #include <phonon/MediaController>
+#include <phonon/audiooutput.h>
+#include <phonon/backendcapabilities.h>
+#include <phonon/mediaobject.h>
+#include <phonon/seekslider.h>
+#include <phonon/volumeslider.h>
 
 extern "C" {
 #include <cdda_interface.h>
@@ -37,17 +37,22 @@ class QLabel;
 class QCheckBox;
 class TagData;
 
-
 class PlayerWidget : public QWidget
 {
-     Q_OBJECT
+    Q_OBJECT
 public:
     PlayerWidget(Phonon::MediaObject *mediaObject, int _track, QTreeWidgetItem *_treeWidgetItem, QWidget *parent, Qt::WindowFlags f = {});
     ~PlayerWidget();
 
-    void trackChanged( int track );
-    bool isPlaying() { return playing; }
-    QTreeWidgetItem *treeWidgetItem() { return m_treeWidgetItem; }
+    void trackChanged(int track);
+    bool isPlaying()
+    {
+        return playing;
+    }
+    QTreeWidgetItem *treeWidgetItem()
+    {
+        return m_treeWidgetItem;
+    }
 
 private:
     int track;
@@ -63,10 +68,9 @@ private slots:
     void stopPlaybackClicked();
 
 Q_SIGNALS:
-    void startPlayback( int track );
+    void startPlayback(int track);
     void stopPlayback();
 };
-
 
 /**
  * @short Shows a dialog for selecting files from a CD
@@ -75,22 +79,11 @@ Q_SIGNALS:
  */
 class CDOpener : public QDialog
 {
-     Q_OBJECT
+    Q_OBJECT
 public:
-    enum DialogPage {
-        CdOpenPage,
-        ConversionOptionsPage
-    };
+    enum DialogPage { CdOpenPage, ConversionOptionsPage };
 
-    enum Columns {
-        Column_Rip      = 0,
-        Column_Track    = 1,
-        Column_Artist   = 2,
-        Column_Composer = 3,
-        Column_Title    = 4,
-        Column_Length   = 5,
-        Column_Player   = 6
-    };
+    enum Columns { Column_Rip = 0, Column_Track = 1, Column_Artist = 2, Column_Composer = 3, Column_Title = 4, Column_Length = 5, Column_Player = 6 };
 
     /** Constructor */
     CDOpener(Config *_config, const QString &_device, QWidget *parent, Qt::WindowFlags = {});
@@ -103,25 +96,25 @@ public:
 
 public slots:
     /** Set the current profile */
-    void setProfile( const QString& profile );
+    void setProfile(const QString &profile);
 
     /** Set the current format */
-    void setFormat( const QString& format );
+    void setFormat(const QString &format);
 
     /** Set the current output directory */
-    void setOutputDirectory( const QString& directory );
+    void setOutputDirectory(const QString &directory);
 
     /** Set the command to execute after the conversion is complete */
-    void setCommand( const QString& _command );
+    void setCommand(const QString &_command);
 
 private:
     void writeConfig();
     void readConfig();
 
     /** returns a list of devices holding audio cds plus a short description (track count) */
-    QMap<QString,QString> cdDevices();
-    bool openCdDevice( const QString& _device );
-    int cdda_audio_tracks( cdrom_drive *cdDrive ) const;
+    QMap<QString, QString> cdDevices();
+    bool openCdDevice(const QString &_device);
+    int cdda_audio_tracks(cdrom_drive *cdDrive) const;
 
     /** the widget for selecting and editing the cd tracks */
     QWidget *cdOpenerWidget;
@@ -177,7 +170,7 @@ private:
     Phonon::MediaController *mediaController;
     Phonon::MediaSource *mediaSource;
 
-    QList<PlayerWidget*> playerWidgets;
+    QList<PlayerWidget *> playerWidgets;
 
     /** Save the tag information to a cue file */
     QPushButton *pSaveCue;
@@ -199,11 +192,11 @@ private:
     cdrom_drive *cdDrive;
     cdrom_paranoia *cdParanoia;
 
-//     void *wmHandle;
+    //     void *wmHandle;
 
     KCDDB::Client *cddb;
 
-    QList<TagData*> tags; // @0 disc tags
+    QList<TagData *> tags; // @0 disc tags
     bool cdTextFound;
     bool cddbFound;
 
@@ -222,11 +215,11 @@ private:
 
     QString command;
 
-    inline QBrush brushSetAlpha( QBrush brush, const int alpha )
+    inline QBrush brushSetAlpha(QBrush brush, const int alpha)
     {
         QColor color = brush.color();
-        color.setAlpha( alpha );
-        brush.setColor( color );
+        color.setAlpha(alpha);
+        brush.setColor(color);
         return brush;
     }
 
@@ -237,40 +230,41 @@ private:
     void adjustComposerColumn();
 
 private slots:
-    void requestCddb( bool autoRequest = false );
-    void lookup_cddb_done( KCDDB::Result result );
+    void requestCddb(bool autoRequest = false);
+    void lookup_cddb_done(KCDDB::Result result);
     void timeout();
 
     void trackChanged();
     void trackUpPressed();
     void trackDownPressed();
-    void artistChanged( const QString& text );
-    void trackTitleChanged( const QString& text );
-    void trackArtistChanged( const QString& text );
-    void trackComposerChanged( const QString& text );
+    void artistChanged(const QString &text);
+    void trackTitleChanged(const QString &text);
+    void trackArtistChanged(const QString &text);
+    void trackComposerChanged(const QString &text);
     void trackCommentChanged();
     void editTrackTitleClicked();
     void editTrackArtistClicked();
     void editTrackComposerClicked();
     void editTrackCommentClicked();
-//     void itemHighlighted( QTreeWidgetItem *item, int column );
+    //     void itemHighlighted( QTreeWidgetItem *item, int column );
 
-    void startPlayback( int track );
+    void startPlayback(int track);
     void stopPlayback();
-    void playbackTitleChanged( int title );
-    void playbackStateChanged( Phonon::State newstate, Phonon::State oldstate );
+    void playbackTitleChanged(int title);
+    void playbackStateChanged(Phonon::State newstate, Phonon::State oldstate);
 
     void proceedClicked();
     void addClicked();
-//     void addAsOneTrackClicked();
+    //     void addAsOneTrackClicked();
     void saveCuesheetClicked();
 
     void fadeAnim();
 
 Q_SIGNALS:
-    void addTracks( const QString& device, QList<int> trackList, int tracks, QList<TagData*> tagList, ConversionOptions *conversionOptions, const QString& command );
-    void addDisc( const QString& device, ConversionOptions *conversionOptions );
-    //void openCuesheetEditor( const QString& content );
+    void
+    addTracks(const QString &device, QList<int> trackList, int tracks, QList<TagData *> tagList, ConversionOptions *conversionOptions, const QString &command);
+    void addDisc(const QString &device, ConversionOptions *conversionOptions);
+    // void openCuesheetEditor( const QString& content );
 };
 
 #endif // CDOPENER_H

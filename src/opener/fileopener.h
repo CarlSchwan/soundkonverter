@@ -54,8 +54,7 @@ private slots:
     void showHelp();
 
 Q_SIGNALS:
-    void openFiles( const QList<QUrl>& files, ConversionOptions *conversionOptions );
-
+    void openFiles(const QList<QUrl> &files, ConversionOptions *conversionOptions);
 };
 
 #endif

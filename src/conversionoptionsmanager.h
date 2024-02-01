@@ -19,9 +19,9 @@
 #ifndef CONVERSIONOPTIONSMANAGER_H
 #define CONVERSIONOPTIONSMANAGER_H
 
-#include <QObject>
-#include <QList>
 #include <QHash>
+#include <QList>
+#include <QObject>
 
 class ConversionOptions;
 class PluginLoader;
@@ -37,15 +37,15 @@ public:
         ConversionOptions *conversionOptions;
     };
 
-    ConversionOptionsManager( PluginLoader *_pluginLoader, QObject *parent );
+    ConversionOptionsManager(PluginLoader *_pluginLoader, QObject *parent);
     ~ConversionOptionsManager();
 
-    int addConversionOptions( ConversionOptions *conversionOptions );
-    int increaseReferences( int id );
-    const ConversionOptions *getConversionOptions( int id ) const;
-    void removeConversionOptions( int id );
-    int updateConversionOptions( int id, ConversionOptions *conversionOptions );
-    
+    int addConversionOptions(ConversionOptions *conversionOptions);
+    int increaseReferences(int id);
+    const ConversionOptions *getConversionOptions(int id) const;
+    void removeConversionOptions(int id);
+    int updateConversionOptions(int id, ConversionOptions *conversionOptions);
+
     QList<int> getAllIds() const;
 
 private:

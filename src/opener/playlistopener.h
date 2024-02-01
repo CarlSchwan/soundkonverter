@@ -50,7 +50,7 @@ private Q_SLOTS:
     void okClickedSlot();
 
 Q_SIGNALS:
-    void openFiles( const QList<QUrl>& files, ConversionOptions *conversionOptions );
+    void openFiles(const QList<QUrl> &files, ConversionOptions *conversionOptions);
 
 private:
     void readConfig();

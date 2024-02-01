@@ -20,7 +20,7 @@ class QSpinBox;
 class KComboBox;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
  */
 class ConfigAdvancedPage : public ConfigPageBase
 {
@@ -29,7 +29,7 @@ public:
     /**
      * Default Constructor
      */
-    ConfigAdvancedPage( Config *_config, QWidget *parent );
+    ConfigAdvancedPage(Config *_config, QWidget *parent);
 
     /**
      * Default Destructor
@@ -56,7 +56,6 @@ public slots:
 
 private slots:
     void somethingChanged();
-
 };
 
 #endif

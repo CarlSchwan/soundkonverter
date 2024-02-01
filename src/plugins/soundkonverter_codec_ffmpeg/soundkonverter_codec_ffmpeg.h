@@ -4,33 +4,30 @@
 
 #include "../../core/codecplugin.h"
 
-#include <QWeakPointer>
 #include <QDateTime>
+#include <QWeakPointer>
 
 class ConversionOptions;
 class QDialog;
 class QCheckBox;
 
-
 class soundkonverter_codec_ffmpeg : public CodecPlugin
 {
     Q_OBJECT
 public:
-    struct FFmpegEncoderData
-    {
+    struct FFmpegEncoderData {
         QString name;
         bool experimental = false;
     };
 
-    struct CodecData
-    {
+    struct CodecData {
         QString codecName;
         QList<FFmpegEncoderData> ffmpegEnoderList;
         FFmpegEncoderData currentFFmpegEncoder;
     };
 
     /** Default Constructor */
-    soundkonverter_codec_ffmpeg( QObject *parent, const QVariantList& args );
+    soundkonverter_codec_ffmpeg(QObject *parent, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_ffmpeg();
@@ -40,10 +37,10 @@ public:
 
     QList<ConversionPipeTrunk> codecTable();
 
-    bool isConfigSupported( ActionType action, const QString& codecName );
-    void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent );
+    bool isConfigSupported(ActionType action, const QString &codecName);
+    void showConfigDialog(ActionType action, const QString &codecName, QWidget *parent);
     bool hasInfo();
-    void showInfo( QWidget *parent );
+    void showInfo(QWidget *parent);
 
     CodecWidget *newCodecWidget();
 
@@ -61,8 +58,8 @@ public:
                                const ConversionOptions *_conversionOptions,
                                TagData *tags = 0,
                                bool replayGain = false);
-    float parseOutput( const QString& output, int *length );
-    float parseOutput( const QString& output );
+    float parseOutput(const QString &output, int *length);
+    float parseOutput(const QString &output);
 
 private:
     QList<CodecData> codecList;
@@ -87,7 +84,7 @@ private slots:
     void configDialogDefault();
 
     void infoProcessOutput();
-    void infoProcessExit( int exitCode, QProcess::ExitStatus exitStatus );
+    void infoProcessExit(int exitCode, QProcess::ExitStatus exitStatus);
 };
 
 #endif // _SOUNDKONVERTER_CODEC_FFMPEG_H_

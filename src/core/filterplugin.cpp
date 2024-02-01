@@ -2,34 +2,34 @@
 #include "filterplugin.h"
 #include "codecwidget.h"
 
-
 //
 // class FilterPluginItem
 //
 ////////////////////
 
-FilterPluginItem::FilterPluginItem( QObject *parent )
-    : CodecPluginItem( parent )
-{}
+FilterPluginItem::FilterPluginItem(QObject *parent)
+    : CodecPluginItem(parent)
+{
+}
 
 FilterPluginItem::~FilterPluginItem()
-{}
-
+{
+}
 
 //
 // class FilterPlugin
 //
 ////////////////////
 
-FilterPlugin::FilterPlugin( QObject *parent )
-    : CodecPlugin( parent )
+FilterPlugin::FilterPlugin(QObject *parent)
+    : CodecPlugin(parent)
 {
     lastUsedFilterOptions = 0;
 }
 
 FilterPlugin::~FilterPlugin()
 {
-    if( lastUsedFilterOptions )
+    if (lastUsedFilterOptions)
         delete lastUsedFilterOptions;
 }
 
@@ -38,12 +38,12 @@ QString FilterPlugin::type() const
     return "filter";
 }
 
-FilterWidget *FilterPlugin::deleteFilterWidget( FilterWidget *filterWidget )
+FilterWidget *FilterPlugin::deleteFilterWidget(FilterWidget *filterWidget)
 {
-    if( !filterWidget )
+    if (!filterWidget)
         return 0;
 
-    if( lastUsedFilterOptions )
+    if (lastUsedFilterOptions)
         delete lastUsedFilterOptions;
 
     lastUsedFilterOptions = filterWidget->currentFilterOptions();
@@ -53,10 +53,9 @@ FilterWidget *FilterPlugin::deleteFilterWidget( FilterWidget *filterWidget )
     return 0;
 }
 
-FilterOptions *FilterPlugin::filterOptionsFromXml( QDomElement filterOptions )
+FilterOptions *FilterPlugin::filterOptionsFromXml(QDomElement filterOptions)
 {
     FilterOptions *options = new FilterOptions();
-    options->fromXml( filterOptions );
+    options->fromXml(filterOptions);
     return options;
 }
-

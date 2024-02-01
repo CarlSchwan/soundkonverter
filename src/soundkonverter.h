@@ -21,7 +21,6 @@ class ReplayGainScanner;
 
 class KStatusNotifierItem;
 
-
 /**
  * This class serves as the main window for soundKonverter.  It handles the
  * menus, toolbars, and status bars.
@@ -40,31 +39,34 @@ public:
     /** Default Destructor */
     ~soundKonverter();
 
-    virtual void saveProperties( KConfigGroup& configGroup );
+    virtual void saveProperties(KConfigGroup &configGroup);
 
     void showSystemTray();
     void addConvertFiles(const QList<QUrl> &urls, const QString &profile, const QString &format, const QString &directory, const QString &notifyCommand);
     void addReplayGainFiles(const QList<QUrl> &urls);
-    bool ripCd( const QString& device, const QString& profile, const QString& format, const QString& directory, const QString& notifyCommand );
-    void setAutoClose( bool enabled ) { autoclose = enabled; }
+    bool ripCd(const QString &device, const QString &profile, const QString &format, const QString &directory, const QString &notifyCommand);
+    void setAutoClose(bool enabled)
+    {
+        autoclose = enabled;
+    }
     void startConversion();
     void loadAutosaveFileList();
-    void loadFileList(const QString& fileListPath);
+    void loadFileList(const QString &fileListPath);
     void startupChecks();
 
 private slots:
     void showConfigDialog();
-    void showLogViewer( const int logId = 0 );
+    void showLogViewer(const int logId = 0);
     void showReplayGainScanner();
     void replayGainScannerClosed();
     void showMainWindow();
     void showAboutPlugins();
-    void progressChanged( const QString& progress );
+    void progressChanged(const QString &progress);
 
     /** The conversion has started */
     void conversionStarted();
     /** The conversion has stopped */
-    void conversionStopped( bool failed );
+    void conversionStopped(bool failed);
 
 private:
     Config *config;
@@ -81,7 +83,6 @@ private:
     bool autoclose;
 
     void setupActions();
-
 };
 
 #endif // _SOUNDKONVERTER_H_

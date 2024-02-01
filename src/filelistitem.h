@@ -12,56 +12,48 @@
 #include <QUrl>
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class FileListItem : public QTreeWidgetItem
 {
 public:
-    enum State {
-        WaitingForConversion,
-        Ripping,
-        Converting,
-        ApplyingReplayGain,
-        WaitingForAlbumGain,
-        ApplyingAlbumGain,
-        Stopped
-    };
+    enum State { WaitingForConversion, Ripping, Converting, ApplyingReplayGain, WaitingForAlbumGain, ApplyingAlbumGain, Stopped };
 
     // code values will be displayed in the log files
     enum ReturnCode {
-        Succeeded                       = 0,
-        SucceededWithProblems           = 1,
-        StoppedByUser                   = 2,
-        Skipped                         = 3,
-        Encrypted                       = 7,
-        BackendNeedsConfiguration       = 4,
-        DiscFull                        = 5,
-        CantWriteOutput                 = 8,
-        Failed                          = 6
+        Succeeded = 0,
+        SucceededWithProblems = 1,
+        StoppedByUser = 2,
+        Skipped = 3,
+        Encrypted = 7,
+        BackendNeedsConfiguration = 4,
+        DiscFull = 5,
+        CantWriteOutput = 8,
+        Failed = 6
     };
 
-    explicit FileListItem( QTreeWidget *parent );
-    FileListItem( QTreeWidget *parent, QTreeWidgetItem *after );
+    explicit FileListItem(QTreeWidget *parent);
+    FileListItem(QTreeWidget *parent, QTreeWidgetItem *after);
     ~FileListItem();
 
     int conversionOptionsId;
-    TagData *tags;              // we need to instruct the tagengine to read the tags from the file!
-                                // and the user can change them!
+    TagData *tags; // we need to instruct the tagengine to read the tags from the file!
+                   // and the user can change them!
     QUrl url; // the original input file path name
     // QUrl outputUrl;             // if the user wants to change the output directory/file name per file
-    QString codecName;          // the codec name of the input file
-    State state;                // is this item being converted or ripper or etc.
-    ReturnCode returnCode;      // what's the return code of the conversion
-    bool local;                 // is this a local file?
-    int track;                  // the number of the track, if it is on an audio cd
-                                // if it is lower than 0, it isn't an audio cd track at all
-    int tracks;                 // the total amount of tracks on the cd
-    QString device;             // the device of the audio cd
+    QString codecName; // the codec name of the input file
+    State state; // is this item being converted or ripper or etc.
+    ReturnCode returnCode; // what's the return code of the conversion
+    bool local; // is this a local file?
+    int track; // the number of the track, if it is on an audio cd
+               // if it is lower than 0, it isn't an audio cd track at all
+    int tracks; // the total amount of tracks on the cd
+    QString device; // the device of the audio cd
 
-    float length;               // the length of the track, used for the calculation of the progress bar
-    QString notifyCommand;      // execute this command, when the file is converted (%i=input file, %o=output file)
+    float length; // the length of the track, used for the calculation of the progress bar
+    QString notifyCommand; // execute this command, when the file is converted (%i=input file, %o=output file)
 
-    int logId;                  // the id the item is registered at the logger with, 0 if the conversion hasn't started yet
+    int logId; // the id the item is registered at the logger with, 0 if the conversion hasn't started yet
 
     QPointer<QLabel> lInfo; // a pointer to button to show additional information (e.g. error log). if no butotn shall be shown the pointer must be 0
 };
@@ -69,9 +61,9 @@ public:
 class FileListItemDelegate : public QItemDelegate
 {
 public:
-    explicit FileListItemDelegate( QObject *parent );
+    explicit FileListItemDelegate(QObject *parent);
 
-    virtual void paint( QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const;
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 #endif

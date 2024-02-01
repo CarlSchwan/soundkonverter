@@ -16,7 +16,7 @@ class QTextEdit;
  */
 class LogViewer : public QDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     /** Default Constructor */
     LogViewer(Logger *_logger, QWidget *parent, Qt::WindowFlags = {});
@@ -28,7 +28,7 @@ private:
     void readConfig();
     void writeConfig();
 
-    Logger* logger;
+    Logger *logger;
 
     KComboBox *cItem;
     QTextEdit *kLog;
@@ -37,13 +37,13 @@ private slots:
     void refillLogs();
     void itemChanged();
     void save();
-    void updateProcess( int id );
+    void updateProcess(int id);
 
 public slots:
     /** get notification when a job has been removed */
-    void processRemoved( int id );
+    void processRemoved(int id);
     /** show the corresponding log */
-    void showLog( int id );
+    void showLog(int id);
 };
 
 #endif // LOGVIEWER_H

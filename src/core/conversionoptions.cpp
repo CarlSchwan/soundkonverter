@@ -3,54 +3,53 @@
 
 #include "filterplugin.h"
 
-
 FilterOptions::FilterOptions()
-{}
+{
+}
 
 FilterOptions::~FilterOptions()
-{}
-
-bool FilterOptions::equals( FilterOptions *_other )
 {
-    if( !_other )
-        return false;
-
-    return ( equalsBasics(_other) );
 }
 
-bool FilterOptions::equalsBasics( FilterOptions *_other )
+bool FilterOptions::equals(FilterOptions *_other)
 {
-    if( !_other )
+    if (!_other)
         return false;
 
-    return ( pluginName ==_other->pluginName &&
-             cmdArguments ==_other->cmdArguments );
+    return (equalsBasics(_other));
 }
 
-QDomElement FilterOptions::toXml( QDomDocument document, const QString& elementName ) const
+bool FilterOptions::equalsBasics(FilterOptions *_other)
+{
+    if (!_other)
+        return false;
+
+    return (pluginName == _other->pluginName && cmdArguments == _other->cmdArguments);
+}
+
+QDomElement FilterOptions::toXml(QDomDocument document, const QString &elementName) const
 {
     QDomElement filterOptions = document.createElement(elementName);
 
-    filterOptions.setAttribute("pluginName",pluginName);
-    filterOptions.setAttribute("cmdArguments",cmdArguments);
+    filterOptions.setAttribute("pluginName", pluginName);
+    filterOptions.setAttribute("cmdArguments", cmdArguments);
 
     return filterOptions;
 }
 
-bool FilterOptions::fromXml( QDomElement filterOptions )
+bool FilterOptions::fromXml(QDomElement filterOptions)
 {
     pluginName = filterOptions.attribute("pluginName");
     return true;
 }
 
-FilterOptions* FilterOptions::copy() const
+FilterOptions *FilterOptions::copy() const
 {
-    FilterOptions* c = new FilterOptions();
+    FilterOptions *c = new FilterOptions();
     c->pluginName = pluginName;
     c->cmdArguments = cmdArguments;
     return c;
 }
-
 
 ConversionOptions::ConversionOptions()
 {
@@ -68,122 +67,109 @@ ConversionOptions::ConversionOptions()
 
 ConversionOptions::~ConversionOptions()
 {
-    qDeleteAll( filterOptions );
+    qDeleteAll(filterOptions);
 }
 
-bool ConversionOptions::equals( ConversionOptions *_other )
+bool ConversionOptions::equals(ConversionOptions *_other)
 {
-    if( !_other )
+    if (!_other)
         return false;
 
-    if( !equalsBasics(_other) )
+    if (!equalsBasics(_other))
         return false;
 
-    if( qualityMode !=_other->qualityMode )
+    if (qualityMode != _other->qualityMode)
         return false;
-    if( quality !=_other->quality )
+    if (quality != _other->quality)
         return false;
-    if( bitrate !=_other->bitrate )
+    if (bitrate != _other->bitrate)
         return false;
-    if( bitrateMode !=_other->bitrateMode )
+    if (bitrateMode != _other->bitrateMode)
         return false;
 
-    if( !equalsFilters(_other) )
+    if (!equalsFilters(_other))
         return false;
 
     return true;
 }
 
-bool ConversionOptions::equalsFilters( ConversionOptions *_other )
+bool ConversionOptions::equalsFilters(ConversionOptions *_other)
 {
-    if( !_other )
+    if (!_other)
         return false;
 
     QStringList filters;
-    foreach( FilterOptions *filter, filterOptions )
-    {
-        filters.append( filter->pluginName );
+    foreach (FilterOptions *filter, filterOptions) {
+        filters.append(filter->pluginName);
     }
     filters.sort();
 
     QStringList other_filters;
-    foreach( FilterOptions *otherFilter, _other->filterOptions )
-    {
-        other_filters.append( otherFilter->pluginName );
+    foreach (FilterOptions *otherFilter, _other->filterOptions) {
+        other_filters.append(otherFilter->pluginName);
     }
     other_filters.sort();
 
-    if( filters == other_filters )
-    {
-        foreach( FilterOptions *filter, filterOptions )
-        {
-            foreach( FilterOptions *otherFilter, _other->filterOptions )
-            {
-                if( otherFilter->pluginName == filter->pluginName )
-                {
-                    if( !filter->equals(otherFilter) )
+    if (filters == other_filters) {
+        foreach (FilterOptions *filter, filterOptions) {
+            foreach (FilterOptions *otherFilter, _other->filterOptions) {
+                if (otherFilter->pluginName == filter->pluginName) {
+                    if (!filter->equals(otherFilter))
                         return false;
                     break;
                 }
             }
         }
-    }
-    else
-    {
+    } else {
         return false;
     }
 
     return true;
 }
 
-bool ConversionOptions::equalsBasics( ConversionOptions *_other )
+bool ConversionOptions::equalsBasics(ConversionOptions *_other)
 {
-    if( !_other )
+    if (!_other)
         return false;
 
-    return ( pluginName ==_other->pluginName &&
-             profile ==_other->profile &&
-             codecName ==_other->codecName &&
-             outputDirectoryMode ==_other->outputDirectoryMode &&
-             outputDirectory ==_other->outputDirectory &&
-             replaygain ==_other->replaygain &&
-             cmdArguments ==_other->cmdArguments );
+    return (pluginName == _other->pluginName && profile == _other->profile && codecName == _other->codecName
+            && outputDirectoryMode == _other->outputDirectoryMode && outputDirectory == _other->outputDirectory && replaygain == _other->replaygain
+            && cmdArguments == _other->cmdArguments);
 }
 
-QDomElement ConversionOptions::toXml( QDomDocument document ) const
+QDomElement ConversionOptions::toXml(QDomDocument document) const
 {
     QDomElement conversionOptions = document.createElement("conversionOptions");
-    conversionOptions.setAttribute("pluginName",pluginName);
-    conversionOptions.setAttribute("profile",profile);
-    conversionOptions.setAttribute("codecName",codecName);
+    conversionOptions.setAttribute("pluginName", pluginName);
+    conversionOptions.setAttribute("profile", profile);
+    conversionOptions.setAttribute("codecName", codecName);
     QDomElement encodingOptions = document.createElement("encodingOptions");
-    encodingOptions.setAttribute("qualityMode",qualityMode);
-    encodingOptions.setAttribute("quality",quality);
-    encodingOptions.setAttribute("bitrate",bitrate);
-    encodingOptions.setAttribute("bitrateMode",bitrateMode);
-    encodingOptions.setAttribute("compressionLevel",compressionLevel);
-    encodingOptions.setAttribute("cmdArguments",cmdArguments);
+    encodingOptions.setAttribute("qualityMode", qualityMode);
+    encodingOptions.setAttribute("quality", quality);
+    encodingOptions.setAttribute("bitrate", bitrate);
+    encodingOptions.setAttribute("bitrateMode", bitrateMode);
+    encodingOptions.setAttribute("compressionLevel", compressionLevel);
+    encodingOptions.setAttribute("cmdArguments", cmdArguments);
     conversionOptions.appendChild(encodingOptions);
     QDomElement outputOptions = document.createElement("outputOptions");
-    outputOptions.setAttribute("outputDirectoryMode",outputDirectoryMode);
-    outputOptions.setAttribute("outputDirectory",outputDirectory);
-    outputOptions.setAttribute("outputFilesystem",outputFilesystem);
+    outputOptions.setAttribute("outputDirectoryMode", outputDirectoryMode);
+    outputOptions.setAttribute("outputDirectory", outputDirectory);
+    outputOptions.setAttribute("outputFilesystem", outputFilesystem);
     conversionOptions.appendChild(outputOptions);
     QDomElement features = document.createElement("features");
-    features.setAttribute("replaygain",replaygain);
+    features.setAttribute("replaygain", replaygain);
     conversionOptions.appendChild(features);
 
     int i = 0;
-    foreach( const FilterOptions *filter, filterOptions )
-    {
-        QDomElement filterOptionsElement = filter->toXml(document,"filterOptions"+QString::number(i++));
+    foreach (const FilterOptions *filter, filterOptions) {
+        QDomElement filterOptionsElement = filter->toXml(document, "filterOptions" + QString::number(i++));
         conversionOptions.appendChild(filterOptionsElement);
     }
 
     return conversionOptions;
 }
 
-bool ConversionOptions::fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements )
+bool ConversionOptions::fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements)
 {
     pluginName = conversionOptions.attribute("pluginName");
     profile = conversionOptions.attribute("profile");
@@ -202,21 +188,19 @@ bool ConversionOptions::fromXml( QDomElement conversionOptions, QList<QDomElemen
     QDomElement features = conversionOptions.elementsByTagName("features").at(0).toElement();
     replaygain = features.attribute("replaygain").toInt();
 
-    if( filterOptionsElements )
-    {
-        for( QDomNode node = conversionOptions.firstChild(); !node.isNull(); node = node.nextSibling() )
-        {
-            if( node.nodeName().startsWith("filterOptions") )
-                filterOptionsElements->append( node.toElement() );
+    if (filterOptionsElements) {
+        for (QDomNode node = conversionOptions.firstChild(); !node.isNull(); node = node.nextSibling()) {
+            if (node.nodeName().startsWith("filterOptions"))
+                filterOptionsElements->append(node.toElement());
         }
     }
 
     return true;
 }
 
-ConversionOptions* ConversionOptions::copy() const
+ConversionOptions *ConversionOptions::copy() const
 {
-    ConversionOptions* c = new ConversionOptions();
+    ConversionOptions *c = new ConversionOptions();
     c->pluginName = pluginName;
     c->qualityMode = qualityMode;
     c->quality = quality;
@@ -231,8 +215,7 @@ ConversionOptions* ConversionOptions::copy() const
     c->outputFilesystem = outputFilesystem;
     c->replaygain = replaygain;
 
-    foreach( const FilterOptions* f, filterOptions )
-    {
+    foreach (const FilterOptions *f, filterOptions) {
         c->filterOptions.append(f->copy());
     }
 

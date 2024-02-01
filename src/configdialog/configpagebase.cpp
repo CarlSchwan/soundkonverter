@@ -1,7 +1,7 @@
 //
 // C++ Implementation: configpagebase
 //
-// Description: 
+// Description:
 //
 //
 // Author: Daniel Faust <hessijames@gmail.com>, (C) 2007
@@ -15,23 +15,25 @@
 
 #include <QApplication>
 
-
-ConfigPageBase::ConfigPageBase( QWidget *parent )
- : QWidget( parent )
+ConfigPageBase::ConfigPageBase(QWidget *parent)
+    : QWidget(parent)
 {
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
     spacingOffset = 2 * fontHeight;
-    spacingSmall  = (int)round(0.5*fontHeight);
-    spacingMedium =     fontHeight;
-    spacingBig    = 2 * fontHeight;
+    spacingSmall = (int)round(0.5 * fontHeight);
+    spacingMedium = fontHeight;
+    spacingBig = 2 * fontHeight;
 }
 
 ConfigPageBase::~ConfigPageBase()
-{}
+{
+}
 
 void ConfigPageBase::resetDefaults()
-{}
+{
+}
 
 void ConfigPageBase::saveSettings()
-{}
+{
+}

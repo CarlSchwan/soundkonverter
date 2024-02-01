@@ -9,39 +9,37 @@ class KComboBox;
 class QPushButton;
 class QHBoxLayout;
 
-
 class SoxEffectWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SoxEffectWidget( QWidget *parent );
+    explicit SoxEffectWidget(QWidget *parent);
     ~SoxEffectWidget();
 
-    void setRemoveButtonShown( bool shown );
-    void setAddButtonShown( bool shown );
+    void setRemoveButtonShown(bool shown);
+    void setAddButtonShown(bool shown);
 
     SoxFilterOptions::EffectData currentEffectOptions();
-    bool setEffectOptions( SoxFilterOptions::EffectData effectData );
+    bool setEffectOptions(SoxFilterOptions::EffectData effectData);
 
 private:
     KComboBox *cEffect;
     QHBoxLayout *widgetsBox;
-    QList<QWidget*> widgets;
+    QList<QWidget *> widgets;
     QPushButton *pRemove;
     QPushButton *pAdd;
 
 private slots:
     void removeClicked();
-    void effectChanged( int index );
+    void effectChanged(int index);
 
-    void normalizeVolumeChanged( double value );
+    void normalizeVolumeChanged(double value);
 
 Q_SIGNALS:
     void addEffectWidgetClicked();
-    void removeEffectWidgetClicked( SoxEffectWidget *widget );
+    void removeEffectWidgetClicked(SoxEffectWidget *widget);
 
     void optionsChanged();
 };
-
 
 #endif // SOXEFFECTWIDGET_H

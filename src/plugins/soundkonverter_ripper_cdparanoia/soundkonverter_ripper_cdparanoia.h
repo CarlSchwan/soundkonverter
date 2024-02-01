@@ -14,13 +14,12 @@ class QCheckBox;
 class QComboBox;
 class QSpinBox;
 
-
 class soundkonverter_ripper_cdparanoia : public RipperPlugin
 {
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_ripper_cdparanoia( QObject *parent, const QVariantList& args );
+    soundkonverter_ripper_cdparanoia(QObject *parent, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_ripper_cdparanoia();
@@ -29,15 +28,15 @@ public:
 
     QList<ConversionPipeTrunk> codecTable();
 
-    bool isConfigSupported( ActionType action, const QString& codecName );
-    void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent );
+    bool isConfigSupported(ActionType action, const QString &codecName);
+    void showConfigDialog(ActionType action, const QString &codecName, QWidget *parent);
     bool hasInfo();
-    void showInfo( QWidget *parent );
+    void showInfo(QWidget *parent);
 
     int rip(const QString &device, int track, int tracks, const QUrl &outputFile);
     QStringList ripCommand(const QString &device, int track, int tracks, const QUrl &outputFile);
-    float parseOutput( const QString& output, int *fromSector, int *toSector );
-    float parseOutput( const QString& output );
+    float parseOutput(const QString &output, int *fromSector, int *toSector);
+    float parseOutput(const QString &output);
 
 private slots:
     /** Get the process' output */
@@ -59,7 +58,7 @@ private:
     bool enableExtraParanoia;
 
 private slots:
-    void configDialogForceReadSpeedChanged( int state );
+    void configDialogForceReadSpeedChanged(int state);
     void configDialogSave();
     void configDialogDefault();
 };

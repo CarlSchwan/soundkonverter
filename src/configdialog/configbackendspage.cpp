@@ -26,73 +26,74 @@
 #include <QPushButton>
 #include <QToolButton>
 
-BackendsListWidget::BackendsListWidget( const QString& _name, Config *_config, QWidget *parent )
-    : QGroupBox( _name, parent ),
-    config( _config ),
-    name( _name )
+BackendsListWidget::BackendsListWidget(const QString &_name, Config *_config, QWidget *parent)
+    : QGroupBox(_name, parent)
+    , config(_config)
+    , name(_name)
 {
     auto box = new QVBoxLayout(this);
 
-    lBackends = new QListWidget( this );
-    connect( lBackends, SIGNAL(currentRowChanged(int)), this, SLOT(itemSelected(int)) );
-    box->addWidget( lBackends );
+    lBackends = new QListWidget(this);
+    connect(lBackends, SIGNAL(currentRowChanged(int)), this, SLOT(itemSelected(int)));
+    box->addWidget(lBackends);
 
     QHBoxLayout *arrowBox = new QHBoxLayout();
-    box->addLayout( arrowBox );
+    box->addLayout(arrowBox);
 
-    pUp = new QToolButton( this );
+    pUp = new QToolButton(this);
     pUp->setIcon(QIcon::fromTheme("arrow-up"));
-    pUp->setAutoRaise( true );
-    pUp->setEnabled( false );
-    connect( pUp, SIGNAL(clicked()), this, SLOT(up()) );
-    arrowBox->addWidget( pUp );
+    pUp->setAutoRaise(true);
+    pUp->setEnabled(false);
+    connect(pUp, SIGNAL(clicked()), this, SLOT(up()));
+    arrowBox->addWidget(pUp);
 
-    pDown = new QToolButton( this );
+    pDown = new QToolButton(this);
     pDown->setIcon(QIcon::fromTheme("arrow-down"));
-    pDown->setAutoRaise( true );
-    pDown->setEnabled( false );
-    connect( pDown, SIGNAL(clicked()), this, SLOT(down()) );
-    arrowBox->addWidget( pDown );
+    pDown->setAutoRaise(true);
+    pDown->setEnabled(false);
+    connect(pDown, SIGNAL(clicked()), this, SLOT(down()));
+    arrowBox->addWidget(pDown);
 
-    pConfigure = new QToolButton( this );
+    pConfigure = new QToolButton(this);
     pConfigure->setIcon(QIcon::fromTheme("configure"));
-    pConfigure->setAutoRaise( true );
-    pConfigure->setEnabled( false );
-    connect( pConfigure, SIGNAL(clicked()), this, SLOT(configure()) );
-    arrowBox->addWidget( pConfigure );
+    pConfigure->setAutoRaise(true);
+    pConfigure->setEnabled(false);
+    connect(pConfigure, SIGNAL(clicked()), this, SLOT(configure()));
+    arrowBox->addWidget(pConfigure);
 
-    pInfo = new QToolButton( this );
+    pInfo = new QToolButton(this);
     pInfo->setIcon(QIcon::fromTheme("help-about"));
-    pInfo->setAutoRaise( true );
-    pInfo->setEnabled( false );
-    arrowBox->addWidget( pInfo );
-    connect( pInfo, SIGNAL(clicked()), this, SLOT(info()) );
+    pInfo->setAutoRaise(true);
+    pInfo->setEnabled(false);
+    arrowBox->addWidget(pInfo);
+    connect(pInfo, SIGNAL(clicked()), this, SLOT(info()));
 }
 
 BackendsListWidget::~BackendsListWidget()
-{}
+{
+}
 
-void BackendsListWidget::setFormat( const QString& _format )
+void BackendsListWidget::setFormat(const QString &_format)
 {
     format = _format;
 }
 
-void BackendsListWidget::addItem( const QString& item )
+void BackendsListWidget::addItem(const QString &item)
 {
-    lBackends->addItem( item );
+    lBackends->addItem(item);
 }
 
 void BackendsListWidget::clear()
 {
     lBackends->clear();
-    pUp->setEnabled( false );
-    pDown->setEnabled( false );
-    pConfigure->setEnabled( false );
-    pInfo->setEnabled( false );
-    pUp->setToolTip( "" );
-    pDown->setToolTip( "" );
-    pConfigure->setToolTip( "" );
-    pInfo->setToolTip( "" );
+    pUp->setEnabled(false);
+    pDown->setEnabled(false);
+    pConfigure->setEnabled(false);
+    pInfo->setEnabled(false);
+    pUp->setToolTip("");
+    pDown->setToolTip("");
+    pConfigure->setToolTip("");
+    pInfo->setToolTip("");
     originalOrder.clear();
 }
 
@@ -100,9 +101,8 @@ QStringList BackendsListWidget::getList()
 {
     QStringList list;
 
-    for( int i=0; i<lBackends->count(); i++ )
-    {
-        list.append( lBackends->item(i)->text() );
+    for (int i = 0; i < lBackends->count(); i++) {
+        list.append(lBackends->item(i)->text());
     }
 
     return list;
@@ -118,283 +118,272 @@ void BackendsListWidget::resetOrder()
     originalOrder = getList();
 }
 
-void BackendsListWidget::itemSelected( int row )
+void BackendsListWidget::itemSelected(int row)
 {
-    const QListWidgetItem *item = lBackends->item( row );
+    const QListWidgetItem *item = lBackends->item(row);
 
-    if( !item )
+    if (!item)
         return;
 
-    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName( item->text() );
+    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName(item->text());
 
-    pUp->setEnabled( row > 0 );
-    pDown->setEnabled( row < lBackends->count()-1 );
+    pUp->setEnabled(row > 0);
+    pDown->setEnabled(row < lBackends->count() - 1);
 
-    if( plugin )
-    {
-        if( name == i18n("Decoder") )
-            pConfigure->setEnabled( plugin->isConfigSupported(CodecPlugin::Decoder,format) );
-        else if( name == i18n("Encoder") )
-            pConfigure->setEnabled( plugin->isConfigSupported(CodecPlugin::Encoder,format) );
-        else if( name == i18n("Replay Gain") )
-            pConfigure->setEnabled( plugin->isConfigSupported(CodecPlugin::ReplayGain,format) );
+    if (plugin) {
+        if (name == i18n("Decoder"))
+            pConfigure->setEnabled(plugin->isConfigSupported(CodecPlugin::Decoder, format));
+        else if (name == i18n("Encoder"))
+            pConfigure->setEnabled(plugin->isConfigSupported(CodecPlugin::Encoder, format));
+        else if (name == i18n("Replay Gain"))
+            pConfigure->setEnabled(plugin->isConfigSupported(CodecPlugin::ReplayGain, format));
 
-        pInfo->setEnabled( plugin->hasInfo() );
+        pInfo->setEnabled(plugin->hasInfo());
 
         const QString pluginName = plugin->name();
 
-        if( pUp->isEnabled() )
-            pUp->setToolTip( i18n("Move %1 one position up",pluginName) );
+        if (pUp->isEnabled())
+            pUp->setToolTip(i18n("Move %1 one position up", pluginName));
         else
-            pUp->setToolTip( "" );
+            pUp->setToolTip("");
 
-        if( pDown->isEnabled() )
-            pDown->setToolTip( i18n("Move %1 one position down",pluginName) );
+        if (pDown->isEnabled())
+            pDown->setToolTip(i18n("Move %1 one position down", pluginName));
         else
-            pDown->setToolTip( "" );
+            pDown->setToolTip("");
 
-        if( pInfo->isEnabled() )
-            pInfo->setToolTip( i18n("About %1 ...",pluginName) );
+        if (pInfo->isEnabled())
+            pInfo->setToolTip(i18n("About %1 ...", pluginName));
         else
-            pInfo->setToolTip( "" );
+            pInfo->setToolTip("");
 
-        if( pConfigure->isEnabled() )
-            pConfigure->setToolTip( i18n("Configure %1 ...",pluginName) );
+        if (pConfigure->isEnabled())
+            pConfigure->setToolTip(i18n("Configure %1 ...", pluginName));
         else
-            pConfigure->setToolTip( "" );
+            pConfigure->setToolTip("");
     }
 }
 
 void BackendsListWidget::up()
 {
     const int row = lBackends->currentRow();
-    lBackends->insertItem( row-1, lBackends->takeItem(row) );
-    lBackends->setCurrentRow( row-1 );
+    lBackends->insertItem(row - 1, lBackends->takeItem(row));
+    lBackends->setCurrentRow(row - 1);
     emit orderChanged();
 }
 
 void BackendsListWidget::down()
 {
     const int row = lBackends->currentRow();
-    lBackends->insertItem( row+1, lBackends->takeItem(row) );
-    lBackends->setCurrentRow( row+1 );
+    lBackends->insertItem(row + 1, lBackends->takeItem(row));
+    lBackends->setCurrentRow(row + 1);
     emit orderChanged();
 }
 
 void BackendsListWidget::configure()
 {
     const int row = lBackends->currentRow();
-    const QListWidgetItem *item = lBackends->item( row );
+    const QListWidgetItem *item = lBackends->item(row);
 
-    if( !item )
+    if (!item)
         return;
 
-    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName( item->text() );
+    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName(item->text());
 
-    if( plugin )
-    {
-        if( name == i18n("Decoder") )
-            plugin->showConfigDialog( CodecPlugin::Decoder, format, this );
-        else if( name == i18n("Encoder") )
-            plugin->showConfigDialog( CodecPlugin::Encoder, format, this );
-        else if( name == i18n("Replay Gain") )
-            plugin->showConfigDialog( CodecPlugin::ReplayGain, format, this );
+    if (plugin) {
+        if (name == i18n("Decoder"))
+            plugin->showConfigDialog(CodecPlugin::Decoder, format, this);
+        else if (name == i18n("Encoder"))
+            plugin->showConfigDialog(CodecPlugin::Encoder, format, this);
+        else if (name == i18n("Replay Gain"))
+            plugin->showConfigDialog(CodecPlugin::ReplayGain, format, this);
     }
 }
 
 void BackendsListWidget::info()
 {
     const int row = lBackends->currentRow();
-    const QListWidgetItem *item = lBackends->item( row );
+    const QListWidgetItem *item = lBackends->item(row);
 
-    if( !item )
+    if (!item)
         return;
 
-    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName( item->text() );
+    BackendPlugin *plugin = config->pluginLoader()->backendPluginByName(item->text());
 
-    if( plugin )
-        plugin->showInfo( this );
+    if (plugin)
+        plugin->showInfo(this);
 }
 
 // class ConfigBackendsPage
 ///////////////////////////
 
-ConfigBackendsPage::ConfigBackendsPage( Config *_config, QWidget *parent )
-    : ConfigPageBase( parent ),
-    config( _config )
+ConfigBackendsPage::ConfigBackendsPage(Config *_config, QWidget *parent)
+    : ConfigPageBase(parent)
+    , config(_config)
 {
-    QVBoxLayout *box = new QVBoxLayout( this );
+    QVBoxLayout *box = new QVBoxLayout(this);
 
     QFont groupFont;
-    groupFont.setBold( true );
+    groupFont.setBold(true);
 
-    QLabel *lCdRipper = new QLabel( i18n("CD ripper"), this );
-    lCdRipper->setFont( groupFont );
-    box->addWidget( lCdRipper );
+    QLabel *lCdRipper = new QLabel(i18n("CD ripper"), this);
+    lCdRipper->setFont(groupFont);
+    box->addWidget(lCdRipper);
 
-    box->addSpacing( spacingSmall );
+    box->addSpacing(spacingSmall);
 
     QHBoxLayout *ripperBox = new QHBoxLayout();
-    ripperBox->addSpacing( spacingOffset );
-    box->addLayout( ripperBox );
-    QLabel *lSelectorRipper = new QLabel( i18n("Use plugin:"), this );
-    ripperBox->addWidget( lSelectorRipper );
-    ripperBox->setStretchFactor( lSelectorRipper, 2 );
-    cSelectorRipper = new KComboBox( this );
-    foreach( const Config::CodecData& codec, config->data.backends.codecs )
-    {
-        if( codec.codecName == "audio cd" )
-        {
-            cSelectorRipper->addItems( codec.decoders );
+    ripperBox->addSpacing(spacingOffset);
+    box->addLayout(ripperBox);
+    QLabel *lSelectorRipper = new QLabel(i18n("Use plugin:"), this);
+    ripperBox->addWidget(lSelectorRipper);
+    ripperBox->setStretchFactor(lSelectorRipper, 2);
+    cSelectorRipper = new KComboBox(this);
+    foreach (const Config::CodecData &codec, config->data.backends.codecs) {
+        if (codec.codecName == "audio cd") {
+            cSelectorRipper->addItems(codec.decoders);
         }
     }
-    ripperBox->addWidget( cSelectorRipper );
-    ripperBox->setStretchFactor( cSelectorRipper, 1 );
-    connect( cSelectorRipper, SIGNAL(activated(int)), this, SLOT(somethingChanged()) );
-    connect( cSelectorRipper, SIGNAL(activated(const QString&)), this, SLOT(ripperChanged(const QString&)) );
+    ripperBox->addWidget(cSelectorRipper);
+    ripperBox->setStretchFactor(cSelectorRipper, 1);
+    connect(cSelectorRipper, SIGNAL(activated(int)), this, SLOT(somethingChanged()));
+    connect(cSelectorRipper, SIGNAL(activated(const QString &)), this, SLOT(ripperChanged(const QString &)));
     pConfigureRipper = new QPushButton(QIcon::fromTheme("configure"), "", this);
-    pConfigureRipper->setFixedSize( cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height() );
-    pConfigureRipper->setFlat( true );
-    ripperBox->addWidget( pConfigureRipper );
-    ripperBox->setStretchFactor( pConfigureRipper, 1 );
-    connect( pConfigureRipper, SIGNAL(clicked()), this, SLOT(configureRipper()) );
+    pConfigureRipper->setFixedSize(cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height());
+    pConfigureRipper->setFlat(true);
+    ripperBox->addWidget(pConfigureRipper);
+    ripperBox->setStretchFactor(pConfigureRipper, 1);
+    connect(pConfigureRipper, SIGNAL(clicked()), this, SLOT(configureRipper()));
 
-    box->addSpacing( spacingBig );
+    box->addSpacing(spacingBig);
 
-    QLabel *lFilters = new QLabel( i18n("Filters"), this );
-    lFilters->setFont( groupFont );
-    box->addWidget( lFilters );
+    QLabel *lFilters = new QLabel(i18n("Filters"), this);
+    lFilters->setFont(groupFont);
+    box->addWidget(lFilters);
 
-    box->addSpacing( spacingSmall );
+    box->addSpacing(spacingSmall);
 
     QHBoxLayout *filterBox = new QHBoxLayout();
-    filterBox->addSpacing( spacingOffset );
-    box->addLayout( filterBox );
+    filterBox->addSpacing(spacingOffset);
+    box->addLayout(filterBox);
     QGridLayout *filterGrid = new QGridLayout();
 
     int row = 0;
-    foreach( const QString& filterPluginName, config->data.backends.filters )
-    {
-        if( row == 0 )
-        {
-            QLabel *lSelectorFilter = new QLabel( i18n("Enable plugins:"), this );
-            filterGrid->addWidget( lSelectorFilter, row, 0 );
+    foreach (const QString &filterPluginName, config->data.backends.filters) {
+        if (row == 0) {
+            QLabel *lSelectorFilter = new QLabel(i18n("Enable plugins:"), this);
+            filterGrid->addWidget(lSelectorFilter, row, 0);
         }
 
-        QCheckBox *newCheckBox = new QCheckBox( filterPluginName, this );
-        newCheckBox->setChecked( config->data.backends.enabledFilters.contains(filterPluginName) );
-        filterGrid->addWidget( newCheckBox, row, 1 );
-        filterCheckBoxes.append( newCheckBox );
-        connect( newCheckBox, SIGNAL(stateChanged(int)), this, SLOT(somethingChanged()) );
+        QCheckBox *newCheckBox = new QCheckBox(filterPluginName, this);
+        newCheckBox->setChecked(config->data.backends.enabledFilters.contains(filterPluginName));
+        filterGrid->addWidget(newCheckBox, row, 1);
+        filterCheckBoxes.append(newCheckBox);
+        connect(newCheckBox, SIGNAL(stateChanged(int)), this, SLOT(somethingChanged()));
 
         QPushButton *newConfigButton = new QPushButton(QIcon::fromTheme("configure"), "", this);
-        newConfigButton->setFixedSize( cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height() );
-        newConfigButton->setFlat( true );
-        filterGrid->addWidget( newConfigButton, row, 2 );
-        connect( newConfigButton, SIGNAL(clicked()), this, SLOT(configureFilter()) );
-        filterConfigButtons.append( newConfigButton );
+        newConfigButton->setFixedSize(cSelectorRipper->sizeHint().height(), cSelectorRipper->sizeHint().height());
+        newConfigButton->setFlat(true);
+        filterGrid->addWidget(newConfigButton, row, 2);
+        connect(newConfigButton, SIGNAL(clicked()), this, SLOT(configureFilter()));
+        filterConfigButtons.append(newConfigButton);
 
-        FilterPlugin *plugin = qobject_cast<FilterPlugin*>(config->pluginLoader()->backendPluginByName(filterPluginName));
-        if( plugin )
-        {
-            newConfigButton->setEnabled( plugin->isConfigSupported(BackendPlugin::General,"") );
-        }
-        else
-        {
-            newConfigButton->setEnabled( false );
+        FilterPlugin *plugin = qobject_cast<FilterPlugin *>(config->pluginLoader()->backendPluginByName(filterPluginName));
+        if (plugin) {
+            newConfigButton->setEnabled(plugin->isConfigSupported(BackendPlugin::General, ""));
+        } else {
+            newConfigButton->setEnabled(false);
         }
 
-        if( newConfigButton->isEnabled() )
-            newConfigButton->setToolTip( i18n("Configure %1 ...",filterPluginName) );
+        if (newConfigButton->isEnabled())
+            newConfigButton->setToolTip(i18n("Configure %1 ...", filterPluginName));
 
         row++;
     }
 
-    filterGrid->setColumnStretch( 0, 2 );
-    filterGrid->setColumnStretch( 1, 1 );
-    filterBox->addLayout( filterGrid );
+    filterGrid->setColumnStretch(0, 2);
+    filterGrid->setColumnStretch(1, 1);
+    filterBox->addLayout(filterGrid);
 
-    box->addSpacing( spacingBig );
+    box->addSpacing(spacingBig);
 
-    QLabel *lPriorities = new QLabel( i18n("Priorities"), this );
-    lPriorities->setFont( groupFont );
-    box->addWidget( lPriorities );
+    QLabel *lPriorities = new QLabel(i18n("Priorities"), this);
+    lPriorities->setFont(groupFont);
+    box->addWidget(lPriorities);
 
-    box->addSpacing( spacingSmall );
+    box->addSpacing(spacingSmall);
 
     QVBoxLayout *formatBox = new QVBoxLayout();
-    box->addLayout( formatBox, 1 );
+    box->addLayout(formatBox, 1);
 
     QHBoxLayout *formatSelectorBox = new QHBoxLayout();
-    formatSelectorBox->addSpacing( spacingOffset );
-    formatBox->addLayout( formatSelectorBox );
-    QLabel *lSelectorFormat = new QLabel( i18n("Configure plugin priorities for format:"), this );
-    formatSelectorBox->addWidget( lSelectorFormat );
-    cSelectorFormat = new KComboBox( this );
-    cSelectorFormat->addItems( config->pluginLoader()->formatList(PluginLoader::Possibilities(PluginLoader::Encode|PluginLoader::Decode|PluginLoader::ReplayGain),PluginLoader::CompressionType(PluginLoader::InferiorQuality|PluginLoader::Lossy|PluginLoader::Lossless|PluginLoader::Hybrid)) );
-    cSelectorFormat->removeItem( cSelectorFormat->findText("wav") );
-    cSelectorFormat->removeItem( cSelectorFormat->findText("audio cd") );
-    formatSelectorBox->addWidget( cSelectorFormat );
-    connect( cSelectorFormat, SIGNAL(activated(const QString&)), this, SLOT(formatChanged(const QString&)) );
+    formatSelectorBox->addSpacing(spacingOffset);
+    formatBox->addLayout(formatSelectorBox);
+    QLabel *lSelectorFormat = new QLabel(i18n("Configure plugin priorities for format:"), this);
+    formatSelectorBox->addWidget(lSelectorFormat);
+    cSelectorFormat = new KComboBox(this);
+    cSelectorFormat->addItems(config->pluginLoader()->formatList(
+        PluginLoader::Possibilities(PluginLoader::Encode | PluginLoader::Decode | PluginLoader::ReplayGain),
+        PluginLoader::CompressionType(PluginLoader::InferiorQuality | PluginLoader::Lossy | PluginLoader::Lossless | PluginLoader::Hybrid)));
+    cSelectorFormat->removeItem(cSelectorFormat->findText("wav"));
+    cSelectorFormat->removeItem(cSelectorFormat->findText("audio cd"));
+    formatSelectorBox->addWidget(cSelectorFormat);
+    connect(cSelectorFormat, SIGNAL(activated(const QString &)), this, SLOT(formatChanged(const QString &)));
     formatSelectorBox->addStretch();
 
     QHBoxLayout *formatBackendsBox = new QHBoxLayout();
-    formatBackendsBox->addSpacing( spacingOffset );
-    formatBox->addLayout( formatBackendsBox );
-    decoderList = new BackendsListWidget( i18n("Decoder"), config, this );
-    formatBackendsBox->addWidget( decoderList );
-    connect( decoderList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()) );
-    encoderList = new BackendsListWidget( i18n("Encoder"), config, this );
-    formatBackendsBox->addWidget( encoderList );
-    connect( encoderList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()) );
-    replaygainList = new BackendsListWidget( i18n("Replay Gain"), config, this );
-    formatBackendsBox->addWidget( replaygainList );
-    connect( replaygainList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()) );
+    formatBackendsBox->addSpacing(spacingOffset);
+    formatBox->addLayout(formatBackendsBox);
+    decoderList = new BackendsListWidget(i18n("Decoder"), config, this);
+    formatBackendsBox->addWidget(decoderList);
+    connect(decoderList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()));
+    encoderList = new BackendsListWidget(i18n("Encoder"), config, this);
+    formatBackendsBox->addWidget(encoderList);
+    connect(encoderList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()));
+    replaygainList = new BackendsListWidget(i18n("Replay Gain"), config, this);
+    formatBackendsBox->addWidget(replaygainList);
+    connect(replaygainList, SIGNAL(orderChanged()), this, SLOT(somethingChanged()));
 
     QHBoxLayout *optimizationsBox = new QHBoxLayout();
-    optimizationsBox->addSpacing( spacingOffset );
-    formatBox->addLayout( optimizationsBox );
+    optimizationsBox->addSpacing(spacingOffset);
+    formatBox->addLayout(optimizationsBox);
     optimizationsBox->addStretch();
     pShowOptimizations = new QPushButton(QIcon::fromTheme("games-solve"), i18n("Show possible optimizations"), this);
-    optimizationsBox->addWidget( pShowOptimizations );
-    connect( pShowOptimizations, SIGNAL(clicked()), this, SLOT(showOptimizations()) );
+    optimizationsBox->addWidget(pShowOptimizations);
+    connect(pShowOptimizations, SIGNAL(clicked()), this, SLOT(showOptimizations()));
     optimizationsBox->addStretch();
 
-    box->addStretch( 2 );
+    box->addStretch(2);
 
-    ripperChanged( cSelectorRipper->currentText() );
-    formatChanged( cSelectorFormat->currentText() );
+    ripperChanged(cSelectorRipper->currentText());
+    formatChanged(cSelectorFormat->currentText());
 }
-
 
 ConfigBackendsPage::~ConfigBackendsPage()
-{}
-
-void ConfigBackendsPage::ripperChanged( const QString& pluginName )
 {
-    RipperPlugin *plugin = qobject_cast<RipperPlugin*>(config->pluginLoader()->backendPluginByName(pluginName));
-
-    if( plugin )
-    {
-        pConfigureRipper->setEnabled( plugin->isConfigSupported(BackendPlugin::General,"") );
-    }
-    else
-    {
-        pConfigureRipper->setEnabled( false );
-    }
-
-    if( pConfigureRipper->isEnabled() )
-        pConfigureRipper->setToolTip( i18n("Configure %1 ...",pluginName) );
-    else
-        pConfigureRipper->setToolTip( "" );
 }
 
-void ConfigBackendsPage::formatChanged( const QString& format, bool ignoreChanges )
+void ConfigBackendsPage::ripperChanged(const QString &pluginName)
+{
+    RipperPlugin *plugin = qobject_cast<RipperPlugin *>(config->pluginLoader()->backendPluginByName(pluginName));
+
+    if (plugin) {
+        pConfigureRipper->setEnabled(plugin->isConfigSupported(BackendPlugin::General, ""));
+    } else {
+        pConfigureRipper->setEnabled(false);
+    }
+
+    if (pConfigureRipper->isEnabled())
+        pConfigureRipper->setToolTip(i18n("Configure %1 ...", pluginName));
+    else
+        pConfigureRipper->setToolTip("");
+}
+
+void ConfigBackendsPage::formatChanged(const QString &format, bool ignoreChanges)
 {
     QStringList plugins;
 
-    if( !ignoreChanges && ( decoderList->changed() || encoderList->changed() || replaygainList->changed() ) )
-    {
+    if (!ignoreChanges && (decoderList->changed() || encoderList->changed() || replaygainList->changed())) {
         const int ret = KMessageBox::questionTwoActions(this,
                                                         i18n("You have changed the current settings.\nDo you want to save them?"),
                                                         i18n("Settings changed"),
@@ -411,25 +400,20 @@ void ConfigBackendsPage::formatChanged( const QString& format, bool ignoreChange
     replaygainList->clear();
 
     currentFormat = format;
-    decoderList->setFormat( format );
-    encoderList->setFormat( format );
-    replaygainList->setFormat( format );
+    decoderList->setFormat(format);
+    encoderList->setFormat(format);
+    replaygainList->setFormat(format);
 
-    foreach( const Config::CodecData& codec, config->data.backends.codecs )
-    {
-        if( codec.codecName == format )
-        {
-            foreach( const QString& decoder, codec.decoders )
-            {
-                decoderList->addItem( decoder );
+    foreach (const Config::CodecData &codec, config->data.backends.codecs) {
+        if (codec.codecName == format) {
+            foreach (const QString &decoder, codec.decoders) {
+                decoderList->addItem(decoder);
             }
-            foreach( const QString& encoder, codec.encoders )
-            {
-                encoderList->addItem( encoder );
+            foreach (const QString &encoder, codec.encoders) {
+                encoderList->addItem(encoder);
             }
-            foreach( const QString& replaygain, codec.replaygain )
-            {
-                replaygainList->addItem( replaygain );
+            foreach (const QString &replaygain, codec.replaygain) {
+                replaygainList->addItem(replaygain);
             }
         }
     }
@@ -438,37 +422,33 @@ void ConfigBackendsPage::formatChanged( const QString& format, bool ignoreChange
     encoderList->resetOrder();
     replaygainList->resetOrder();
 
-    emit configChanged( false );
+    emit configChanged(false);
 }
 
 void ConfigBackendsPage::resetDefaults()
 {
     // rippers
     QStringList allPlugins;
-    foreach( RipperPlugin *plugin, config->pluginLoader()->getAllRipperPlugins() )
-    {
+    foreach (RipperPlugin *plugin, config->pluginLoader()->getAllRipperPlugins()) {
         const QString pluginName = plugin->name();
-        foreach( const ConversionPipeTrunk& trunk, plugin->codecTable() )
-        {
+        foreach (const ConversionPipeTrunk &trunk, plugin->codecTable()) {
             if (trunk.enabled && allPlugins.filter(QRegularExpression("[0-9]{8,8}" + pluginName)).count() == 0) {
-                allPlugins += QString::number(trunk.rating).rightJustified(8,'0') + pluginName;
+                allPlugins += QString::number(trunk.rating).rightJustified(8, '0') + pluginName;
                 break;
             }
         }
     }
     allPlugins.sort();
-    if( allPlugins.count() > 0 )
-    {
-        const QString defaultRipper = allPlugins.first().right(allPlugins.first().length()-8);
-        cSelectorRipper->setCurrentIndex( cSelectorRipper->findText(defaultRipper) );
+    if (allPlugins.count() > 0) {
+        const QString defaultRipper = allPlugins.first().right(allPlugins.first().length() - 8);
+        cSelectorRipper->setCurrentIndex(cSelectorRipper->findText(defaultRipper));
     }
 
     int i = 0;
-    foreach( QCheckBox *checkBox, filterCheckBoxes )
-    {
+    foreach (QCheckBox *checkBox, filterCheckBoxes) {
         const QString filterPluginName = config->data.backends.filters.at(i);
 
-        checkBox->setChecked( i == 0 );
+        checkBox->setChecked(i == 0);
 
         i++;
     }
@@ -480,49 +460,43 @@ void ConfigBackendsPage::resetDefaults()
                                                        KStandardGuiItem::cancel());
 
     if (answer == KMessageBox::PrimaryAction) {
-        QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations( true );
-        for( int i=0; i<optimizationList.count(); i++ )
-        {
+        QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations(true);
+        for (int i = 0; i < optimizationList.count(); i++) {
             optimizationList[i].solution = CodecOptimizations::Optimization::Fix;
         }
-        config->doOptimizations( optimizationList );
+        config->doOptimizations(optimizationList);
 
-        formatChanged( cSelectorFormat->currentText(), true );
+        formatChanged(cSelectorFormat->currentText(), true);
 
-        emit configChanged( false );
+        emit configChanged(false);
     }
 }
 
 void ConfigBackendsPage::saveSettings()
 {
-    for( int i=0; i<config->data.backends.codecs.count(); i++ )
-    {
-        if( config->data.backends.codecs.at(i).codecName == "audio cd" )
-        {
+    for (int i = 0; i < config->data.backends.codecs.count(); i++) {
+        if (config->data.backends.codecs.at(i).codecName == "audio cd") {
             const QString currentRipper = cSelectorRipper->currentText();
             QStringList rippers = config->data.backends.codecs[i].decoders;
-            rippers.removeAll( currentRipper );
-            rippers.prepend( currentRipper );
+            rippers.removeAll(currentRipper);
+            rippers.prepend(currentRipper);
             config->data.backends.codecs[i].decoders = rippers;
         }
     }
 
     config->data.backends.enabledFilters.clear();
     int i = 0;
-    foreach( const QCheckBox *checkBox, filterCheckBoxes )
-    {
+    foreach (const QCheckBox *checkBox, filterCheckBoxes) {
         const QString filterPluginName = config->data.backends.filters.at(i);
 
-        if( checkBox->isChecked() )
-            config->data.backends.enabledFilters.append( filterPluginName );
+        if (checkBox->isChecked())
+            config->data.backends.enabledFilters.append(filterPluginName);
 
         i++;
     }
 
-    for( int i=0; i<config->data.backends.codecs.count(); i++ )
-    {
-        if( config->data.backends.codecs.at(i).codecName == currentFormat )
-        {
+    for (int i = 0; i < config->data.backends.codecs.count(); i++) {
+        if (config->data.backends.codecs.at(i).codecName == currentFormat) {
             config->data.backends.codecs[i].decoders = decoderList->getList();
             config->data.backends.codecs[i].encoders = encoderList->getList();
             config->data.backends.codecs[i].replaygain = replaygainList->getList();
@@ -534,9 +508,8 @@ void ConfigBackendsPage::saveSettings()
     replaygainList->resetOrder();
 
     // ensure that the user won't get bothered by an optimization message at the next start
-    QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations( true );
-    for( int i=0; i<optimizationList.count(); i++ )
-    {
+    QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations(true);
+    for (int i = 0; i < optimizationList.count(); i++) {
         optimizationList[i].solution = CodecOptimizations::Optimization::Ignore;
     }
     config->data.backendOptimizationsIgnoreList.optimizationList = optimizationList;
@@ -547,14 +520,11 @@ void ConfigBackendsPage::somethingChanged()
     bool changed = false;
 
     int i = 0;
-    foreach( const QCheckBox *checkBox, filterCheckBoxes )
-    {
-        if( checkBox == QObject::sender() )
-        {
+    foreach (const QCheckBox *checkBox, filterCheckBoxes) {
+        if (checkBox == QObject::sender()) {
             const QString filterPluginName = config->data.backends.filters.at(i);
 
-            if( checkBox->isChecked() != config->data.backends.enabledFilters.contains(filterPluginName) )
-            {
+            if (checkBox->isChecked() != config->data.backends.enabledFilters.contains(filterPluginName)) {
                 changed = true;
                 break;
             }
@@ -562,19 +532,18 @@ void ConfigBackendsPage::somethingChanged()
         i++;
     }
 
-    if( decoderList->changed() || encoderList->changed() || replaygainList->changed() )
+    if (decoderList->changed() || encoderList->changed() || replaygainList->changed())
         changed = true;
 
-    emit configChanged( changed );
+    emit configChanged(changed);
 }
 
 void ConfigBackendsPage::configureRipper()
 {
-    RipperPlugin *plugin = qobject_cast<RipperPlugin*>(config->pluginLoader()->backendPluginByName(cSelectorRipper->currentText()));
+    RipperPlugin *plugin = qobject_cast<RipperPlugin *>(config->pluginLoader()->backendPluginByName(cSelectorRipper->currentText()));
 
-    if( plugin )
-    {
-        plugin->showConfigDialog( BackendPlugin::General, "", this );
+    if (plugin) {
+        plugin->showConfigDialog(BackendPlugin::General, "", this);
     }
 }
 
@@ -582,14 +551,12 @@ void ConfigBackendsPage::configureFilter()
 {
     int i = 0;
     foreach (const QPushButton *configButton, filterConfigButtons) {
-        if( configButton == QObject::sender() )
-        {
+        if (configButton == QObject::sender()) {
             const QString filterPluginName = config->data.backends.filters.at(i);
 
-            FilterPlugin *plugin = qobject_cast<FilterPlugin*>(config->pluginLoader()->backendPluginByName(filterPluginName));
-            if( plugin )
-            {
-                plugin->showConfigDialog( BackendPlugin::General, "", this );
+            FilterPlugin *plugin = qobject_cast<FilterPlugin *>(config->pluginLoader()->backendPluginByName(filterPluginName));
+            if (plugin) {
+                plugin->showConfigDialog(BackendPlugin::General, "", this);
             }
         }
         i++;
@@ -598,19 +565,17 @@ void ConfigBackendsPage::configureFilter()
 
 void ConfigBackendsPage::showOptimizations()
 {
-    QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations( true );
-    if( !optimizationList.isEmpty() )
-    {
-        CodecOptimizations *optimizationsDialog = new CodecOptimizations( optimizationList, this );
-        connect( optimizationsDialog, SIGNAL(solutions(const QList<CodecOptimizations::Optimization>&)), config, SLOT(doOptimizations(const QList<CodecOptimizations::Optimization>&)) );
+    QList<CodecOptimizations::Optimization> optimizationList = config->getOptimizations(true);
+    if (!optimizationList.isEmpty()) {
+        CodecOptimizations *optimizationsDialog = new CodecOptimizations(optimizationList, this);
+        connect(optimizationsDialog,
+                SIGNAL(solutions(const QList<CodecOptimizations::Optimization> &)),
+                config,
+                SLOT(doOptimizations(const QList<CodecOptimizations::Optimization> &)));
         optimizationsDialog->exec();
-    }
-    else
-    {
-        KMessageBox::information( this, i18n("All backend settings seem to be optimal, there is nothing to do.") );
+    } else {
+        KMessageBox::information(this, i18n("All backend settings seem to be optimal, there is nothing to do."));
     }
 
-    formatChanged( cSelectorFormat->currentText(), true );
+    formatChanged(cSelectorFormat->currentText(), true);
 }
-
-

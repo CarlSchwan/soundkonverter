@@ -2,8 +2,8 @@
 #ifndef CODECPLUGIN_H
 #define CODECPLUGIN_H
 
-#include <kcoreaddons_export.h>
 #include <QVariantList>
+#include <kcoreaddons_export.h>
 
 #include "backendplugin.h"
 #include "conversionoptions.h"
@@ -16,7 +16,7 @@ class KCOREADDONS_EXPORT CodecPluginItem : public BackendPluginItem
 {
     Q_OBJECT
 public:
-    explicit CodecPluginItem( QObject *parent );
+    explicit CodecPluginItem(QObject *parent);
     virtual ~CodecPluginItem();
 
     struct Data {
@@ -24,20 +24,19 @@ public:
     } data;
 };
 
-
 /** @author Daniel Faust <hessijames@gmail.com> */
 class KCOREADDONS_EXPORT CodecPlugin : public BackendPlugin
 {
     Q_OBJECT
 public:
-    explicit CodecPlugin( QObject *parent );
+    explicit CodecPlugin(QObject *parent);
     virtual ~CodecPlugin();
 
     virtual QString type() const;
 
     virtual QList<ConversionPipeTrunk> codecTable() = 0;
     virtual CodecWidget *newCodecWidget() = 0;
-    virtual CodecWidget *deleteCodecWidget( CodecWidget *codecWidget );
+    virtual CodecWidget *deleteCodecWidget(CodecWidget *codecWidget);
 
     /**
      * starts the conversion and returns either a conversion id or an error code:
@@ -61,13 +60,12 @@ public:
                                        TagData *tags = 0,
                                        bool replayGain = false) = 0;
 
-    virtual ConversionOptions *conversionOptionsFromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0 );
+    virtual ConversionOptions *conversionOptionsFromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
-    const ConversionOptions* lastConversionOptions();
+    const ConversionOptions *lastConversionOptions();
 
 protected:
     ConversionOptions *lastUsedConversionOptions;
-
 };
 
 #endif // CODECPLUGIN_H

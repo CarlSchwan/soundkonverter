@@ -24,15 +24,9 @@ class DirOpener : public QDialog
 {
     Q_OBJECT
 public:
-    enum DialogPage {
-        DirOpenPage,
-        ConversionOptionsPage
-    };
+    enum DialogPage { DirOpenPage, ConversionOptionsPage };
 
-    enum Mode {
-        Convert    = 0x0001,
-        ReplayGain = 0x0002
-    };
+    enum Mode { Convert = 0x0001, ReplayGain = 0x0002 };
 
     /** Constructor */
     DirOpener(Config *config, Mode _mode, QWidget *parent, Qt::WindowFlags = {});
@@ -77,8 +71,7 @@ private:
     QDialogButtonBox *const m_buttonBox;
 
 Q_SIGNALS:
-    void openFiles( const QUrl& directory, bool recursive, const QStringList& codecList, ConversionOptions *conversionOptions = 0 );
+    void openFiles(const QUrl &directory, bool recursive, const QStringList &codecList, ConversionOptions *conversionOptions = 0);
 };
-
 
 #endif

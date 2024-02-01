@@ -10,23 +10,14 @@ public:
     MusePackConversionOptions();
     ~MusePackConversionOptions();
 
-    bool equals( ConversionOptions *_other );
-    QDomElement toXml( QDomDocument document ) const;
-    bool fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0 );
+    bool equals(ConversionOptions *_other);
+    QDomElement toXml(QDomDocument document) const;
+    bool fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
-    ConversionOptions* copy() const;
+    ConversionOptions *copy() const;
 
     struct Data {
-        enum Preset {
-            Telephone = 0,
-            Thumb = 1,
-            Radio = 2,
-            Standard = 3,
-            Extreme = 4,
-            Insane = 5,
-            Braindead = 6,
-            UserDefined = 7
-        } preset;
+        enum Preset { Telephone = 0, Thumb = 1, Radio = 2, Standard = 3, Extreme = 4, Insane = 5, Braindead = 6, UserDefined = 7 } preset;
     } data;
 };
 

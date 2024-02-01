@@ -2,26 +2,25 @@
 #include "codecplugin.h"
 #include "codecwidget.h"
 
-
-CodecPluginItem::CodecPluginItem( QObject *parent )
-    : BackendPluginItem( parent )
+CodecPluginItem::CodecPluginItem(QObject *parent)
+    : BackendPluginItem(parent)
 {
     data.length = 0;
 }
 
 CodecPluginItem::~CodecPluginItem()
-{}
+{
+}
 
-
-CodecPlugin::CodecPlugin( QObject *parent )
-    : BackendPlugin( parent )
+CodecPlugin::CodecPlugin(QObject *parent)
+    : BackendPlugin(parent)
 {
     lastUsedConversionOptions = 0;
 }
 
 CodecPlugin::~CodecPlugin()
 {
-    if( lastUsedConversionOptions )
+    if (lastUsedConversionOptions)
         delete lastUsedConversionOptions;
 }
 
@@ -30,17 +29,16 @@ QString CodecPlugin::type() const
     return "codec";
 }
 
-CodecWidget *CodecPlugin::deleteCodecWidget( CodecWidget *codecWidget )
+CodecWidget *CodecPlugin::deleteCodecWidget(CodecWidget *codecWidget)
 {
-    if( !codecWidget )
+    if (!codecWidget)
         return 0;
 
-    if( lastUsedConversionOptions )
+    if (lastUsedConversionOptions)
         delete lastUsedConversionOptions;
 
     lastUsedConversionOptions = codecWidget->currentConversionOptions();
-    if( lastUsedConversionOptions )
-    {
+    if (lastUsedConversionOptions) {
         lastUsedConversionOptions->pluginName = name();
         lastUsedConversionOptions->profile = codecWidget->currentProfile();
     }
@@ -50,14 +48,14 @@ CodecWidget *CodecPlugin::deleteCodecWidget( CodecWidget *codecWidget )
     return 0;
 }
 
-ConversionOptions *CodecPlugin::conversionOptionsFromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements )
+ConversionOptions *CodecPlugin::conversionOptionsFromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements)
 {
     ConversionOptions *options = new ConversionOptions();
-    options->fromXml( conversionOptions, filterOptionsElements );
+    options->fromXml(conversionOptions, filterOptionsElements);
     return options;
 }
 
-const ConversionOptions* CodecPlugin::lastConversionOptions()
+const ConversionOptions *CodecPlugin::lastConversionOptions()
 {
     return lastUsedConversionOptions;
 }

@@ -1,13 +1,12 @@
 
 #include "shortencodecglobal.h"
 
-#include "soundkonverter_codec_shorten.h"
 #include "../../core/conversionoptions.h"
 #include "shortencodecwidget.h"
+#include "soundkonverter_codec_shorten.h"
 
-
-soundkonverter_codec_shorten::soundkonverter_codec_shorten( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_shorten::soundkonverter_codec_shorten(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +17,8 @@ soundkonverter_codec_shorten::soundkonverter_codec_shorten( QObject *parent, con
 }
 
 soundkonverter_codec_shorten::~soundkonverter_codec_shorten()
-{}
+{
+}
 
 QString soundkonverter_codec_shorten::name() const
 {
@@ -33,23 +33,25 @@ QList<ConversionPipeTrunk> soundkonverter_codec_shorten::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "shorten";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["shorten"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "shorten", "shorten" ) + "\n" + standardMessage( "install_website_backend,url", "shorten", "http://etree.org/shnutils/shorten/" );
+    newTrunk.enabled = (binaries["shorten"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "shorten", "shorten") + "\n"
+        + standardMessage("install_website_backend,url", "shorten", "http://etree.org/shnutils/shorten/");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "shorten";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["shorten"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "shorten", "shorten" ) + "\n" + standardMessage( "install_website_backend,url", "shorten", "http://etree.org/shnutils/shorten/" );
+    newTrunk.enabled = (binaries["shorten"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "shorten", "shorten") + "\n"
+        + standardMessage("install_website_backend,url", "shorten", "http://etree.org/shnutils/shorten/");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_shorten::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_shorten::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -57,7 +59,7 @@ bool soundkonverter_codec_shorten::isConfigSupported( ActionType action, const Q
     return false;
 }
 
-void soundkonverter_codec_shorten::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_shorten::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -69,7 +71,7 @@ bool soundkonverter_codec_shorten::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_shorten::showInfo( QWidget *parent )
+void soundkonverter_codec_shorten::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -77,7 +79,7 @@ void soundkonverter_codec_shorten::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_shorten::newCodecWidget()
 {
     ShortenCodecWidget *widget = new ShortenCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
 int soundkonverter_codec_shorten::convert(const QUrl &inputFile,
@@ -88,24 +90,24 @@ int soundkonverter_codec_shorten::convert(const QUrl &inputFile,
                                           TagData *tags,
                                           bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
@@ -121,24 +123,20 @@ QStringList soundkonverter_codec_shorten::convertCommand(const QUrl &inputFile,
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "shorten" )
-    {
+    if (outputCodec == "shorten") {
         command += binaries["shorten"];
-        if( conversionOptions->pluginName == global_plugin_name )
-        {
+        if (conversionOptions->pluginName == global_plugin_name) {
             command += conversionOptions->cmdArguments;
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "\"" + escapeUrl(outputFile) + "\"";
-    }
-    else
-    {
+    } else {
         command += binaries["shorten"];
         command += "-x";
         command += "\"" + escapeUrl(inputFile) + "\"";
@@ -148,7 +146,7 @@ QStringList soundkonverter_codec_shorten::convertCommand(const QUrl &inputFile,
     return command;
 }
 
-float soundkonverter_codec_shorten::parseOutput( const QString& output )
+float soundkonverter_codec_shorten::parseOutput(const QString &output)
 {
     Q_UNUSED(output)
 

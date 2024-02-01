@@ -1,13 +1,12 @@
 
 #include "flaccodecglobal.h"
 
-#include "soundkonverter_codec_flac.h"
 #include "../../core/conversionoptions.h"
 #include "flaccodecwidget.h"
+#include "soundkonverter_codec_flac.h"
 
-
-soundkonverter_codec_flac::soundkonverter_codec_flac( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_flac::soundkonverter_codec_flac(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +17,8 @@ soundkonverter_codec_flac::soundkonverter_codec_flac( QObject *parent, const QVa
 }
 
 soundkonverter_codec_flac::~soundkonverter_codec_flac()
-{}
+{
+}
 
 QString soundkonverter_codec_flac::name() const
 {
@@ -33,23 +33,23 @@ QList<ConversionPipeTrunk> soundkonverter_codec_flac::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "flac";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["flac"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "flac", "flac" ) + "\n" + standardMessage( "install_opensource_backend", "flac" );
+    newTrunk.enabled = (binaries["flac"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "flac", "flac") + "\n" + standardMessage("install_opensource_backend", "flac");
     newTrunk.data.hasInternalReplayGain = true;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "flac";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["flac"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "flac", "flac" ) + "\n" + standardMessage( "install_opensource_backend", "flac" );
+    newTrunk.enabled = (binaries["flac"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "flac", "flac") + "\n" + standardMessage("install_opensource_backend", "flac");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_flac::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_flac::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -57,7 +57,7 @@ bool soundkonverter_codec_flac::isConfigSupported( ActionType action, const QStr
     return false;
 }
 
-void soundkonverter_codec_flac::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_flac::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -69,7 +69,7 @@ bool soundkonverter_codec_flac::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_flac::showInfo( QWidget *parent )
+void soundkonverter_codec_flac::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -77,7 +77,7 @@ void soundkonverter_codec_flac::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_flac::newCodecWidget()
 {
     FlacCodecWidget *widget = new FlacCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
 int soundkonverter_codec_flac::convert(const QUrl &inputFile,
@@ -88,24 +88,24 @@ int soundkonverter_codec_flac::convert(const QUrl &inputFile,
                                        TagData *tags,
                                        bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
@@ -120,33 +120,28 @@ QStringList soundkonverter_codec_flac::convertCommand(const QUrl &inputFile,
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
-    if( inputFile.isEmpty() )
+    if (inputFile.isEmpty())
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "flac" )
-    {
+    if (outputCodec == "flac") {
         command += binaries["flac"];
         command += "-V";
-        if( conversionOptions->pluginName == global_plugin_name )
-        {
-            command += "--compression-level-"+QString::number((int)conversionOptions->compressionLevel);
+        if (conversionOptions->pluginName == global_plugin_name) {
+            command += "--compression-level-" + QString::number((int)conversionOptions->compressionLevel);
         }
-        if( conversionOptions->replaygain && replayGain )
-        {
+        if (conversionOptions->replaygain && replayGain) {
             command += "--replay-gain";
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "-o";
         command += "\"" + escapeUrl(outputFile) + "\"";
-    }
-    else
-    {
+    } else {
         command += binaries["flac"];
         command += "-d";
         command += "\"" + escapeUrl(inputFile) + "\"";
@@ -157,14 +152,13 @@ QStringList soundkonverter_codec_flac::convertCommand(const QUrl &inputFile,
     return command;
 }
 
-float soundkonverter_codec_flac::parseOutput( const QString& output )
+float soundkonverter_codec_flac::parseOutput(const QString &output)
 {
     // 01-Unknown.wav: 98% complete, ratio=0,479    // encode
     // 01-Unknown.wav: 27% complete                 // decode
 
     QRegExp regEnc("(\\d+)% complete");
-    if( output.contains(regEnc) )
-    {
+    if (output.contains(regEnc)) {
         return (float)regEnc.cap(1).toInt();
     }
 

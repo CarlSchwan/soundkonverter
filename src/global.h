@@ -18,7 +18,7 @@
 #define SOUNDKONVERTER_VERSION_STRING "3.0.1"
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class Global
 {
@@ -26,8 +26,7 @@ public:
     Global();
     ~Global();
 
-    static QString prettyNumber( double num, QString unit, short digits = 3 );
-
+    static QString prettyNumber(double num, QString unit, short digits = 3);
 };
 
 #endif
