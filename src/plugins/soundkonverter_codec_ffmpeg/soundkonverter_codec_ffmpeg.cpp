@@ -6,7 +6,10 @@
 #include "ffmpegcodecwidget.h"
 #include "soundkonverter_codec_ffmpeg.h"
 
+#include <KConfigGroup>
+#include <KLocalizedString>
 #include <KMessageBox>
+#include <KSharedConfig>
 #include <QCheckBox>
 #include <QDialog>
 #include <QFileInfo>
@@ -14,7 +17,7 @@
 
 // TODO check for decoders at runtime, too
 
-soundkonverter_codec_ffmpeg::soundkonverter_codec_ffmpeg(QObject *parent, const QVariantList &args)
+soundkonverter_codec_ffmpeg::soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -23,16 +26,14 @@ soundkonverter_codec_ffmpeg::soundkonverter_codec_ffmpeg(QObject *parent, const 
 
     binaries["ffmpeg"] = "";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group;
-
-    group = conf->group("Plugin-" + name());
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
+    KConfigGroup group = conf->group("Plugin-" + name());
     configVersion = group.readEntry("configVersion", 0);
     experimentalCodecsEnabled = group.readEntry("experimentalCodecsEnabled", false);
     ffmpegVersionMajor = group.readEntry("ffmpegVersionMajor", 0);
     ffmpegVersionMinor = group.readEntry("ffmpegVersionMinor", 0);
     ffmpegLastModified = group.readEntry("ffmpegLastModified", QDateTime());
-    ffmpegCodecList = group.readEntry("codecList", QStringList()).toSet();
+    ffmpegCodecList = group.readEntry("codecList", QStringList());
 
     // WARNING enabled codecs need to be rescanned everytime new codecs are added here -> increase plugin version
 
@@ -233,10 +234,10 @@ QList<ConversionPipeTrunk> soundkonverter_codec_ffmpeg::codecTable()
         }
     }
 
-    QSet<QString> codecs;
-    codecs += QSet<QString>::fromList(fromCodecs);
-    codecs += QSet<QString>::fromList(toCodecs);
-    allCodecs = codecs.toList();
+    QList<QString> codecs;
+    codecs += fromCodecs;
+    codecs += toCodecs;
+    allCodecs = codecs;
 
     return table;
 }
@@ -256,15 +257,13 @@ void soundkonverter_codec_ffmpeg::showConfigDialog(ActionType action, const QStr
 
     if (!configDialog.data()) {
         configDialog = new QDialog(parent);
-        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
-        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
+        configDialog.data()->setWindowTitle(i18n("Configure %1", *global_plugin_name));
+        // configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
 
-        QWidget *configDialogWidget = new QWidget(configDialog.data());
-        QHBoxLayout *configDialogBox = new QHBoxLayout(configDialogWidget);
-        configDialogExperimantalCodecsEnabledCheckBox = new QCheckBox(i18n("Enable experimental codecs"), configDialogWidget);
+        QHBoxLayout *configDialogBox = new QHBoxLayout(configDialog.data());
+        configDialogExperimantalCodecsEnabledCheckBox = new QCheckBox(i18n("Enable experimental codecs"), configDialog.data());
         configDialogBox->addWidget(configDialogExperimantalCodecsEnabledCheckBox);
 
-        configDialog.data()->setMainWidget(configDialogWidget);
         connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
         connect(configDialog.data(), SIGNAL(defaultClicked()), this, SLOT(configDialogDefault()));
     }
@@ -278,7 +277,7 @@ void soundkonverter_codec_ffmpeg::configDialogSave()
         const bool old_experimentalCodecsEnabled = experimentalCodecsEnabled;
         experimentalCodecsEnabled = configDialogExperimantalCodecsEnabledCheckBox->isChecked();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -403,16 +402,19 @@ float soundkonverter_codec_ffmpeg::parseOutput(const QString &output, int *lengt
     // Duration: 00:02:16.50, start: 0.000000, bitrate: 1411 kb/s
     // size=    2445kB time=00:01:58.31 bitrate= 169.3kbits/s
 
-    QRegExp regLength("Duration: (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
-    if (length && output.contains(regLength)) {
-        *length = regLength.cap(1).toInt() * 3600 + regLength.cap(2).toInt() * 60 + regLength.cap(3).toInt();
+    QRegularExpression regLength("Duration: (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
+    QRegularExpressionMatch match;
+    if (length && output.contains(regLength, &match)) {
+        *length = match.captured(1).toInt() * 3600 + match.captured(2).toInt() * 60 + match.captured(3).toInt();
     }
-    QRegExp reg1("time=(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
-    QRegExp reg2("time=(\\d+)\\.\\d");
-    if (output.contains(reg1)) {
-        return reg1.cap(1).toInt() * 3600 + reg1.cap(2).toInt() * 60 + reg1.cap(3).toInt();
-    } else if (output.contains(reg2)) {
-        return reg2.cap(1).toInt();
+    QRegularExpression reg1("time=(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
+    QRegularExpressionMatch match1;
+    QRegularExpression reg2("time=(\\d+)\\.\\d");
+    QRegularExpressionMatch match2;
+    if (output.contains(reg1, &match1)) {
+        return match1.captured(1).toInt() * 3600 + match1.captured(2).toInt() * 60 + match1.captured(3).toInt();
+    } else if (output.contains(reg2, &match2)) {
+        return match2.captured(1).toInt();
     }
 
     // TODO error handling
@@ -457,19 +459,21 @@ void soundkonverter_codec_ffmpeg::infoProcessExit(int exitCode, QProcess::ExitSt
     Q_UNUSED(exitStatus)
     Q_UNUSED(exitCode)
 
-    QRegExp regVersion("ffmpeg version (\\d+)\\.(\\d+) ");
-    if (infoProcessOutputData.contains(regVersion)) {
-        ffmpegVersionMajor = regVersion.cap(1).toInt();
-        ffmpegVersionMinor = regVersion.cap(2).toInt();
+    QRegularExpression regVersion("ffmpeg version (\\d+)\\.(\\d+) ");
+    QRegularExpressionMatch match;
+    if (infoProcessOutputData.contains(regVersion, &match)) {
+        ffmpegVersionMajor = match.captured(1).toInt();
+        ffmpegVersionMinor = match.captured(2).toInt();
     }
 
     ffmpegCodecList.clear();
 
     for (int i = 0; i < codecList.count(); i++) {
         for (int j = 0; j < codecList.at(i).ffmpegEnoderList.count(); j++) {
-            QRegExp regEncoder("[AVS][F\\.][S\\.]([X\\.])[B\\.][D\\.] " + codecList.at(i).ffmpegEnoderList.at(j).name + "\\b");
+            QRegularExpression regEncoder("[AVS][F\\.][S\\.]([X\\.])[B\\.][D\\.] " + codecList.at(i).ffmpegEnoderList.at(j).name + "\\b");
+            QRegularExpressionMatch match;
             if (infoProcessOutputData.contains(regEncoder)) {
-                const bool experimental = regEncoder.cap(1) == "X";
+                const bool experimental = match.captured(1) == "X";
                 if (experimental) {
                     codecList[i].ffmpegEnoderList[j].experimental = true;
                 }
@@ -481,7 +485,7 @@ void soundkonverter_codec_ffmpeg::infoProcessExit(int exitCode, QProcess::ExitSt
     QFileInfo ffmpegInfo(binaries["ffmpeg"]);
     ffmpegLastModified = ffmpegInfo.lastModified();
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -489,12 +493,12 @@ void soundkonverter_codec_ffmpeg::infoProcessExit(int exitCode, QProcess::ExitSt
     group.writeEntry("ffmpegVersionMajor", ffmpegVersionMajor);
     group.writeEntry("ffmpegVersionMinor", ffmpegVersionMinor);
     group.writeEntry("ffmpegLastModified", ffmpegLastModified);
-    group.writeEntry("codecList", ffmpegCodecList.toList());
+    group.writeEntry("codecList", ffmpegCodecList);
 
     infoProcessOutputData.clear();
     infoProcess.data()->deleteLater();
 }
 
-K_PLUGIN_FACTORY(codec_ffmpeg, registerPlugin<soundkonverter_codec_ffmpeg>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_ffmpegFactory, "soundkonverter_codec_ffmpeg.json", registerPlugin<soundkonverter_codec_ffmpeg>();)
 
 #include "soundkonverter_codec_ffmpeg.moc"

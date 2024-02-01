@@ -4,8 +4,9 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
 #include <QDateTime>
-#include <QWeakPointer>
+#include <QPointer>
 
 class ConversionOptions;
 class QDialog;
@@ -27,7 +28,7 @@ public:
     };
 
     /** Default Constructor */
-    soundkonverter_codec_ffmpeg(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_ffmpeg();
@@ -63,10 +64,10 @@ public:
 
 private:
     QList<CodecData> codecList;
-    QWeakPointer<KProcess> infoProcess;
+    QPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
-    QWeakPointer<QDialog> configDialog;
+    QPointer<QDialog> configDialog;
     QCheckBox *configDialogExperimantalCodecsEnabledCheckBox;
 
     int configVersion;
@@ -74,7 +75,7 @@ private:
     int ffmpegVersionMajor;
     int ffmpegVersionMinor;
     QDateTime ffmpegLastModified;
-    QSet<QString> ffmpegCodecList;
+    QList<QString> ffmpegCodecList;
 
 private slots:
     /** Get the process' output */
