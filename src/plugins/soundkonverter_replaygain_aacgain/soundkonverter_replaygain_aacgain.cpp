@@ -33,7 +33,7 @@ soundkonverter_replaygain_aacgain::soundkonverter_replaygain_aacgain(QObject *pa
     allCodecs += "m4v";
     allCodecs += "mp3";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -136,7 +136,7 @@ void soundkonverter_replaygain_aacgain::configDialogSave()
         modifyAudioStream = configDialogModifyAudioStreamCheckBox->isChecked();
         gainAdjustment = configDialogGainAdjustmentSpinBox->value();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());

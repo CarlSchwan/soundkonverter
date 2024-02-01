@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
+
 set(soundkonverter_codec_ffmpeg_SRCS
    soundkonverter_codec_ffmpeg.cpp
    ffmpegcodecwidget.cpp

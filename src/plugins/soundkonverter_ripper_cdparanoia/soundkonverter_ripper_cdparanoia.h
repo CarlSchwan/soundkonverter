@@ -6,8 +6,8 @@
 
 #include <KProcess>
 #include <QList>
+#include <QPointer>
 #include <QUrl>
-#include <QWeakPointer>
 
 class QDialog;
 class QCheckBox;
@@ -43,7 +43,7 @@ private slots:
     void processOutput();
 
 private:
-    QWeakPointer<QDialog> configDialog;
+    QPointer<QDialog> configDialog;
     QCheckBox *configDialogForceReadSpeedCheckBox;
     QSpinBox *configDialogForceReadSpeedSpinBox;
     QComboBox *configDialogForceEndiannessComboBox;

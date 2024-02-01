@@ -5,7 +5,7 @@
 #include "flakecodecwidget.h"
 #include "soundkonverter_codec_flake.h"
 
-soundkonverter_codec_flake::soundkonverter_codec_flake(QObject *parent, const QVariantList &args)
+soundkonverter_codec_flake::soundkonverter_codec_flake(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -139,14 +139,15 @@ float soundkonverter_codec_flake::parseOutput(const QString &output)
 {
     // progress:   6% | ratio: 0.556 | bitrate: 784.4 kbps
 
-    QRegExp regEnc("progress:\\s+(\\d+)%");
+    static QRegularExpression regEnc("progress:\\s+(\\d+)%");
+    QRegularExpressionMatch match;
     if (output.contains(regEnc)) {
-        return (float)regEnc.cap(1).toInt();
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_flake, registerPlugin<soundkonverter_codec_flake>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_flakeFactory, "soundkonverter_codec_flake.json", registerPlugin<soundkonverter_codec_flake>();)
 
 #include "soundkonverter_codec_flake.moc"

@@ -27,7 +27,7 @@ soundkonverter_ripper_cdparanoia::soundkonverter_ripper_cdparanoia(QObject *pare
 
     binaries["cdparanoia"] = "";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -156,7 +156,7 @@ void soundkonverter_ripper_cdparanoia::configDialogSave()
         enableParanoia = configDialogEnableParanoiaCheckBox->isChecked();
         enableExtraParanoia = configDialogEnableExtraParanoiaCheckBox->isChecked();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());

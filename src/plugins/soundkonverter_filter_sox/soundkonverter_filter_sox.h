@@ -5,7 +5,7 @@
 #include "../../core/filterplugin.h"
 
 #include <QDateTime>
-#include <QWeakPointer>
+#include <QPointer>
 
 class FilterOptions;
 class QDialog;
@@ -62,10 +62,10 @@ public:
 
 private:
     QList<SoxCodecData> codecList;
-    QWeakPointer<KProcess> infoProcess;
+    QPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
-    QWeakPointer<QDialog> configDialog;
+    QPointer<QDialog> configDialog;
     KComboBox *configDialogSamplingRateQualityComboBox;
 
     int configVersion;

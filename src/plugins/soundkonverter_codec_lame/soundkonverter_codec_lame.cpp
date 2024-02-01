@@ -6,17 +6,22 @@
 #include "soundkonverter_codec_lame.h"
 
 #include <KComboBox>
+#include <KConfigGroup>
+#include <KLocalizedString>
+#include <KPageDialog>
+#include <KSharedConfig>
 #include <QCheckBox>
 #include <QDialog>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
 #include <QLocale>
+#include <QPushButton>
 #include <QSlider>
 #include <QSpinBox>
 #include <QWidget>
 
-soundkonverter_codec_lame::soundkonverter_codec_lame(QObject *parent, const QVariantList &args)
+soundkonverter_codec_lame::soundkonverter_codec_lame(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -29,7 +34,7 @@ soundkonverter_codec_lame::soundkonverter_codec_lame(QObject *parent, const QVar
     allCodecs += "mp2";
     allCodecs += "wav";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -102,15 +107,26 @@ bool soundkonverter_codec_lame::isConfigSupported(ActionType action, const QStri
     return true;
 }
 
+class ConfigDialog : public KPageDialog
+{
+public:
+    explicit ConfigDialog(soundkonverter_codec_lame *plugin, QWidget *parent)
+    {
+        setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
+        setWindowTitle(i18n("Configure %1", *global_plugin_name));
+
+        connect(this, &ConfigDialog::accepted, plugin, &soundkonverter_codec_lame::configDialogSave);
+        connect(buttonBox()->button(QDialogButtonBox::Reset), &QPushButton::clicked, plugin, &soundkonverter_codec_lame::configDialogDefault);
+    }
+};
+
 void soundkonverter_codec_lame::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
 
     if (!configDialog.data()) {
-        configDialog = new QDialog(parent);
-        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
-        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
+        configDialog = new ConfigDialog(this, parent);
 
         QWidget *configDialogWidget = new QWidget(configDialog.data());
         QHBoxLayout *configDialogBox = new QHBoxLayout(configDialogWidget);
@@ -124,9 +140,7 @@ void soundkonverter_codec_lame::showConfigDialog(ActionType action, const QStrin
         configDialogStereoModeComboBox->addItem(i18n("Dual Mono"), "dual mono");
         configDialogBox->addWidget(configDialogStereoModeComboBox);
 
-        configDialog.data()->setMainWidget(configDialogWidget);
-        connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
-        connect(configDialog.data(), SIGNAL(defaultClicked()), this, SLOT(configDialogDefault()));
+        configDialog->addPage(configDialogWidget, "");
     }
     configDialogStereoModeComboBox->setCurrentIndex(configDialogStereoModeComboBox->findData(stereoMode));
     configDialog.data()->show();
@@ -137,7 +151,7 @@ void soundkonverter_codec_lame::configDialogSave()
     if (configDialog.data()) {
         stereoMode = configDialogStereoModeComboBox->itemData(configDialogStereoModeComboBox->currentIndex()).toString();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -162,16 +176,12 @@ bool soundkonverter_codec_lame::hasInfo()
 void soundkonverter_codec_lame::showInfo(QWidget *parent)
 {
     QDialog *dialog = new QDialog(parent);
-    dialog->setCaption(i18n("About %1", *global_plugin_name));
-    dialog->setButtons(QDialog::Ok);
+    dialog->setWindowTitle(i18n("About %1", *global_plugin_name));
 
-    QLabel *widget = new QLabel(dialog);
-
+    auto layout = new QVBoxLayout(dialog);
+    auto widget = new QLabel(dialog);
     widget->setText(i18n("LAME is a free high quality MP3 encoder.\nYou can get it at: http://lame.sourceforge.net"));
-
-    dialog->setMainWidget(widget);
-
-    dialog->enableButtonApply(false);
+    layout->addWidget(widget);
     dialog->show();
 }
 
@@ -360,6 +370,6 @@ ConversionOptions *soundkonverter_codec_lame::conversionOptionsFromXml(QDomEleme
     return options;
 }
 
-K_PLUGIN_FACTORY(codec_lame, registerPlugin<soundkonverter_codec_lame>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_lameFactory, "soundkonverter_codec_lame.json", registerPlugin<soundkonverter_codec_lame>();)
 
 #include "soundkonverter_codec_lame.moc"

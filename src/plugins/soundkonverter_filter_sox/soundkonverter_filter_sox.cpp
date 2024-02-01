@@ -23,7 +23,7 @@ soundkonverter_filter_sox::soundkonverter_filter_sox(QObject *parent, const QVar
 
     binaries["sox"] = "";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -249,7 +249,7 @@ void soundkonverter_filter_sox::configDialogSave()
     if (configDialog.data()) {
         samplingRateQuality = configDialogSamplingRateQualityComboBox->itemData(configDialogSamplingRateQualityComboBox->currentIndex()).toString();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -481,7 +481,7 @@ void soundkonverter_filter_sox::infoProcessExit(int exitCode, QProcess::ExitStat
         QFileInfo soxInfo(binaries["sox"]);
         soxLastModified = soxInfo.lastModified();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());

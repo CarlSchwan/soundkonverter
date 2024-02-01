@@ -6,15 +6,20 @@
 #include "libavcodecwidget.h"
 #include "soundkonverter_codec_libav.h"
 
+#include <KConfigGroup>
+#include <KLocalizedString>
 #include <KMessageBox>
+#include <KPageDialog>
+#include <KSharedConfig>
 #include <QCheckBox>
-#include <QDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
+#include <QPushButton>
+#include <QRegularExpression>
 
 // TODO check for decoders at runtime, too
 
-soundkonverter_codec_libav::soundkonverter_codec_libav(QObject *parent, const QVariantList &args)
+soundkonverter_codec_libav::soundkonverter_codec_libav(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -23,7 +28,7 @@ soundkonverter_codec_libav::soundkonverter_codec_libav(QObject *parent, const QV
 
     binaries["avconv"] = "";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -32,7 +37,7 @@ soundkonverter_codec_libav::soundkonverter_codec_libav(QObject *parent, const QV
     libavVersionMajor = group.readEntry("libavVersionMajor", 0);
     libavVersionMinor = group.readEntry("libavVersionMinor", 0);
     libavLastModified = group.readEntry("libavLastModified", QDateTime());
-    libavCodecList = group.readEntry("codecList", QStringList()).toSet();
+    libavCodecList = group.readEntry("codecList", QStringList());
 
     CodecData data;
     LibavCodecData libavData;
@@ -321,10 +326,17 @@ QList<ConversionPipeTrunk> soundkonverter_codec_libav::codecTable()
         }
     }
 
-    QSet<QString> codecs;
-    codecs += QSet<QString>::fromList(fromCodecs);
-    codecs += QSet<QString>::fromList(toCodecs);
-    allCodecs = codecs.toList();
+    allCodecs.clear();
+    for (const auto &codec : fromCodecs) {
+        if (!allCodecs.contains(codec)) {
+            allCodecs << codec;
+        }
+    }
+    for (const auto &codec : toCodecs) {
+        if (!allCodecs.contains(codec)) {
+            allCodecs << codec;
+        }
+    }
 
     return table;
 }
@@ -337,24 +349,36 @@ bool soundkonverter_codec_libav::isConfigSupported(ActionType action, const QStr
     return true;
 }
 
+class ConfigDialog : public KPageDialog
+{
+public:
+    explicit ConfigDialog(soundkonverter_codec_libav *plugin, QWidget *parent)
+        : KPageDialog(parent)
+    {
+        setWindowTitle(i18n("Configure %1", *global_plugin_name));
+        setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
+
+        connect(this, &QDialog::accepted, plugin, &soundkonverter_codec_libav::configDialogSave);
+        connect(buttonBox()->button(QDialogButtonBox::Reset), &QPushButton::clicked, this, [plugin]() {
+            plugin->configDialogSave();
+        });
+    }
+};
+
 void soundkonverter_codec_libav::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
 
     if (!configDialog.data()) {
-        configDialog = new QDialog(parent);
-        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
-        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
+        configDialog = new ConfigDialog(this, parent);
 
         QWidget *configDialogWidget = new QWidget(configDialog.data());
         QHBoxLayout *configDialogBox = new QHBoxLayout(configDialogWidget);
         configDialogExperimantalCodecsEnabledCheckBox = new QCheckBox(i18n("Enable experimental codecs"), configDialogWidget);
         configDialogBox->addWidget(configDialogExperimantalCodecsEnabledCheckBox);
 
-        configDialog.data()->setMainWidget(configDialogWidget);
-        connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
-        connect(configDialog.data(), SIGNAL(defaultClicked()), this, SLOT(configDialogDefault()));
+        configDialog.data()->addPage(configDialogWidget, "");
     }
     configDialogExperimantalCodecsEnabledCheckBox->setChecked(experimentalCodecsEnabled);
     configDialog.data()->show();
@@ -366,7 +390,7 @@ void soundkonverter_codec_libav::configDialogSave()
         const bool old_experimentalCodecsEnabled = experimentalCodecsEnabled;
         experimentalCodecsEnabled = configDialogExperimantalCodecsEnabledCheckBox->isChecked();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -491,16 +515,19 @@ float soundkonverter_codec_libav::parseOutput(const QString &output, int *length
     // Duration: 00:02:16.50, start: 0.000000, bitrate: 1411 kb/s
     // size=    2445kB time=158.31 bitrate= 169.3kbits/s
 
-    QRegExp regLength("Duration: (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
-    if (length && output.contains(regLength)) {
-        *length = regLength.cap(1).toInt() * 3600 + regLength.cap(2).toInt() * 60 + regLength.cap(3).toInt();
+    QRegularExpression regLength("Duration: (\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
+    QRegularExpressionMatch match;
+    if (length && output.contains(regLength, &match)) {
+        *length = match.captured(1).toInt() * 3600 + match.captured(2).toInt() * 60 + match.captured(3).toInt();
     }
-    QRegExp reg1("time=(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
-    QRegExp reg2("time=(\\d+)\\.\\d");
-    if (output.contains(reg1)) {
-        return (float)reg1.cap(1).toInt() * 3600 + (float)reg1.cap(2).toInt() * 60 + (float)reg1.cap(3).toInt();
-    } else if (output.contains(reg2)) {
-        return (float)reg2.cap(1).toInt();
+    QRegularExpression reg1("time=(\\d{2}):(\\d{2}):(\\d{2})\\.(\\d{2})");
+    QRegularExpressionMatch match1;
+    QRegularExpression reg2("time=(\\d+)\\.\\d");
+    QRegularExpressionMatch match2;
+    if (output.contains(reg1, &match1)) {
+        return (float)match1.captured(1).toInt() * 3600 + (float)match1.captured(2).toInt() * 60 + (float)match1.captured(3).toInt();
+    } else if (output.contains(reg2, &match2)) {
+        return (float)match2.captured(1).toInt();
     }
 
     // TODO error handling
@@ -545,17 +572,18 @@ void soundkonverter_codec_libav::infoProcessExit(int exitCode, QProcess::ExitSta
     Q_UNUSED(exitStatus)
     Q_UNUSED(exitCode)
 
-    QRegExp regVersion("libav version (\\d+)\\.(\\d+) ");
-    if (infoProcessOutputData.contains(regVersion)) {
-        libavVersionMajor = regVersion.cap(1).toInt();
-        libavVersionMinor = regVersion.cap(2).toInt();
+    QRegularExpression regVersion("libav version (\\d+)\\.(\\d+) ");
+    QRegularExpressionMatch match;
+    if (infoProcessOutputData.contains(regVersion, &match)) {
+        libavVersionMajor = match.captured(1).toInt();
+        libavVersionMinor = match.captured(2).toInt();
     }
 
     libavCodecList.clear();
 
     for (int i = 0; i < codecList.count(); i++) {
         for (int j = 0; j < codecList.at(i).libavCodecList.count(); j++) {
-            if (infoProcessOutputData.contains(QRegExp(" (D| )E.{4} " + codecList.at(i).libavCodecList.at(j).name + " "))) {
+            if (infoProcessOutputData.contains(QRegularExpression(" (D| )E.{4} " + codecList.at(i).libavCodecList.at(j).name + " "))) {
                 libavCodecList += codecList.at(i).libavCodecList.at(j).name;
             }
         }
@@ -564,7 +592,7 @@ void soundkonverter_codec_libav::infoProcessExit(int exitCode, QProcess::ExitSta
     QFileInfo libavInfo(binaries["avconv"]);
     libavLastModified = libavInfo.lastModified();
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -578,6 +606,6 @@ void soundkonverter_codec_libav::infoProcessExit(int exitCode, QProcess::ExitSta
     infoProcess.data()->deleteLater();
 }
 
-K_PLUGIN_FACTORY(codec_libav, registerPlugin<soundkonverter_codec_libav>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_libavFactory, "soundkonverter_codec_libav.json", registerPlugin<soundkonverter_codec_libav>();)
 
 #include "soundkonverter_codec_libav.moc"

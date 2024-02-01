@@ -3,7 +3,6 @@
 
 #include "soundkonverter_replaygain_musepackgain.h"
 
-#include <KStandardDirs>
 #include <QFile>
 
 soundkonverter_replaygain_musepackgain::soundkonverter_replaygain_musepackgain(QObject *parent, const QVariantList &args)

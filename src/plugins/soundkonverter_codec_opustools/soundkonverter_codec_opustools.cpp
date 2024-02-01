@@ -23,7 +23,7 @@ soundkonverter_codec_opustools::soundkonverter_codec_opustools(QObject *parent, 
     allCodecs += "opus";
     allCodecs += "wav";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -103,7 +103,7 @@ void soundkonverter_codec_opustools::configDialogSave()
     if (configDialog.data()) {
         uncoupledChannels = configDialogUncoupledChannelsCheckBox->isChecked();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -234,6 +234,6 @@ ConversionOptions *soundkonverter_codec_opustools::conversionOptionsFromXml(QDom
     return options;
 }
 
-K_PLUGIN_FACTORY(codec_opustools, registerPlugin<soundkonverter_codec_opustools>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_opustoolsFactory, "soundkonverter_codec_opustools.json", registerPlugin<soundkonverter_codec_opustools>();)
 
 #include "soundkonverter_codec_opustools.moc"

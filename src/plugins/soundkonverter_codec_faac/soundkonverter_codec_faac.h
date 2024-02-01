@@ -4,8 +4,9 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
 #include <QDateTime>
-#include <QWeakPointer>
+#include <QPointer>
 
 class ConversionOptions;
 
@@ -14,7 +15,7 @@ class soundkonverter_codec_faac : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_faac(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_faac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_faac();
@@ -48,7 +49,7 @@ public:
     float parseOutput(const QString &output);
 
 private:
-    QWeakPointer<KProcess> infoProcess;
+    QPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
     int configVersion;

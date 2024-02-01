@@ -145,6 +145,6 @@ float soundkonverter_codec_timidity::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_timidity, registerPlugin<soundkonverter_codec_timidity>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_timidityFactory, "soundkonverter_codec_timidity.json", registerPlugin<soundkonverter_codec_timidity>();)
 
 #include "soundkonverter_codec_timidity.moc"

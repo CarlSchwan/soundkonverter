@@ -4,11 +4,12 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
 #include <QDateTime>
-#include <QWeakPointer>
+#include <QPointer>
 
 class ConversionOptions;
-class QDialog;
+class KPageDialog;
 class QCheckBox;
 
 class soundkonverter_codec_libav : public CodecPlugin
@@ -28,7 +29,7 @@ public:
     };
 
     /** Default Constructor */
-    soundkonverter_codec_libav(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_libav(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_libav();
@@ -64,10 +65,10 @@ public:
 
 private:
     QList<CodecData> codecList;
-    QWeakPointer<KProcess> infoProcess;
+    QPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
-    QWeakPointer<QDialog> configDialog;
+    QPointer<KPageDialog> configDialog;
     QCheckBox *configDialogExperimantalCodecsEnabledCheckBox;
 
     int configVersion;
@@ -75,14 +76,15 @@ private:
     int libavVersionMajor;
     int libavVersionMinor;
     QDateTime libavLastModified;
-    QSet<QString> libavCodecList;
+    QList<QString> libavCodecList;
 
-private slots:
-    /** Get the process' output */
-    void processOutput();
-
+public Q_SLOTS:
     void configDialogSave();
     void configDialogDefault();
+
+private Q_SLOTS:
+    /** Get the process' output */
+    void processOutput();
 
     void infoProcessOutput();
     void infoProcessExit(int exitCode, QProcess::ExitStatus exitStatus);

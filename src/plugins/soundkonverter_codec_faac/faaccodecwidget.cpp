@@ -5,6 +5,7 @@
 #include "faaccodecwidget.h"
 
 #include <KComboBox>
+#include <KLocalizedString>
 #include <QLabel>
 #include <QLayout>
 #include <QLocale>

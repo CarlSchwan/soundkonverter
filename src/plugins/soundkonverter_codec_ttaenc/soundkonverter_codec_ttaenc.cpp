@@ -159,6 +159,6 @@ float soundkonverter_codec_ttaenc::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_ttaenc, registerPlugin<soundkonverter_codec_ttaenc>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_ttaencFactory, "soundkonverter_codec_ttaenc.json", registerPlugin<soundkonverter_codec_ttaenc>();)
 
 #include "soundkonverter_codec_ttaenc.moc"

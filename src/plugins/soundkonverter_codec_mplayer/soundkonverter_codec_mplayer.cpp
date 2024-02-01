@@ -208,6 +208,6 @@ float soundkonverter_codec_mplayer::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_mplayer, registerPlugin<soundkonverter_codec_mplayer>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_mplayerFactory, "soundkonverter_codec_mplayer.json", registerPlugin<soundkonverter_codec_mplayer>();)
 
 #include "soundkonverter_codec_mplayer.moc"

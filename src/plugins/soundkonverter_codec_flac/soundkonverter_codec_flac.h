@@ -4,6 +4,8 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
+
 class ConversionOptions;
 
 class soundkonverter_codec_flac : public CodecPlugin
@@ -11,7 +13,7 @@ class soundkonverter_codec_flac : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_flac(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_flac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_flac();

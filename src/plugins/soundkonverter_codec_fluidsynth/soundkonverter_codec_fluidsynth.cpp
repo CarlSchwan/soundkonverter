@@ -5,13 +5,16 @@
 #include "fluidsynthcodecwidget.h"
 #include "soundkonverter_codec_fluidsynth.h"
 
+#include <KConfigGroup>
+#include <KLocalizedString>
+#include <KPageDialog>
+#include <KSharedConfig>
 #include <KUrlRequester>
 #include <QApplication>
-#include <QDialog>
 #include <QHBoxLayout>
 #include <QLabel>
 
-soundkonverter_codec_fluidsynth::soundkonverter_codec_fluidsynth(QObject *parent, const QVariantList &args)
+soundkonverter_codec_fluidsynth::soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -24,7 +27,7 @@ soundkonverter_codec_fluidsynth::soundkonverter_codec_fluidsynth(QObject *parent
     allCodecs += "mod";
     allCodecs += "wav";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -80,9 +83,9 @@ void soundkonverter_codec_fluidsynth::showConfigDialog(ActionType action, const 
     if (!configDialog.data()) {
         const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-        configDialog = new QDialog(parent);
-        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
-        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel);
+        configDialog = new KPageDialog(parent);
+        configDialog.data()->setWindowTitle(i18n("Configure %1", *global_plugin_name));
+        configDialog.data()->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
         QWidget *configDialogWidget = new QWidget(configDialog.data());
         QHBoxLayout *configDialogBox = new QHBoxLayout(configDialogWidget);
@@ -96,8 +99,8 @@ void soundkonverter_codec_fluidsynth::showConfigDialog(ActionType action, const 
         configDialogSoundFontUrlRequester->setMinimumWidth(30 * fontHeight);
         configDialogBox->addWidget(configDialogSoundFontUrlRequester);
 
-        configDialog.data()->setMainWidget(configDialogWidget);
-        connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
+        configDialog.data()->addPage(configDialogWidget, "");
+        connect(configDialog.data(), &QDialog::accepted, this, &soundkonverter_codec_fluidsynth::configDialogSave);
     }
     configDialogSoundFontUrlRequester->setUrl(soundFontFile);
     configDialog.data()->show();
@@ -108,7 +111,7 @@ void soundkonverter_codec_fluidsynth::configDialogSave()
     if (configDialog.data()) {
         soundFontFile = configDialogSoundFontUrlRequester->url().toLocalFile();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());
@@ -211,6 +214,6 @@ float soundkonverter_codec_fluidsynth::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_fluidsynth, registerPlugin<soundkonverter_codec_fluidsynth>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_fluidsynthFactory, "soundkonverter_codec_fluidsynth.json", registerPlugin<soundkonverter_codec_fluidsynth>();)
 
 #include "soundkonverter_codec_fluidsynth.moc"

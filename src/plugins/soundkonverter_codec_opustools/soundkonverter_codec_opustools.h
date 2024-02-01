@@ -4,7 +4,7 @@
 
 #include "../../core/codecplugin.h"
 
-#include <QWeakPointer>
+#include <QPointer>
 
 class ConversionOptions;
 class QDialog;
@@ -49,7 +49,7 @@ public:
     ConversionOptions *conversionOptionsFromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
 private:
-    QWeakPointer<QDialog> configDialog;
+    QPointer<QDialog> configDialog;
     QCheckBox *configDialogUncoupledChannelsCheckBox;
 
     int configVersion;

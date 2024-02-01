@@ -6,9 +6,11 @@
 #include "soundkonverter_codec_faac.h"
 
 #include <KConfigGroup>
+#include <KLocalizedString>
+#include <KSharedConfig>
 #include <QFileInfo>
 
-soundkonverter_codec_faac::soundkonverter_codec_faac(QObject *parent, const QVariantList &args)
+soundkonverter_codec_faac::soundkonverter_codec_faac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -16,7 +18,7 @@ soundkonverter_codec_faac::soundkonverter_codec_faac(QObject *parent, const QVar
     binaries["faac"] = "";
     binaries["faad"] = "";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -222,16 +224,18 @@ float soundkonverter_codec_faac::parseOutput(const QString &output)
 {
     //  9397/9397  (100%)|  136.1  |    9.1/9.1    |   23.92x | 0.0
 
-    QRegExp regEnc("(\\d+)/(\\d+)");
-    if (output.contains(regEnc)) {
-        return (float)regEnc.cap(1).toInt() * 100 / regEnc.cap(2).toInt();
+    static QRegularExpression regEnc("(\\d+)/(\\d+)");
+    QRegularExpressionMatch match;
+    if (output.contains(regEnc, &match)) {
+        return (float)match.captured(1).toInt() * 100 / match.captured(2).toInt();
     }
 
     // 15% decoding xxx
 
-    QRegExp regDec("(\\d+)%");
+    static QRegularExpression regDec("(\\d+)%");
+    QRegularExpressionMatch match1;
     if (output.contains(regDec)) {
-        return (float)regDec.cap(1).toInt();
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
@@ -256,7 +260,7 @@ void soundkonverter_codec_faac::infoProcessExit(int exitCode, QProcess::ExitStat
     QFileInfo ffmpegInfo(binaries["faac"]);
     faacLastModified = ffmpegInfo.lastModified();
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -268,6 +272,6 @@ void soundkonverter_codec_faac::infoProcessExit(int exitCode, QProcess::ExitStat
     infoProcess.data()->deleteLater();
 }
 
-K_PLUGIN_FACTORY(codec_faac, registerPlugin<soundkonverter_codec_faac>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_faacFactory, "soundkonverter_codec_faac.json", registerPlugin<soundkonverter_codec_faac>();)
 
 #include "soundkonverter_codec_faac.moc"

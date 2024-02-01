@@ -158,6 +158,6 @@ float soundkonverter_codec_speex::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_speex, registerPlugin<soundkonverter_codec_speex>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_speexFactory, "soundkonverter_codec_speex.json", registerPlugin<soundkonverter_codec_speex>();)
 
 #include "soundkonverter_codec_speex.moc"

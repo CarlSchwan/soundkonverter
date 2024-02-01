@@ -4,8 +4,8 @@
 
 #include "../../core/replaygainplugin.h"
 
+#include <QPointer>
 #include <QUrl>
-#include <QWeakPointer>
 
 class ConversionOptions;
 class QDialog;
@@ -46,7 +46,7 @@ public:
     float parseOutput(const QString &output);
 
 private:
-    QWeakPointer<QDialog> configDialog;
+    QPointer<QDialog> configDialog;
     QComboBox *configDialogTagModeComboBox;
     QCheckBox *configDialogModifyAudioStreamCheckBox;
     QDoubleSpinBox *configDialogGainAdjustmentSpinBox;

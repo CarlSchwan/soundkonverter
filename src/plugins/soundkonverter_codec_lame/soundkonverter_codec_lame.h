@@ -4,11 +4,12 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
+#include <QPointer>
 #include <QUrl>
-#include <QWeakPointer>
 
 class ConversionOptions;
-class QDialog;
+class KPageDialog;
 class KComboBox;
 
 class soundkonverter_codec_lame : public CodecPlugin
@@ -16,7 +17,7 @@ class soundkonverter_codec_lame : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_lame(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_lame(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_lame();
@@ -50,13 +51,13 @@ public:
     ConversionOptions *conversionOptionsFromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
 private:
-    QWeakPointer<QDialog> configDialog;
+    QPointer<KPageDialog> configDialog;
     KComboBox *configDialogStereoModeComboBox;
 
     int configVersion;
     QString stereoMode;
 
-private slots:
+public Q_SLOTS:
     void configDialogSave();
     void configDialogDefault();
 };

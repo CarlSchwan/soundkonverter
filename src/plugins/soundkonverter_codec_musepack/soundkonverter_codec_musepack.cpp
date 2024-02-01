@@ -5,10 +5,10 @@
 #include "musepackconversionoptions.h"
 #include "soundkonverter_codec_musepack.h"
 
-#include <KStandardDirs>
 #include <QFile>
+#include <QStandardPaths>
 
-soundkonverter_codec_musepack::soundkonverter_codec_musepack(QObject *parent, const QVariantList &args)
+soundkonverter_codec_musepack::soundkonverter_codec_musepack(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -31,9 +31,9 @@ QString soundkonverter_codec_musepack::name() const
 
 void soundkonverter_codec_musepack::scanForBackends(const QStringList &directoryList)
 {
-    binaries["mppenc"] = KStandardDirs::findExe("mppenc"); // sv7
+    binaries["mppenc"] = QStandardPaths::findExecutable("mppenc"); // sv7
     if (binaries["mppenc"].isEmpty())
-        binaries["mppenc"] = KStandardDirs::findExe("mpcenc"); // sv8
+        binaries["mppenc"] = QStandardPaths::findExecutable("mpcenc"); // sv8
 
     if (binaries["mppenc"].isEmpty()) {
         for (QList<QString>::const_iterator b = directoryList.begin(); b != directoryList.end(); ++b) {
@@ -47,9 +47,9 @@ void soundkonverter_codec_musepack::scanForBackends(const QStringList &directory
         }
     }
 
-    binaries["mppdec"] = KStandardDirs::findExe("mppdec"); // sv7
+    binaries["mppdec"] = QStandardPaths::findExecutable("mppdec"); // sv7
     if (binaries["mppdec"].isEmpty())
-        binaries["mppdec"] = KStandardDirs::findExe("mpcdec"); // sv8
+        binaries["mppdec"] = QStandardPaths::findExecutable("mpcdec"); // sv8
 
     if (binaries["mppdec"].isEmpty()) {
         for (QList<QString>::const_iterator b = directoryList.begin(); b != directoryList.end(); ++b) {
@@ -238,6 +238,6 @@ ConversionOptions *soundkonverter_codec_musepack::conversionOptionsFromXml(QDomE
     return options;
 }
 
-K_PLUGIN_FACTORY(codec_musepack, registerPlugin<soundkonverter_codec_musepack>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_musepackFactory, "soundkonverter_codec_musepack.json", registerPlugin<soundkonverter_codec_musepack>();)
 
 #include "soundkonverter_codec_musepack.moc"

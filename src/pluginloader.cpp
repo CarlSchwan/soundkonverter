@@ -160,6 +160,8 @@ void PluginLoader::load()
                 }
             }
             logger->log(1000, "");
+
+            codecPlugins << plugin;
         } else {
             logger->log(1000, "<pre>\t<span style=\"color:red\">failed to load plugin: " + codecsPlugin.fileName() + "</span></pre>");
         }

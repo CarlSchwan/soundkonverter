@@ -220,6 +220,6 @@ void soundkonverter_codec_neroaac::processOutput()
     }
 }
 
-K_PLUGIN_FACTORY(codec_neroaac, registerPlugin<soundkonverter_codec_neroaac>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_neroaacFactory, "soundkonverter_codec_neroaac.json", registerPlugin<soundkonverter_codec_neroaac>();)
 
 #include "soundkonverter_codec_neroaac.moc"

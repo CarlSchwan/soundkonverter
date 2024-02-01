@@ -155,6 +155,6 @@ float soundkonverter_codec_shorten::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_shorten, registerPlugin<soundkonverter_codec_shorten>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_shortenFactory, "soundkonverter_codec_shorten.json", registerPlugin<soundkonverter_codec_shorten>();)
 
 #include "soundkonverter_codec_shorten.moc"

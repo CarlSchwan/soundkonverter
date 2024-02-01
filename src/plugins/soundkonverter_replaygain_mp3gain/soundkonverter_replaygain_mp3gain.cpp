@@ -32,7 +32,7 @@ soundkonverter_replaygain_mp3gain::soundkonverter_replaygain_mp3gain(QObject *pa
 
     allCodecs += "mp3";
 
-    KSharedConfig::Ptr conf = KGlobal::config();
+    KSharedConfig::Ptr conf = KSharedConfig::openConfig();
     KConfigGroup group;
 
     group = conf->group("Plugin-" + name());
@@ -129,7 +129,7 @@ void soundkonverter_replaygain_mp3gain::configDialogSave()
         modifyAudioStream = configDialogModifyAudioStreamCheckBox->isChecked();
         gainAdjustment = configDialogGainAdjustmentSpinBox->value();
 
-        KSharedConfig::Ptr conf = KGlobal::config();
+        KSharedConfig::Ptr conf = KSharedConfig::openConfig();
         KConfigGroup group;
 
         group = conf->group("Plugin-" + name());

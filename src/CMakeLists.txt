@@ -14,7 +14,7 @@ set(soundkonvertercore_SRCS
 )
 
 add_library(soundkonvertercore SHARED ${soundkonvertercore_SRCS})
-target_link_libraries(soundkonvertercore KF6::WidgetsAddons KF6::KIOFileWidgets KF6::KIOCore KF6::I18n KF6::StatusNotifierItem)
+target_link_libraries(soundkonvertercore KF6::WidgetsAddons KF6::KIOFileWidgets KF6::KIOCore KF6::I18n KF6::StatusNotifierItem KF6::KCMUtils)
 
 install(TARGETS soundkonvertercore DESTINATION ${LIB_INSTALL_DIR})
 

@@ -5,6 +5,7 @@
 #include "flakecodecwidget.h"
 
 #include <KLineEdit>
+#include <KLocalizedString>
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>

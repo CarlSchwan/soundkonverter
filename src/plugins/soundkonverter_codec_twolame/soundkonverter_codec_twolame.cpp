@@ -211,6 +211,6 @@ float soundkonverter_codec_twolame::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_twolame, registerPlugin<soundkonverter_codec_twolame>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_twolameFactory, "soundkonverter_codec_twolame.json", registerPlugin<soundkonverter_codec_twolame>();)
 
 #include "soundkonverter_codec_twolame.moc"

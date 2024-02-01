@@ -6,6 +6,7 @@
 
 #include <KComboBox>
 #include <KLineEdit>
+#include <KLocalizedString>
 #include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QLabel>

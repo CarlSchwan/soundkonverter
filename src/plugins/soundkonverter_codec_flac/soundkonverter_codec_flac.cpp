@@ -4,8 +4,9 @@
 #include "../../core/conversionoptions.h"
 #include "flaccodecwidget.h"
 #include "soundkonverter_codec_flac.h"
+#include <QRegularExpression>
 
-soundkonverter_codec_flac::soundkonverter_codec_flac(QObject *parent, const QVariantList &args)
+soundkonverter_codec_flac::soundkonverter_codec_flac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -157,14 +158,15 @@ float soundkonverter_codec_flac::parseOutput(const QString &output)
     // 01-Unknown.wav: 98% complete, ratio=0,479    // encode
     // 01-Unknown.wav: 27% complete                 // decode
 
-    QRegExp regEnc("(\\d+)% complete");
-    if (output.contains(regEnc)) {
-        return (float)regEnc.cap(1).toInt();
+    static QRegularExpression regEnc("(\\d+)% complete");
+    QRegularExpressionMatch match;
+    if (output.contains(regEnc, &match)) {
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_flac, registerPlugin<soundkonverter_codec_flac>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_flacFactory, "soundkonverter_codec_flac.json", registerPlugin<soundkonverter_codec_flac>();)
 
 #include "soundkonverter_codec_flac.moc"

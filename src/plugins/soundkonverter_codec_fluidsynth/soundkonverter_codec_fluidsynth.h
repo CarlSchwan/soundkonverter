@@ -4,11 +4,12 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
+#include <QPointer>
 #include <QUrl>
-#include <QWeakPointer>
 
 class ConversionOptions;
-class QDialog;
+class KPageDialog;
 class KUrlRequester;
 
 class soundkonverter_codec_fluidsynth : public CodecPlugin
@@ -16,7 +17,7 @@ class soundkonverter_codec_fluidsynth : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_fluidsynth(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_fluidsynth();
@@ -47,7 +48,7 @@ public:
     float parseOutput(const QString &output);
 
 private:
-    QWeakPointer<QDialog> configDialog;
+    QPointer<KPageDialog> configDialog;
     KUrlRequester *configDialogSoundFontUrlRequester;
 
     QUrl soundFontFile;

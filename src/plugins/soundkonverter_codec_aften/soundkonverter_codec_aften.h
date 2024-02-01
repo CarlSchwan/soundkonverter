@@ -3,6 +3,7 @@
 #define SOUNDKONVERTER_CODEC_AFTEN_H
 
 #include "../../core/codecplugin.h"
+#include <KPluginMetaData>
 
 class ConversionOptions;
 
@@ -11,7 +12,7 @@ class soundkonverter_codec_aften : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_aften(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_aften(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_aften();

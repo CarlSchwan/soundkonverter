@@ -178,6 +178,8 @@ float soundkonverter_codec_vorbistools::parseOutput(const QString &output)
     return data.toFloat();
 }
 
-K_PLUGIN_FACTORY(codec_vorbistools, registerPlugin<soundkonverter_codec_vorbistools>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_vorbistoolsFactory,
+                           "soundkonverter_codec_vorbistools.json",
+                           registerPlugin<soundkonverter_codec_vorbistools>();)
 
 #include "soundkonverter_codec_vorbistools.moc"

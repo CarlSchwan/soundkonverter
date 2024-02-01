@@ -14,6 +14,7 @@
 #include <QSpinBox>
 
 #include <KLineEdit>
+#include <KLocalizedString>
 
 LameCodecWidget::LameCodecWidget()
     : CodecWidget()

@@ -5,7 +5,10 @@
 #include "aftencodecwidget.h"
 #include "soundkonverter_codec_aften.h"
 
-soundkonverter_codec_aften::soundkonverter_codec_aften(QObject *parent, const QVariantList &args)
+#include <KPluginFactory>
+#include <QRegularExpression>
+
+soundkonverter_codec_aften::soundkonverter_codec_aften(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -147,14 +150,15 @@ float soundkonverter_codec_aften::parseOutput(const QString &output)
 {
     // progress:  59% | q: 269.7 | bw: 44.0 | bitrate: 192.0 kbps
 
-    QRegExp reg("progress:\\s+(\\d+)%");
-    if (output.contains(reg)) {
-        return (float)reg.cap(1).toInt();
+    static QRegularExpression reg("progress:\\s+(\\d+)%");
+    QRegularExpressionMatch match;
+    if (output.contains(reg, &match)) {
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_aften, registerPlugin<soundkonverter_codec_aften>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_aftenFactory, "soundkonverter_codec_aften.json", registerPlugin<soundkonverter_codec_aften>();)
 
 #include "soundkonverter_codec_aften.moc"

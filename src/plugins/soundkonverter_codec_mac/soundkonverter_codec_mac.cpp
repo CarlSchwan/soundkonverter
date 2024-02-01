@@ -165,5 +165,5 @@ float soundkonverter_codec_mac::parseOutput(const QString &output)
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_mac, registerPlugin<soundkonverter_codec_mac>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_macFactory, "soundkonverter_codec_mac.json", registerPlugin<soundkonverter_codec_mac>();)
 #include "soundkonverter_codec_mac.moc"

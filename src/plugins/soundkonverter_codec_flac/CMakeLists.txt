@@ -1,14 +1,13 @@
-project(soundkonverter_codec_flac)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_flac_SRCS
    soundkonverter_codec_flac.cpp
    flaccodecwidget.cpp
 )
 
-add_library(soundkonverter_codec_flac MODULE ${soundkonverter_codec_flac_SRCS})
+kcoreaddons_add_plugin(soundkonverter_codec_flac
+    SOURCES ${soundkonverter_codec_flac_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
+
 target_link_libraries(soundkonverter_codec_flac KF6::WidgetsAddons Qt6::Xml soundkonvertercore)
-
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_flac DESTINATION ${KDE_INSTALL_PLUGINDIR})
-install(FILES soundkonverter_codec_flac.desktop DESTINATION ${SERVICES_INSTALL_DIR})

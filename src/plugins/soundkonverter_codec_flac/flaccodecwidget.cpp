@@ -4,6 +4,7 @@
 #include "../../core/conversionoptions.h"
 #include "flaccodecwidget.h"
 
+#include <KLocalizedString>
 #include <QLabel>
 #include <QLayout>
 #include <QLocale>

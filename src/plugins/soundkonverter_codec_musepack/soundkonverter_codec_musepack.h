@@ -3,6 +3,7 @@
 #define SOUNDKONVERTER_CODEC_MUSEPACK_H
 
 #include "../../core/codecplugin.h"
+#include <KPluginMetaData>
 
 class ConversionOptions;
 
@@ -11,7 +12,7 @@ class soundkonverter_codec_musepack : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_musepack(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_musepack(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_musepack();
