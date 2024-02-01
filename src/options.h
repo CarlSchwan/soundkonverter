@@ -10,8 +10,7 @@ class OptionsDetailed;
 class Config;
 class ConversionOptions;
 
-class KTabWidget;
-
+class QTabWidget;
 
 /**
  * @short The widget, where we can set our output options
@@ -23,7 +22,7 @@ class Options : public QWidget
     Q_OBJECT
 public:
     /** Constructor */
-    Options( Config *_config, const QString& text, QWidget *parent );
+    Options(Config *_config, const QString &text, QWidget *parent);
 
     /** Destructor */
     ~Options();
@@ -32,20 +31,20 @@ public:
     ConversionOptions *currentConversionOptions();
 
     /** Set the current options */
-    bool setCurrentConversionOptions( const ConversionOptions* optionsptions );
+    bool setCurrentConversionOptions(const ConversionOptions *optionsptions);
 
 public slots:
     /** Set the current profile */
-    void setProfile( const QString& profile );
+    void setProfile(const QString &profile);
 
     /** Set the current format */
-    void setFormat( const QString& format );
+    void setFormat(const QString &format);
 
     /** Set the current output directory mode */
-    void setOutputDirectoryMode( int mode );
+    void setOutputDirectoryMode(int mode);
 
     /** Set the current output directory */
-    void setOutputDirectory( const QString& directory );
+    void setOutputDirectory(const QString &directory);
 
     /** Should be called if the conversion options have been accepted by the user */
     void accepted();
@@ -53,19 +52,17 @@ public slots:
 private:
     Config *config;
 
-    KTabWidget *tab;
+    QTabWidget *tab;
 
     OptionsSimple *optionsSimple;
     OptionsDetailed *optionsDetailed;
 
-
 private slots:
-    void tabChanged( const int pageIndex );
+    void tabChanged(const int pageIndex);
     void simpleOutputDirectoryModeChanged(const int mode);
-    void simpleOutputDirectoryChanged(const QString&);
+    void simpleOutputDirectoryChanged(const QString &);
     void simpleOptionsChanged();
     void detailedOutputDirectoryModeChanged(const int mode);
-
 };
 
 #endif // OPTIONS_H

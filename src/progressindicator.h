@@ -3,12 +3,12 @@
 #ifndef PROGRESSINDICATOR_H
 #define PROGRESSINDICATOR_H
 
-#include <QWidget>
 #include <QDateTime>
+#include <QElapsedTimer>
+#include <QWidget>
 
 class QProgressBar;
 class QLabel;
-
 
 class TrailingAverage
 {
@@ -16,8 +16,8 @@ public:
     TrailingAverage();
     ~TrailingAverage();
 
-    void setCount( int _count );
-    void addData( float _deltaTime, float _deltaValue );
+    void setCount(int _count);
+    void addData(float _deltaTime, float _deltaValue);
     float average();
 
 private:
@@ -35,22 +35,17 @@ class ProgressIndicator : public QWidget
 {
     Q_OBJECT
 public:
-    enum Feature
-    {
-        FeatureNone  = 0,
-        FeatureSpeed = 1,
-        FeatureTime  = 2
-    };
+    enum Feature { FeatureNone = 0, FeatureSpeed = 1, FeatureTime = 2 };
 
-    ProgressIndicator( QWidget *parent, Feature features = FeatureNone );
+    ProgressIndicator(QWidget *parent, Feature features = FeatureNone);
     ~ProgressIndicator();
 
 public slots:
-    void timeChanged( float timeDelta );
-    void timeFinished( float timeDelta );
-    void finished( bool reset );
+    void timeChanged(float timeDelta);
+    void timeFinished(float timeDelta);
+    void finished(bool reset);
 
-    void update( float timeProgress );
+    void update(float timeProgress);
 
 private:
     QProgressBar *pBar;
@@ -60,13 +55,13 @@ private:
     float totalTime;
     float processedTime;
 
-    QTime updateTime;
+    QElapsedTimer updateTime;
     float lastProcessedTime;
     TrailingAverage timeAverage;
     TrailingAverage speedAverage;
 
-signals:
-    void progressChanged( const QString& progress );
+Q_SIGNALS:
+    void progressChanged(const QString &progress);
 };
 
 #endif // PROGRESSINDICATOR_H

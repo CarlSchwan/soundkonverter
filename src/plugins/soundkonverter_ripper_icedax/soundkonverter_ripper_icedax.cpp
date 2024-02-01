@@ -3,10 +3,10 @@
 
 #include "soundkonverter_ripper_icedax.h"
 
-#include <KLocale>
+#include <QLocale>
 
-soundkonverter_ripper_icedax::soundkonverter_ripper_icedax( QObject *parent, const QVariantList& args  )
-    : RipperPlugin( parent )
+soundkonverter_ripper_icedax::soundkonverter_ripper_icedax(QObject *parent, const QVariantList &args)
+    : RipperPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -14,7 +14,8 @@ soundkonverter_ripper_icedax::soundkonverter_ripper_icedax( QObject *parent, con
 }
 
 soundkonverter_ripper_icedax::~soundkonverter_ripper_icedax()
-{}
+{
+}
 
 QString soundkonverter_ripper_icedax::name() const
 {
@@ -29,15 +30,17 @@ QList<ConversionPipeTrunk> soundkonverter_ripper_icedax::codecTable()
     newTrunk.codecFrom = "audio cd";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["icedax"] != "" );
+    newTrunk.enabled = (binaries["icedax"] != "");
     newTrunk.data.canRipEntireCd = true;
-    newTrunk.problemInfo = i18n( "In order to rip audio cds per track or to a single file, you need to install 'icedax'.\n'icedax' is usually shipped with your distribution, the package name can vary." );
-    table.append( newTrunk );
+    newTrunk.problemInfo = i18n(
+        "In order to rip audio cds per track or to a single file, you need to install 'icedax'.\n'icedax' is usually shipped with your distribution, the "
+        "package name can vary.");
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_ripper_icedax::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_ripper_icedax::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -45,7 +48,7 @@ bool soundkonverter_ripper_icedax::isConfigSupported( ActionType action, const Q
     return false;
 }
 
-void soundkonverter_ripper_icedax::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_ripper_icedax::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -57,12 +60,12 @@ bool soundkonverter_ripper_icedax::hasInfo()
     return false;
 }
 
-void soundkonverter_ripper_icedax::showInfo( QWidget *parent )
+void soundkonverter_ripper_icedax::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
 
-int soundkonverter_ripper_icedax::rip( const QString& device, int track, int tracks, const KUrl& outputFile )
+int soundkonverter_ripper_icedax::rip(const QString &device, int track, int tracks, const QUrl &outputFile)
 {
     QStringList command;
 
@@ -71,36 +74,33 @@ int soundkonverter_ripper_icedax::rip( const QString& device, int track, int tra
     command += "-H";
     command += "-D";
     command += device;
-    if( track > 0 )
-    {
-        command += "-t "+QString::number(track);
-    }
-    else
-    {
+    if (track > 0) {
+        command += "-t " + QString::number(track);
+    } else {
         command += "-t 1+" + QString::number(tracks);
     }
     command += "\"" + outputFile.toLocalFile() + "\"";
 
-    RipperPluginItem *newItem = new RipperPluginItem( this );
+    RipperPluginItem *newItem = new RipperPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
-    newItem->data.fileCount = ( track > 0 ) ? 1 : tracks;
+    newItem->data.fileCount = (track > 0) ? 1 : tracks;
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-QStringList soundkonverter_ripper_icedax::ripCommand( const QString& device, int track, int tracks, const KUrl& outputFile )
+QStringList soundkonverter_ripper_icedax::ripCommand(const QString &device, int track, int tracks, const QUrl &outputFile)
 {
     Q_UNUSED(device)
     Q_UNUSED(track)
@@ -110,53 +110,50 @@ QStringList soundkonverter_ripper_icedax::ripCommand( const QString& device, int
     return QStringList();
 }
 
-float soundkonverter_ripper_icedax::parseOutput( const QString& output, RipperPluginItem *ripperItem )
+float soundkonverter_ripper_icedax::parseOutput(const QString &output, RipperPluginItem *ripperItem)
 {
     float progress = -1;
 
     QString data = output;
-    data = data.left( data.lastIndexOf("%") );
-    if( data.lastIndexOf("%") >= 0 )
-        data = data.remove( 0, data.lastIndexOf("%") );
+    data = data.left(data.lastIndexOf("%"));
+    if (data.lastIndexOf("%") >= 0)
+        data = data.remove(0, data.lastIndexOf("%"));
     data = data.simplified();
     progress = data.toFloat();
 
-    if( !ripperItem )
+    if (!ripperItem)
         return progress;
 
-    if( progress > 90 && ripperItem->data.lastFileProgress <= 90 )
-    {
+    if (progress > 90 && ripperItem->data.lastFileProgress <= 90) {
         ripperItem->data.processedFiles++;
     }
     ripperItem->data.lastFileProgress = progress;
 
     int processedFiles = ripperItem->data.processedFiles;
-    if( progress > 90 )
+    if (progress > 90)
         processedFiles--;
 
     return ((float)processedFiles * 100 + progress) / (float)ripperItem->data.fileCount;
 }
 
-float soundkonverter_ripper_icedax::parseOutput( const QString& output)
+float soundkonverter_ripper_icedax::parseOutput(const QString &output)
 {
-    return parseOutput( output, 0 );
+    return parseOutput(output, 0);
 }
 
 void soundkonverter_ripper_icedax::processOutput()
 {
-    for( int i=0; i<backendItems.size(); i++ )
-    {
-        if( backendItems.at(i)->process == QObject::sender() )
-        {
+    for (int i = 0; i < backendItems.size(); i++) {
+        if (backendItems.at(i)->process == QObject::sender()) {
             QString output = backendItems.at(i)->process->readAllStandardOutput().data();
-            RipperPluginItem *pluginItem = qobject_cast<RipperPluginItem*>(backendItems.at(i));
+            RipperPluginItem *pluginItem = qobject_cast<RipperPluginItem *>(backendItems.at(i));
 
-            float progress = parseOutput( output, pluginItem );
+            float progress = parseOutput(output, pluginItem);
 
-            if( progress == -1 && !output.simplified().isEmpty() )
-                logOutput( backendItems.at(i)->id, output );
+            if (progress == -1 && !output.simplified().isEmpty())
+                logOutput(backendItems.at(i)->id, output);
 
-            if( progress > backendItems.at(i)->progress )
+            if (progress > backendItems.at(i)->progress)
                 backendItems.at(i)->progress = progress;
 
             return;

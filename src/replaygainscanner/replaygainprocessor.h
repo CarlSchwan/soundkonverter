@@ -5,10 +5,10 @@
 
 #include "replaygainfilelistitem.h"
 
+#include <QElapsedTimer>
 #include <QList>
 #include <QObject>
 #include <QTimer>
-#include <QTime>
 #include <QWeakPointer>
 
 class ReplayGainPlugin;
@@ -16,11 +16,10 @@ class Config;
 class Logger;
 class ReplayGainFileList;
 
-
 class ReplayGainProcessorItem
 {
 public:
-    explicit ReplayGainProcessorItem( ReplayGainFileListItem *item );
+    explicit ReplayGainProcessorItem(ReplayGainFileListItem *item);
     ~ReplayGainProcessorItem();
 
     /** a reference to the file list item, in case it's a convert item */
@@ -45,32 +44,32 @@ public:
 
     int time;
 
-    QTime progressedTime;
+    QElapsedTimer progressedTime;
 };
-
 
 class ReplayGainProcessor : public QObject
 {
     Q_OBJECT
 public:
-    ReplayGainProcessor( Config *_config, ReplayGainFileList *_fileList, Logger *_logger );
+    ReplayGainProcessor(Config *_config, ReplayGainFileList *_fileList, Logger *_logger);
     ~ReplayGainProcessor();
 
 private:
     /** Calculate replaygain tags of the file with the convert item @p item */
-    void replaygain( ReplayGainProcessorItem *item );
+    void replaygain(ReplayGainProcessorItem *item);
 
     /** Remove item @p item and emit the state @p state */
-    void remove( ReplayGainProcessorItem *item, ReplayGainFileListItem::ReturnCode returnCode = ReplayGainFileListItem::Succeeded );
+    void remove(ReplayGainProcessorItem *item, ReplayGainFileListItem::ReturnCode returnCode = ReplayGainFileListItem::Succeeded);
 
     /** holds all active files */
-    QList<ReplayGainProcessorItem*> items;
+    QList<ReplayGainProcessorItem *> items;
 
     Config *config;
     ReplayGainFileList *fileList;
     Logger *logger;
 
-    QStringList activeVorbisGainDirectories; // vorbisgain creates temporary files with the fixed name "vorbisgain.tmp", so it must run only once per directory (https://github.com/dfaust/soundkonverter/issues/12)
+    QStringList activeVorbisGainDirectories; // vorbisgain creates temporary files with the fixed name "vorbisgain.tmp", so it must run only once per directory
+                                             // (https://github.com/dfaust/soundkonverter/issues/12)
 
     struct LogQueue {
         int id;
@@ -84,9 +83,9 @@ private:
 
 private slots:
     /** A plugin has finished converting a file */
-    void pluginProcessFinished( int id, int exitCode );
+    void pluginProcessFinished(int id, int exitCode);
     /** A plugin has something to log */
-    void pluginLog( int id, const QString& message );
+    void pluginLog(int id, const QString &message);
 
     /** sums up the progresses of all processes and sends it to the ProgressIndicator */
     void updateProgress();
@@ -94,23 +93,23 @@ private slots:
 public slots:
     // connected to ReplayGainFileList
     /** Add a new @p fileListItem to the item list and start */
-    void add( ReplayGainFileListItem *fileListItem, ReplayGainPlugin::ApplyMode mode );
+    void add(ReplayGainFileListItem *fileListItem, ReplayGainPlugin::ApplyMode mode);
     /** Stop the item with the file list item @p fileListItem in the item list and remove it */
-    void kill( ReplayGainFileListItem *fileListItem );
+    void kill(ReplayGainFileListItem *fileListItem);
 
-signals:
+Q_SIGNALS:
     // connected to FileList
     /** The conversion of an item has finished and the state is reported */
-    void finished( ReplayGainFileListItem *fileListItem, ReplayGainFileListItem::ReturnCode returnCode );
-    void updateItem( ReplayGainFileListItem *item, bool initialUpdate = false );
+    void finished(ReplayGainFileListItem *fileListItem, ReplayGainFileListItem::ReturnCode returnCode);
+    void updateItem(ReplayGainFileListItem *item, bool initialUpdate = false);
 
     // connected to Logger
     /** Tell the logger that the process has finished */
-    void finishedProcess( int id, bool succeeded );
+    void finishedProcess(int id, bool succeeded);
 
     // connected to ProgressIndicator
-    void updateTime( float timeProgress );
-    void timeFinished( float timeDelta );
+    void updateTime(float timeProgress);
+    void timeFinished(float timeDelta);
 };
 
 #endif // REPLAYGAINPROCESSOR_H

@@ -1,13 +1,15 @@
 
 #include "aftencodecglobal.h"
 
-#include "soundkonverter_codec_aften.h"
 #include "../../core/conversionoptions.h"
 #include "aftencodecwidget.h"
+#include "soundkonverter_codec_aften.h"
 
+#include <KPluginFactory>
+#include <QRegularExpression>
 
-soundkonverter_codec_aften::soundkonverter_codec_aften( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_aften::soundkonverter_codec_aften(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +20,8 @@ soundkonverter_codec_aften::soundkonverter_codec_aften( QObject *parent, const Q
 }
 
 soundkonverter_codec_aften::~soundkonverter_codec_aften()
-{}
+{
+}
 
 QString soundkonverter_codec_aften::name() const
 {
@@ -33,23 +36,23 @@ QList<ConversionPipeTrunk> soundkonverter_codec_aften::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "ac3";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["aften"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "ac3", "aften" ) + "\n" + standardMessage( "install_opensource_backend", "aften" );
+    newTrunk.enabled = (binaries["aften"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "ac3", "aften") + "\n" + standardMessage("install_opensource_backend", "aften");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "ac3";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["aften"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "ac3", "aften" ) + "\n" + standardMessage( "install_opensource_backend", "aften" );
+    newTrunk.enabled = (binaries["aften"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "ac3", "aften") + "\n" + standardMessage("install_opensource_backend", "aften");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_aften::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_aften::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -57,7 +60,7 @@ bool soundkonverter_codec_aften::isConfigSupported( ActionType action, const QSt
     return false;
 }
 
-void soundkonverter_codec_aften::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_aften::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -69,7 +72,7 @@ bool soundkonverter_codec_aften::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_aften::showInfo( QWidget *parent )
+void soundkonverter_codec_aften::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -77,54 +80,62 @@ void soundkonverter_codec_aften::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_aften::newCodecWidget()
 {
     AftenCodecWidget *widget = new AftenCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
-int soundkonverter_codec_aften::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_aften::convert(const QUrl &inputFile,
+                                        const QUrl &outputFile,
+                                        const QString &inputCodec,
+                                        const QString &outputCodec,
+                                        const ConversionOptions *_conversionOptions,
+                                        TagData *tags,
+                                        bool replayGain)
 {
-    const QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    const QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_aften::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_aften::convertCommand(const QUrl &inputFile,
+                                                       const QUrl &outputFile,
+                                                       const QString &inputCodec,
+                                                       const QString &outputCodec,
+                                                       const ConversionOptions *_conversionOptions,
+                                                       TagData *tags,
+                                                       bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "ac3" )
-    {
+    if (outputCodec == "ac3") {
         command += binaries["aften"];
-        if( conversionOptions->qualityMode == ConversionOptions::Quality )
-        {
+        if (conversionOptions->qualityMode == ConversionOptions::Quality) {
             command += "-q";
             command += QString::number(conversionOptions->quality);
-        }
-        else if( conversionOptions->qualityMode == ConversionOptions::Bitrate )
-        {
+        } else if (conversionOptions->qualityMode == ConversionOptions::Bitrate) {
             command += "-b";
             command += QString::number(conversionOptions->bitrate);
         }
@@ -135,19 +146,19 @@ QStringList soundkonverter_codec_aften::convertCommand( const KUrl& inputFile, c
     return command;
 }
 
-float soundkonverter_codec_aften::parseOutput( const QString& output )
+float soundkonverter_codec_aften::parseOutput(const QString &output)
 {
     // progress:  59% | q: 269.7 | bw: 44.0 | bitrate: 192.0 kbps
 
-    QRegExp reg("progress:\\s+(\\d+)%");
-    if( output.contains(reg) )
-    {
-        return (float)reg.cap(1).toInt();
+    static QRegularExpression reg("progress:\\s+(\\d+)%");
+    QRegularExpressionMatch match;
+    if (output.contains(reg, &match)) {
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_aften, registerPlugin<soundkonverter_codec_aften>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_aftenFactory, "soundkonverter_codec_aften.json", registerPlugin<soundkonverter_codec_aften>();)
 
 #include "soundkonverter_codec_aften.moc"

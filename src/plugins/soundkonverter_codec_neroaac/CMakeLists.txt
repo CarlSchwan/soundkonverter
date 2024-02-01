@@ -1,14 +1,13 @@
-project(soundkonverter_codec_neroaac)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_neroaac_SRCS
    soundkonverter_codec_neroaac.cpp
    neroaaccodecwidget.cpp
 )
 
-add_library(soundkonverter_codec_neroaac MODULE ${soundkonverter_codec_neroaac_SRCS})
-target_link_libraries(soundkonverter_codec_neroaac KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_neroaac
+    SOURCES ${soundkonverter_codec_neroaac_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_neroaac DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_neroaac.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_neroaac KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

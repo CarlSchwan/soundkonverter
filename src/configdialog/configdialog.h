@@ -11,13 +11,13 @@ class ConfigCoverArtPage;
 class ConfigBackendsPage;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class ConfigDialog : public KPageDialog
 {
     Q_OBJECT
 public:
-    ConfigDialog( Config *_config, QWidget *parent/*, Page startPage = GeneralPage*/ );
+    ConfigDialog(Config *_config, QWidget *parent /*, Page startPage = GeneralPage*/);
     ~ConfigDialog();
 
 private:
@@ -41,12 +41,12 @@ private:
     bool backendsPageChanged;
 
 private slots:
-    void configChanged( bool state );
+    void configChanged(bool state);
     void okClicked();
     void applyClicked();
     void defaultClicked();
 
-signals:
+Q_SIGNALS:
     void updateFileList();
 };
 

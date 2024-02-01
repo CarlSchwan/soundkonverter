@@ -3,7 +3,6 @@
 
 #include "lameconversionoptions.h"
 
-
 LameConversionOptions::LameConversionOptions()
     : ConversionOptions()
 {
@@ -16,50 +15,45 @@ LameConversionOptions::LameConversionOptions()
 }
 
 LameConversionOptions::~LameConversionOptions()
-{}
-
-bool LameConversionOptions::equals( ConversionOptions *_other )
 {
-    if( !_other || _other->pluginName!=pluginName )
+}
+
+bool LameConversionOptions::equals(ConversionOptions *_other)
+{
+    if (!_other || _other->pluginName != pluginName)
         return false;
 
-    LameConversionOptions *other = dynamic_cast<LameConversionOptions*>(_other);
+    LameConversionOptions *other = dynamic_cast<LameConversionOptions *>(_other);
 
-    if( data.preset==other->data.preset && data.preset==Data::UserDefined )
-    {
+    if (data.preset == other->data.preset && data.preset == Data::UserDefined) {
         return ConversionOptions::equals(_other);
-    }
-    else if( data.preset==other->data.preset && data.preset==Data::SpecifyBitrate )
-    {
-        return ( equalsBasics(_other) && equalsFilters(_other) && data.presetBitrate==other->data.presetBitrate && data.presetBitrateCbr==other->data.presetBitrateCbr && data.presetFast==other->data.presetFast );
-    }
-    else if( data.preset==other->data.preset )
-    {
-        return ( equalsBasics(_other) && equalsFilters(_other) && data.presetFast==other->data.presetFast );
-    }
-    else
-    {
+    } else if (data.preset == other->data.preset && data.preset == Data::SpecifyBitrate) {
+        return (equalsBasics(_other) && equalsFilters(_other) && data.presetBitrate == other->data.presetBitrate
+                && data.presetBitrateCbr == other->data.presetBitrateCbr && data.presetFast == other->data.presetFast);
+    } else if (data.preset == other->data.preset) {
+        return (equalsBasics(_other) && equalsFilters(_other) && data.presetFast == other->data.presetFast);
+    } else {
         return false;
     }
 }
 
-QDomElement LameConversionOptions::toXml( QDomDocument document ) const
+QDomElement LameConversionOptions::toXml(QDomDocument document) const
 {
-    QDomElement conversionOptions = ConversionOptions::toXml( document );
+    QDomElement conversionOptions = ConversionOptions::toXml(document);
     QDomElement encodingOptions = conversionOptions.elementsByTagName("encodingOptions").at(0).toElement();
     QDomElement data = document.createElement("data");
-    data.setAttribute("preset",LameConversionOptions::data.preset);
-    data.setAttribute("presetBitrate",LameConversionOptions::data.presetBitrate);
-    data.setAttribute("presetBitrateCbr",LameConversionOptions::data.presetBitrateCbr);
-    data.setAttribute("presetFast",LameConversionOptions::data.presetFast);
+    data.setAttribute("preset", LameConversionOptions::data.preset);
+    data.setAttribute("presetBitrate", LameConversionOptions::data.presetBitrate);
+    data.setAttribute("presetBitrateCbr", LameConversionOptions::data.presetBitrateCbr);
+    data.setAttribute("presetFast", LameConversionOptions::data.presetFast);
     encodingOptions.appendChild(data);
 
     return conversionOptions;
 }
 
-bool LameConversionOptions::fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements )
+bool LameConversionOptions::fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements)
 {
-    ConversionOptions::fromXml( conversionOptions, filterOptionsElements );
+    ConversionOptions::fromXml(conversionOptions, filterOptionsElements);
     QDomElement encodingOptions = conversionOptions.elementsByTagName("encodingOptions").at(0).toElement();
     QDomElement data = encodingOptions.elementsByTagName("data").at(0).toElement();
     LameConversionOptions::data.preset = (Data::Preset)data.attribute("preset").toInt();
@@ -70,9 +64,9 @@ bool LameConversionOptions::fromXml( QDomElement conversionOptions, QList<QDomEl
     return true;
 }
 
-ConversionOptions* LameConversionOptions::copy() const
+ConversionOptions *LameConversionOptions::copy() const
 {
-    LameConversionOptions* c = new LameConversionOptions();
+    LameConversionOptions *c = new LameConversionOptions();
     c->pluginName = pluginName;
     c->qualityMode = qualityMode;
     c->quality = quality;
@@ -87,8 +81,7 @@ ConversionOptions* LameConversionOptions::copy() const
     c->outputFilesystem = outputFilesystem;
     c->replaygain = replaygain;
 
-    foreach( const FilterOptions* f, filterOptions )
-    {
+    foreach (const FilterOptions *f, filterOptions) {
         c->filterOptions.append(f->copy());
     }
 
@@ -97,5 +90,5 @@ ConversionOptions* LameConversionOptions::copy() const
     c->data.presetBitrateCbr = data.presetBitrateCbr;
     c->data.presetFast = data.presetFast;
 
-    return static_cast<ConversionOptions*>(c);
+    return static_cast<ConversionOptions *>(c);
 }

@@ -1,13 +1,12 @@
 
 #include "flakecodecglobal.h"
 
-#include "soundkonverter_codec_flake.h"
 #include "../../core/conversionoptions.h"
 #include "flakecodecwidget.h"
+#include "soundkonverter_codec_flake.h"
 
-
-soundkonverter_codec_flake::soundkonverter_codec_flake( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_flake::soundkonverter_codec_flake(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +17,8 @@ soundkonverter_codec_flake::soundkonverter_codec_flake( QObject *parent, const Q
 }
 
 soundkonverter_codec_flake::~soundkonverter_codec_flake()
-{}
+{
+}
 
 QString soundkonverter_codec_flake::name() const
 {
@@ -33,15 +33,16 @@ QList<ConversionPipeTrunk> soundkonverter_codec_flake::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "flac";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["flake"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "flac", "flake" ) + "\n" + standardMessage( "install_website_backend,url", "flake", "http://flake-enc.sourceforge.net" );
+    newTrunk.enabled = (binaries["flake"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "flac", "flake") + "\n"
+        + standardMessage("install_website_backend,url", "flake", "http://flake-enc.sourceforge.net");
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_flake::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_flake::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -49,7 +50,7 @@ bool soundkonverter_codec_flake::isConfigSupported( ActionType action, const QSt
     return false;
 }
 
-void soundkonverter_codec_flake::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_flake::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -61,59 +62,69 @@ bool soundkonverter_codec_flake::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_flake::showInfo( QWidget *parent )
+void soundkonverter_codec_flake::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
-//         info.description = i18n("Flake is an alternative flac encoder.\nFor more information see: http://flake-enc.sourceforge.net");
+    //         info.description = i18n("Flake is an alternative flac encoder.\nFor more information see: http://flake-enc.sourceforge.net");
 }
 
 CodecWidget *soundkonverter_codec_flake::newCodecWidget()
 {
     FlakeCodecWidget *widget = new FlakeCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
-int soundkonverter_codec_flake::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_flake::convert(const QUrl &inputFile,
+                                        const QUrl &outputFile,
+                                        const QString &inputCodec,
+                                        const QString &outputCodec,
+                                        const ConversionOptions *_conversionOptions,
+                                        TagData *tags,
+                                        bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_flake::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_flake::convertCommand(const QUrl &inputFile,
+                                                       const QUrl &outputFile,
+                                                       const QString &inputCodec,
+                                                       const QString &outputCodec,
+                                                       const ConversionOptions *_conversionOptions,
+                                                       TagData *tags,
+                                                       bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "flac" )
-    {
+    if (outputCodec == "flac") {
         command += binaries["flake"];
-        if( conversionOptions->pluginName == global_plugin_name )
-        {
-            command += "-"+QString::number((int)conversionOptions->compressionLevel);
+        if (conversionOptions->pluginName == global_plugin_name) {
+            command += "-" + QString::number((int)conversionOptions->compressionLevel);
             command += conversionOptions->cmdArguments;
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
@@ -124,19 +135,19 @@ QStringList soundkonverter_codec_flake::convertCommand( const KUrl& inputFile, c
     return command;
 }
 
-float soundkonverter_codec_flake::parseOutput( const QString& output )
+float soundkonverter_codec_flake::parseOutput(const QString &output)
 {
     // progress:   6% | ratio: 0.556 | bitrate: 784.4 kbps
 
-    QRegExp regEnc("progress:\\s+(\\d+)%");
-    if( output.contains(regEnc) )
-    {
-        return (float)regEnc.cap(1).toInt();
+    static QRegularExpression regEnc("progress:\\s+(\\d+)%");
+    QRegularExpressionMatch match;
+    if (output.contains(regEnc)) {
+        return (float)match.captured(1).toInt();
     }
 
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_flake, registerPlugin<soundkonverter_codec_flake>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_flakeFactory, "soundkonverter_codec_flake.json", registerPlugin<soundkonverter_codec_flake>();)
 
 #include "soundkonverter_codec_flake.moc"

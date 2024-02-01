@@ -1,14 +1,13 @@
-project(soundkonverter_codec_mac)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_mac_SRCS
    soundkonverter_codec_mac.cpp
    maccodecwidget.cpp
 )
 
-add_library(soundkonverter_codec_mac MODULE ${soundkonverter_codec_mac_SRCS})
-target_link_libraries(soundkonverter_codec_mac KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_mac
+    SOURCES ${soundkonverter_codec_mac_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_mac DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_mac.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_mac KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

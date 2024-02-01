@@ -3,12 +3,10 @@
 
 #include "soundkonverter_replaygain_musepackgain.h"
 
-#include <KStandardDirs>
 #include <QFile>
 
-
-soundkonverter_replaygain_musepackgain::soundkonverter_replaygain_musepackgain( QObject *parent, const QVariantList& args  )
-    : ReplayGainPlugin( parent )
+soundkonverter_replaygain_musepackgain::soundkonverter_replaygain_musepackgain(QObject *parent, const QVariantList &args)
+    : ReplayGainPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -18,7 +16,8 @@ soundkonverter_replaygain_musepackgain::soundkonverter_replaygain_musepackgain( 
 }
 
 soundkonverter_replaygain_musepackgain::~soundkonverter_replaygain_musepackgain()
-{}
+{
+}
 
 QString soundkonverter_replaygain_musepackgain::name() const
 {
@@ -32,14 +31,15 @@ QList<ReplayGainPipe> soundkonverter_replaygain_musepackgain::codecTable()
 
     newPipe.codecName = "musepack";
     newPipe.rating = 100;
-    newPipe.enabled = ( binaries["mpcgain"] != "" );
-    newPipe.problemInfo = standardMessage( "replygain_codec,backend", "musepack", "mpcgain" ) + "\n" + standardMessage( "install_website_backend,url", "mpcgain", "http://www.musepack.net" );
-    table.append( newPipe );
+    newPipe.enabled = (binaries["mpcgain"] != "");
+    newPipe.problemInfo = standardMessage("replygain_codec,backend", "musepack", "mpcgain") + "\n"
+        + standardMessage("install_website_backend,url", "mpcgain", "http://www.musepack.net");
+    table.append(newPipe);
 
     return table;
 }
 
-bool soundkonverter_replaygain_musepackgain::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_replaygain_musepackgain::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -47,7 +47,7 @@ bool soundkonverter_replaygain_musepackgain::isConfigSupported( ActionType actio
     return false;
 }
 
-void soundkonverter_replaygain_musepackgain::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_replaygain_musepackgain::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -59,44 +59,43 @@ bool soundkonverter_replaygain_musepackgain::hasInfo()
     return false;
 }
 
-void soundkonverter_replaygain_musepackgain::showInfo( QWidget *parent )
+void soundkonverter_replaygain_musepackgain::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
 
-int soundkonverter_replaygain_musepackgain::apply( const KUrl::List& fileList, ReplayGainPlugin::ApplyMode mode )
+int soundkonverter_replaygain_musepackgain::apply(const QList<QUrl> &fileList, ReplayGainPlugin::ApplyMode mode)
 {
-    if( fileList.count() <= 0 )
+    if (fileList.count() <= 0)
         return BackendPlugin::UnknownError;
 
-    if( mode == ReplayGainPlugin::Remove )
+    if (mode == ReplayGainPlugin::Remove)
         return BackendPlugin::FeatureNotSupported; // NOTE mpc gain does not support removing Replay Gain tags
 
-    ReplayGainPluginItem *newItem = new ReplayGainPluginItem( this );
+    ReplayGainPluginItem *newItem = new ReplayGainPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     QStringList command;
     command += binaries["mpcgain"];
-    foreach( const KUrl& file, fileList )
-    {
+    foreach (const QUrl &file, fileList) {
         command += "\"" + escapeUrl(file) + "\"";
     }
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-float soundkonverter_replaygain_musepackgain::parseOutput( const QString& output )
+float soundkonverter_replaygain_musepackgain::parseOutput(const QString &output)
 {
     Q_UNUSED(output)
 

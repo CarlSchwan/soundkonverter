@@ -5,44 +5,28 @@
 #include "core/replaygainplugin.h"
 #include "metadata/tagengine.h"
 
-#include <QTreeWidget>
 #include <QItemDelegate>
 #include <QPointer>
-#include <KUrl>
-
+#include <QTreeWidget>
+#include <QUrl>
 
 class ReplayGainFileListItem : public QTreeWidgetItem
 {
 public:
-    explicit ReplayGainFileListItem( QTreeWidget *parent );
-    ReplayGainFileListItem( QTreeWidget *parent, QTreeWidgetItem *preceding );
-    explicit ReplayGainFileListItem( QTreeWidgetItem *parent );
+    explicit ReplayGainFileListItem(QTreeWidget *parent);
+    ReplayGainFileListItem(QTreeWidget *parent, QTreeWidgetItem *preceding);
+    explicit ReplayGainFileListItem(QTreeWidgetItem *parent);
 
     ~ReplayGainFileListItem();
 
-    enum Type {
-        Track,
-        Album
-    } type;
+    enum Type { Track, Album } type;
 
-    enum State {
-        Waiting,
-        WaitingForReplayGain,
-        Processing,
-        Stopped
-    } state;
+    enum State { Waiting, WaitingForReplayGain, Processing, Stopped } state;
 
     // code values will be displayed in the log files
-    enum ReturnCode {
-        Succeeded                       = 0,
-        SucceededWithProblems           = 1,
-        StoppedByUser                   = 2,
-        Skipped                         = 3,
-        BackendNeedsConfiguration       = 4,
-        Failed                          = 5
-    } returnCode;
+    enum ReturnCode { Succeeded = 0, SucceededWithProblems = 1, StoppedByUser = 2, Skipped = 3, BackendNeedsConfiguration = 4, Failed = 5 } returnCode;
 
-    KUrl url;
+    QUrl url;
     QString albumName;
     QString codecName;
     int samplingRate;
@@ -51,17 +35,16 @@ public:
     int length;
 
     QStringList directories();
-    KUrl::List urls();
-    void setState( State newState );
-
+    QList<QUrl> urls();
+    void setState(State newState);
 };
 
 class ReplayGainFileListItemDelegate : public QItemDelegate
 {
 public:
-    explicit ReplayGainFileListItemDelegate( QObject *parent );
+    explicit ReplayGainFileListItemDelegate(QObject *parent);
 
-    virtual void paint( QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index ) const;
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 #endif // REPLAYGAINFILELISTITEM_H

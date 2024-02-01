@@ -21,10 +21,10 @@ public:
     ~TwoLameCodecWidget();
 
     ConversionOptions *currentConversionOptions();
-    bool setCurrentConversionOptions( const ConversionOptions *options );
-    void setCurrentFormat( const QString& format );
+    bool setCurrentConversionOptions(const ConversionOptions *options);
+    void setCurrentFormat(const QString &format);
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     int currentDataRate();
 
 private:
@@ -37,14 +37,14 @@ private:
 
     QString currentFormat; // holds the current output file format
 
-    int bitrateForQuality( int quality );
-    int qualityForBitrate( int bitrate );
+    int bitrateForQuality(int quality);
+    int qualityForBitrate(int bitrate);
 
 private slots:
     // user defined options
-    void modeChanged( int mode );
-    void qualitySliderChanged( int quality );
-    void qualitySpinBoxChanged( int quality );
+    void modeChanged(int mode);
+    void qualitySliderChanged(int quality);
+    void qualitySpinBoxChanged(int quality);
 };
 
 #endif // TWOLAMECODECWIDGET_H

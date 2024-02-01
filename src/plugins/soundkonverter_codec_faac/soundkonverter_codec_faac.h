@@ -4,18 +4,18 @@
 
 #include "../../core/codecplugin.h"
 
-#include <QWeakPointer>
+#include <KPluginFactory>
 #include <QDateTime>
+#include <QPointer>
 
 class ConversionOptions;
-
 
 class soundkonverter_codec_faac : public CodecPlugin
 {
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_faac( QObject *parent, const QVariantList& args );
+    soundkonverter_codec_faac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_faac();
@@ -25,19 +25,31 @@ public:
 
     QList<ConversionPipeTrunk> codecTable();
 
-    bool isConfigSupported( ActionType action, const QString& codecName );
-    void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent );
+    bool isConfigSupported(ActionType action, const QString &codecName);
+    void showConfigDialog(ActionType action, const QString &codecName, QWidget *parent);
     bool hasInfo();
-    void showInfo( QWidget *parent );
+    void showInfo(QWidget *parent);
 
     CodecWidget *newCodecWidget();
 
-    int convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags = 0, bool replayGain = false );
-    QStringList convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags = 0, bool replayGain = false );
-    float parseOutput( const QString& output );
+    int convert(const QUrl &inputFile,
+                const QUrl &outputFile,
+                const QString &inputCodec,
+                const QString &outputCodec,
+                const ConversionOptions *_conversionOptions,
+                TagData *tags = 0,
+                bool replayGain = false);
+    QStringList convertCommand(const QUrl &inputFile,
+                               const QUrl &outputFile,
+                               const QString &inputCodec,
+                               const QString &outputCodec,
+                               const ConversionOptions *_conversionOptions,
+                               TagData *tags = 0,
+                               bool replayGain = false);
+    float parseOutput(const QString &output);
 
 private:
-    QWeakPointer<KProcess> infoProcess;
+    QPointer<KProcess> infoProcess;
     QString infoProcessOutputData;
 
     int configVersion;
@@ -46,7 +58,7 @@ private:
 
 private slots:
     void infoProcessOutput();
-    void infoProcessExit( int exitCode, QProcess::ExitStatus exitStatus );
+    void infoProcessExit(int exitCode, QProcess::ExitStatus exitStatus);
 };
 
 #endif // _SOUNDKONVERTER_CODEC_FAAC_H_

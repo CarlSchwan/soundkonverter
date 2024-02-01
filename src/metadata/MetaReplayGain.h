@@ -18,7 +18,6 @@
 #ifndef AMAROK_METAREPLAYGAIN_H
 #define AMAROK_METAREPLAYGAIN_H
 
-
 #include <QMap>
 
 // Taglib
@@ -30,20 +29,14 @@
  */
 namespace Meta
 {
-    enum ReplayGainTag
-    {
-        ReplayGain_Track_Gain,
-        ReplayGain_Track_Peak,
-        ReplayGain_Album_Gain,
-        ReplayGain_Album_Peak
-    };
+enum ReplayGainTag { ReplayGain_Track_Gain, ReplayGain_Track_Peak, ReplayGain_Album_Gain, ReplayGain_Album_Peak };
 
-    typedef QMap<ReplayGainTag, qreal> ReplayGainTagMap;
+typedef QMap<ReplayGainTag, qreal> ReplayGainTagMap;
 
-    /**
-     * Reads the replay gain tags from a taglib file.
-     */
-    ReplayGainTagMap readReplayGainTags( TagLib::FileRef fileref );
+/**
+ * Reads the replay gain tags from a taglib file.
+ */
+ReplayGainTagMap readReplayGainTags(TagLib::FileRef fileref);
 }
 
 #endif // AMAROK_METAREPLAYGAIN_H

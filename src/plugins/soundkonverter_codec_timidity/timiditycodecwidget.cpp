@@ -1,19 +1,20 @@
 
 #include "timiditycodecglobal.h"
 
-#include "timiditycodecwidget.h"
 #include "../../core/conversionoptions.h"
+#include "timiditycodecwidget.h"
 
-#include <KLocale>
-
+#include <QLocale>
 
 TimidityCodecWidget::TimidityCodecWidget()
-    : CodecWidget(),
-    currentFormat( "midi" )
-{}
+    : CodecWidget()
+    , currentFormat("midi")
+{
+}
 
 TimidityCodecWidget::~TimidityCodecWidget()
-{}
+{
+}
 
 ConversionOptions *TimidityCodecWidget::currentConversionOptions()
 {
@@ -21,21 +22,21 @@ ConversionOptions *TimidityCodecWidget::currentConversionOptions()
     return options;
 }
 
-bool TimidityCodecWidget::setCurrentConversionOptions( const ConversionOptions *_options )
+bool TimidityCodecWidget::setCurrentConversionOptions(const ConversionOptions *_options)
 {
-    if( !_options || _options->pluginName != global_plugin_name )
+    if (!_options || _options->pluginName != global_plugin_name)
         return false;
 
     return true;
 }
 
-void TimidityCodecWidget::setCurrentFormat( const QString& format )
+void TimidityCodecWidget::setCurrentFormat(const QString &format)
 {
-    if( currentFormat == format )
+    if (currentFormat == format)
         return;
 
     currentFormat = format;
-    setEnabled( currentFormat != "wav" );
+    setEnabled(currentFormat != "wav");
 }
 
 QString TimidityCodecWidget::currentProfile()
@@ -43,7 +44,7 @@ QString TimidityCodecWidget::currentProfile()
     return i18n("Lossless");
 }
 
-bool TimidityCodecWidget::setCurrentProfile( const QString& profile )
+bool TimidityCodecWidget::setCurrentProfile(const QString &profile)
 {
     return profile == i18n("Lossless");
 }
@@ -52,11 +53,9 @@ int TimidityCodecWidget::currentDataRate()
 {
     int dataRate = 0;
 
-    if( currentFormat == "wav" )
-    {
+    if (currentFormat == "wav") {
         dataRate = 10590000;
     }
 
     return dataRate;
 }
-

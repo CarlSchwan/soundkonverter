@@ -1,19 +1,21 @@
 
 #include "fluidsynthcodecglobal.h"
 
-#include "fluidsynthcodecwidget.h"
 #include "../../core/conversionoptions.h"
+#include "fluidsynthcodecwidget.h"
 
-#include <KLocale>
-
+#include <KLocalizedString>
+#include <QLocale>
 
 FluidsynthCodecWidget::FluidsynthCodecWidget()
-    : CodecWidget(),
-    currentFormat( "midi" )
-{}
+    : CodecWidget()
+    , currentFormat("midi")
+{
+}
 
 FluidsynthCodecWidget::~FluidsynthCodecWidget()
-{}
+{
+}
 
 ConversionOptions *FluidsynthCodecWidget::currentConversionOptions()
 {
@@ -21,21 +23,21 @@ ConversionOptions *FluidsynthCodecWidget::currentConversionOptions()
     return options;
 }
 
-bool FluidsynthCodecWidget::setCurrentConversionOptions( const ConversionOptions *_options )
+bool FluidsynthCodecWidget::setCurrentConversionOptions(const ConversionOptions *_options)
 {
-    if( !_options || _options->pluginName != global_plugin_name )
+    if (!_options || _options->pluginName != global_plugin_name)
         return false;
 
     return true;
 }
 
-void FluidsynthCodecWidget::setCurrentFormat( const QString& format )
+void FluidsynthCodecWidget::setCurrentFormat(const QString &format)
 {
-    if( currentFormat == format )
+    if (currentFormat == format)
         return;
 
     currentFormat = format;
-    setEnabled( currentFormat != "wav" );
+    setEnabled(currentFormat != "wav");
 }
 
 QString FluidsynthCodecWidget::currentProfile()
@@ -43,7 +45,7 @@ QString FluidsynthCodecWidget::currentProfile()
     return i18n("Lossless");
 }
 
-bool FluidsynthCodecWidget::setCurrentProfile( const QString& profile )
+bool FluidsynthCodecWidget::setCurrentProfile(const QString &profile)
 {
     return profile == i18n("Lossless");
 }
@@ -52,11 +54,9 @@ int FluidsynthCodecWidget::currentDataRate()
 {
     int dataRate = 0;
 
-    if( currentFormat == "wav" )
-    {
+    if (currentFormat == "wav") {
         dataRate = 10590000;
     }
 
     return dataRate;
 }
-

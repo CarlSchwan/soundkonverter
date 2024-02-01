@@ -14,7 +14,7 @@ class OutputDirectory;
 // class OptionsDetailed;
 
 class KToolBarButton;
-class KPushButton;
+class QPushButton;
 class QLabel;
 class QCheckBox;
 class KComboBox;
@@ -30,7 +30,7 @@ class OptionsSimple : public QWidget
     Q_OBJECT
 public:
     /** Constructor */
-    OptionsSimple( Config *_config, /*OptionsDetailed*,*/ const QString &text, QWidget* parent );
+    OptionsSimple(Config *_config, /*OptionsDetailed*,*/ const QString &text, QWidget *parent);
 
     /** Detructor */
     ~OptionsSimple();
@@ -38,43 +38,46 @@ public:
     void init();
 
     /** Set the current options */
-//     void setCurrentOptions( const ConversionOptions& );
+    //     void setCurrentOptions( const ConversionOptions& );
 
     /** Refills the whole form (e.g. after a config change) */
-//     void refill(); // TODO syncronize with optionsDetailed
-//
-    void setCurrentProfile( const QString& profile );
-    void setCurrentFormat( const QString& format );
-    void setCurrentOutputDirectory( const QString& directory );
-    void setCurrentOutputDirectoryMode( int mode );
-    void setReplayGainEnabled( bool enabled, const QString& toolTip = "" );
-    void setReplayGainChecked( bool enabled );
-//     void setBpmChecked( bool enabled ) { return cBpm->setChecked( enabled ); }
-    void setCurrentPlugin( CodecPlugin *plugin ) { currentPlugin = plugin; }
+    //     void refill(); // TODO syncronize with optionsDetailed
+    //
+    void setCurrentProfile(const QString &profile);
+    void setCurrentFormat(const QString &format);
+    void setCurrentOutputDirectory(const QString &directory);
+    void setCurrentOutputDirectoryMode(int mode);
+    void setReplayGainEnabled(bool enabled, const QString &toolTip = "");
+    void setReplayGainChecked(bool enabled);
+    //     void setBpmChecked( bool enabled ) { return cBpm->setChecked( enabled ); }
+    void setCurrentPlugin(CodecPlugin *plugin)
+    {
+        currentPlugin = plugin;
+    }
 
     QString currentProfile();
     QString currentFormat();
     bool isReplayGainChecked();
-//     bool isBpmChecked() { return cBpm->isChecked(); }
+    //     bool isBpmChecked() { return cBpm->isChecked(); }
 
     OutputDirectory *outputDirectory; // this way it's easier to sync simple and detailed options
 
 private:
-    KComboBox* cProfile;
-    KPushButton* pProfileRemove;
-    KPushButton* pProfileInfo;
-    KComboBox* cFormat;
-    KPushButton* pFormatInfo;
+    KComboBox *cProfile;
+    QPushButton *pProfileRemove;
+    QPushButton *pProfileInfo;
+    KComboBox *cFormat;
+    QPushButton *pFormatInfo;
 
     QCheckBox *cReplayGain;
-//     QCheckBox *cBpm;
+    //     QCheckBox *cBpm;
     QLabel *lEstimSize;
 
     Config *config;
     CodecPlugin *currentPlugin;
 
 public slots:
-    void currentDataRateChanged( int dataRate );
+    void currentDataRateChanged(int dataRate);
     void updateProfiles();
 
 private slots:
@@ -83,12 +86,12 @@ private slots:
     void profileRemove();
     void formatInfo();
     void profileChanged();
-//     void formatChanged();
+    //     void formatChanged();
     void outputDirectoryChanged();
 
     void somethingChanged();
 
-signals:
+Q_SIGNALS:
     void optionsChanged();
     void customProfilesEdited();
 };

@@ -1,13 +1,12 @@
 
 #include "vorbistoolscodecglobal.h"
 
-#include "soundkonverter_codec_vorbistools.h"
 #include "../../core/conversionoptions.h"
+#include "soundkonverter_codec_vorbistools.h"
 #include "vorbistoolscodecwidget.h"
 
-
-soundkonverter_codec_vorbistools::soundkonverter_codec_vorbistools( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_vorbistools::soundkonverter_codec_vorbistools(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -19,7 +18,8 @@ soundkonverter_codec_vorbistools::soundkonverter_codec_vorbistools( QObject *par
 }
 
 soundkonverter_codec_vorbistools::~soundkonverter_codec_vorbistools()
-{}
+{
+}
 
 QString soundkonverter_codec_vorbistools::name() const
 {
@@ -34,23 +34,25 @@ QList<ConversionPipeTrunk> soundkonverter_codec_vorbistools::codecTable()
     newTrunk.codecFrom = "wav";
     newTrunk.codecTo = "ogg vorbis";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["oggenc"] != "" );
-    newTrunk.problemInfo = standardMessage( "encode_codec,backend", "ogg vorbis", "oggenc" ) + "\n" + i18n( "'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("oggenc"), QString("vorbis-tools") );
+    newTrunk.enabled = (binaries["oggenc"] != "");
+    newTrunk.problemInfo = standardMessage("encode_codec,backend", "ogg vorbis", "oggenc") + "\n"
+        + i18n("'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("oggenc"), QString("vorbis-tools"));
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     newTrunk.codecFrom = "ogg vorbis";
     newTrunk.codecTo = "wav";
     newTrunk.rating = 100;
-    newTrunk.enabled = ( binaries["oggdec"] != "" );
-    newTrunk.problemInfo = standardMessage( "decode_codec,backend", "ogg vorbis", "oggdec" ) + "\n" + i18n( "'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("oggdec"), QString("vorbis-tools") );
+    newTrunk.enabled = (binaries["oggdec"] != "");
+    newTrunk.problemInfo = standardMessage("decode_codec,backend", "ogg vorbis", "oggdec") + "\n"
+        + i18n("'%1' is usually in the package '%2' which should be shipped with your distribution.", QString("oggdec"), QString("vorbis-tools"));
     newTrunk.data.hasInternalReplayGain = false;
-    table.append( newTrunk );
+    table.append(newTrunk);
 
     return table;
 }
 
-bool soundkonverter_codec_vorbistools::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_vorbistools::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -58,7 +60,7 @@ bool soundkonverter_codec_vorbistools::isConfigSupported( ActionType action, con
     return false;
 }
 
-void soundkonverter_codec_vorbistools::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_vorbistools::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -70,7 +72,7 @@ bool soundkonverter_codec_vorbistools::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_vorbistools::showInfo( QWidget *parent )
+void soundkonverter_codec_vorbistools::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -78,65 +80,70 @@ void soundkonverter_codec_vorbistools::showInfo( QWidget *parent )
 CodecWidget *soundkonverter_codec_vorbistools::newCodecWidget()
 {
     VorbisToolsCodecWidget *widget = new VorbisToolsCodecWidget();
-    return qobject_cast<CodecWidget*>(widget);
+    return qobject_cast<CodecWidget *>(widget);
 }
 
-int soundkonverter_codec_vorbistools::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_vorbistools::convert(const QUrl &inputFile,
+                                              const QUrl &outputFile,
+                                              const QString &inputCodec,
+                                              const QString &outputCodec,
+                                              const ConversionOptions *_conversionOptions,
+                                              TagData *tags,
+                                              bool replayGain)
 {
-    QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_vorbistools::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_vorbistools::convertCommand(const QUrl &inputFile,
+                                                             const QUrl &outputFile,
+                                                             const QString &inputCodec,
+                                                             const QString &outputCodec,
+                                                             const ConversionOptions *_conversionOptions,
+                                                             TagData *tags,
+                                                             bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( !_conversionOptions )
+    if (!_conversionOptions)
         return QStringList();
 
     QStringList command;
     const ConversionOptions *conversionOptions = _conversionOptions;
 
-    if( outputCodec == "ogg vorbis" )
-    {
+    if (outputCodec == "ogg vorbis") {
         command += binaries["oggenc"];
-//         if( inputFile.isEmpty() )
-//         {
-//             command += "--raw";
-//         }
-        if( conversionOptions->qualityMode == ConversionOptions::Quality )
-        {
+        //         if( inputFile.isEmpty() )
+        //         {
+        //             command += "--raw";
+        //         }
+        if (conversionOptions->qualityMode == ConversionOptions::Quality) {
             command += "-q";
             command += QString::number(conversionOptions->quality);
-        }
-        else if( conversionOptions->qualityMode == ConversionOptions::Bitrate )
-        {
-            if( conversionOptions->bitrateMode == ConversionOptions::Abr )
-            {
+        } else if (conversionOptions->qualityMode == ConversionOptions::Bitrate) {
+            if (conversionOptions->bitrateMode == ConversionOptions::Abr) {
                 command += "-b";
                 command += QString::number(conversionOptions->bitrate);
-            }
-            else if( conversionOptions->bitrateMode == ConversionOptions::Cbr )
-            {
+            } else if (conversionOptions->bitrateMode == ConversionOptions::Cbr) {
                 command += "--managed";
                 command += "-b";
                 command += QString::number(conversionOptions->bitrate);
@@ -145,12 +152,9 @@ QStringList soundkonverter_codec_vorbistools::convertCommand( const KUrl& inputF
         command += "\"" + escapeUrl(inputFile) + "\"";
         command += "-o";
         command += "\"" + escapeUrl(outputFile) + "\"";
-    }
-    else
-    {
+    } else {
         command += binaries["oggdec"];
-        if( outputFile.isEmpty() )
-        {
+        if (outputFile.isEmpty()) {
             command += "-Q";
         }
         command += "\"" + escapeUrl(inputFile) + "\"";
@@ -161,19 +165,21 @@ QStringList soundkonverter_codec_vorbistools::convertCommand( const KUrl& inputF
     return command;
 }
 
-float soundkonverter_codec_vorbistools::parseOutput( const QString& output )
+float soundkonverter_codec_vorbistools::parseOutput(const QString &output)
 {
     //         [ 99.5%]
 
-    if( output == "" || !output.contains("%") || output.contains("error",Qt::CaseInsensitive) )
+    if (output == "" || !output.contains("%") || output.contains("error", Qt::CaseInsensitive))
         return -1;
 
     QString data = output;
-    data.remove( 0, data.indexOf("[")+1 );
-    data = data.left( data.indexOf("%") );
+    data.remove(0, data.indexOf("[") + 1);
+    data = data.left(data.indexOf("%"));
     return data.toFloat();
 }
 
-K_PLUGIN_FACTORY(codec_vorbistools, registerPlugin<soundkonverter_codec_vorbistools>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_vorbistoolsFactory,
+                           "soundkonverter_codec_vorbistools.json",
+                           registerPlugin<soundkonverter_codec_vorbistools>();)
 
 #include "soundkonverter_codec_vorbistools.moc"

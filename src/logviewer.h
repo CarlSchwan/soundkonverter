@@ -3,45 +3,47 @@
 #ifndef LOGVIEWER_H
 #define LOGVIEWER_H
 
-#include <KDialog>
+#include <QDialog>
 
 class Logger;
 class KComboBox;
-class KTextEdit;
-
+class QTextEdit;
 
 /**
  * @short Shows the logs that are collected by the logger
  * @author Daniel Faust <hessijames@gmail.com>
  * @version 1.0
  */
-class LogViewer : public KDialog
+class LogViewer : public QDialog
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     /** Default Constructor */
-    LogViewer( Logger* _logger, QWidget* parent, Qt::WFlags f=0 );
+    LogViewer(Logger *_logger, QWidget *parent, Qt::WindowFlags = {});
 
     /** Default Destructor */
     ~LogViewer();
 
 private:
-    Logger* logger;
+    void readConfig();
+    void writeConfig();
+
+    Logger *logger;
 
     KComboBox *cItem;
-    KTextEdit *kLog;
+    QTextEdit *kLog;
 
 private slots:
     void refillLogs();
     void itemChanged();
     void save();
-    void updateProcess( int id );
+    void updateProcess(int id);
 
 public slots:
     /** get notification when a job has been removed */
-    void processRemoved( int id );
+    void processRemoved(int id);
     /** show the corresponding log */
-    void showLog( int id );
+    void showLog(int id);
 };
 
 #endif // LOGVIEWER_H

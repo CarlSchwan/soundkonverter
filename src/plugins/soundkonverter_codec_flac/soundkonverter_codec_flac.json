@@ -1,0 +1,16 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "hessijames@gmail.com",
+                "Name": "Daniel Faust"
+            }
+        ],
+        "License": "GPL",
+        "Name": "soundKonverter Flac Plugin",
+        "ServiceTypes": [
+            "soundKonverter/CodecPlugin"
+        ],
+        "Version": "1.0"
+    }
+}

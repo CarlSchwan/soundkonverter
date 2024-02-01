@@ -10,11 +10,11 @@ public:
     OpusToolsConversionOptions();
     ~OpusToolsConversionOptions();
 
-    bool equals( ConversionOptions *_other );
-    QDomElement toXml( QDomDocument document ) const;
-    bool fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0 );
+    bool equals(ConversionOptions *_other);
+    QDomElement toXml(QDomDocument document) const;
+    bool fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements = 0);
 
-    ConversionOptions* copy() const;
+    ConversionOptions *copy() const;
 
     struct Data {
         float floatBitrate;

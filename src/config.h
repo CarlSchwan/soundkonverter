@@ -7,10 +7,10 @@
 
 #include <QObject>
 
-#include "pluginloader.h"
-#include "metadata/tagengine.h"
-#include "conversionoptionsmanager.h"
 #include "codecoptimizations.h"
+#include "conversionoptionsmanager.h"
+#include "metadata/tagengine.h"
+#include "pluginloader.h"
 
 #include <QDomDocument>
 
@@ -18,24 +18,21 @@
 
 class Logger;
 
-
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class Config : public QObject
 {
     Q_OBJECT
 public:
-    struct CodecData
-    {
+    struct CodecData {
         QString codecName;
         QStringList encoders;
         QStringList decoders;
         QStringList replaygain;
     };
 
-    struct ProfileData
-    {
+    struct ProfileData {
         QString fileName;
         QString profileName;
         QString pluginName;
@@ -43,10 +40,8 @@ public:
         QDomDocument data;
     };
 
-    struct Data
-    {
-        struct General
-        {
+    struct Data {
+        struct General {
             int startTab;
             int lastTab;
             QString defaultProfile;
@@ -59,38 +54,27 @@ public:
             QString copyStructureOutputDirectory;
             QStringList lastMetaDataOutputDirectoryPaths;
             QStringList lastNormalOutputDirectoryPaths;
-//             int priority;
+            //             int priority;
             bool waitForAlbumGain;
             bool useVFATNames;
             bool copyIfSameCodec;
             bool writeLogFiles;
-            enum ConflictHandling
-            {
-                NewFileName = 0,
-                Skip = 1,
-                Overwrite = 2
-            } conflictHandling;
+            enum ConflictHandling { NewFileName = 0, Skip = 1, Overwrite = 2 } conflictHandling;
             int numFiles;
             int numReplayGainFiles;
-//             bool executeUserScript;
-//             bool showToolBar;
-//             int outputFilePermissions;
+            //             bool executeUserScript;
+            //             bool showToolBar;
+            //             int outputFilePermissions;
             QStringList actionMenuConvertMimeTypes;
             QStringList actionMenuReplayGainMimeTypes;
-            enum ReplayGainGrouping
-            {
-                AlbumDirectory = 0,
-                Album = 1,
-                Directory = 2
-            } replayGainGrouping;
+            enum ReplayGainGrouping { AlbumDirectory = 0, Album = 1, Directory = 2 } replayGainGrouping;
             QString preferredOggVorbisExtension;
             QString preferredVorbisCommentCommentTag;
             QString preferredVorbisCommentTrackTotalTag;
             QString preferredVorbisCommentDiscTotalTag;
         } general;
 
-        struct Advanced
-        {
+        struct Advanced {
             bool useSharedMemoryForTempFiles;
             int maxSizeForSharedMemoryTempFiles; // maximum file size for storing in shared memory [MiB]
             int sharedMemorySize; // the size of the tmpfs [MiB]
@@ -98,35 +82,31 @@ public:
             bool ejectCdAfterRip;
         } advanced;
 
-        struct CoverArt
-        {
+        struct CoverArt {
             int writeCovers;
             int writeCoverName;
             QString writeCoverDefaultName;
         } coverArt;
 
-        struct Backends
-        {
+        struct Backends {
             QList<CodecData> codecs;
             QStringList filters;
             QStringList enabledFilters;
         } backends;
 
-        struct BackendOptimizationsIgnoreList
-        {
+        struct BackendOptimizationsIgnoreList {
             QList<CodecOptimizations::Optimization> optimizationList;
         } backendOptimizationsIgnoreList;
 
-        struct App
-        {
+        struct App {
             int configVersion;
         } app;
 
-        QMap<QString,ConversionOptions*> profiles;
+        QMap<QString, ConversionOptions *> profiles;
 
     } data;
 
-    Config( Logger *_logger, QObject *parent );
+    Config(Logger *_logger, QObject *parent);
 
     ~Config();
 
@@ -137,19 +117,28 @@ public:
     QStringList customProfiles();
 
     /// Check if new backends got installed and the backend settings can be optimized
-    QList<CodecOptimizations::Optimization> getOptimizations( bool includeIgnored = false );
+    QList<CodecOptimizations::Optimization> getOptimizations(bool includeIgnored = false);
 
-    PluginLoader *pluginLoader() { return pPluginLoader; }
-    TagEngine *tagEngine() { return pTagEngine; }
-    ConversionOptionsManager *conversionOptionsManager() { return pConversionOptionsManager; }
+    PluginLoader *pluginLoader()
+    {
+        return pPluginLoader;
+    }
+    TagEngine *tagEngine()
+    {
+        return pTagEngine;
+    }
+    ConversionOptionsManager *conversionOptionsManager()
+    {
+        return pConversionOptionsManager;
+    }
 
 public slots:
     /// Optimize backend settings according to the user input
-    void doOptimizations( const QList<CodecOptimizations::Optimization>& optimizationList );
+    void doOptimizations(const QList<CodecOptimizations::Optimization> &optimizationList);
 
-signals:
+Q_SIGNALS:
     /// connected to logger
-    void updateWriteLogFilesSetting( bool writeLogFiles );
+    void updateWriteLogFilesSetting(bool writeLogFiles);
 
 private:
     Logger *logger;

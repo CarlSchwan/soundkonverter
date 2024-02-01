@@ -1,69 +1,64 @@
 
 #include "normalizefilterglobal.h"
 
-#include "normalizefilterwidget.h"
 #include "normalizefilteroptions.h"
+#include "normalizefilterwidget.h"
 
-#include <QLayout>
-#include <QHBoxLayout>
-#include <KLocale>
 #include <QCheckBox>
+#include <QHBoxLayout>
+#include <QLayout>
+#include <QLocale>
 
 NormalizeFilterWidget::NormalizeFilterWidget()
     : FilterWidget()
 {
-    QGridLayout *grid = new QGridLayout( this );
-    grid->setContentsMargins( 0, 0, 0, 0 );
+    QGridLayout *grid = new QGridLayout(this);
+    grid->setContentsMargins(0, 0, 0, 0);
 
     // set up encoding options selection
 
     QHBoxLayout *topBox = new QHBoxLayout();
-    grid->addLayout( topBox, 0, 0 );
+    grid->addLayout(topBox, 0, 0);
 
-    cNormalize = new QCheckBox( i18n("Normalize"), this );
-    connect( cNormalize, SIGNAL(toggled(bool)), SIGNAL(optionsChanged()) );
-    topBox->addWidget( cNormalize );
+    cNormalize = new QCheckBox(i18n("Normalize"), this);
+    connect(cNormalize, SIGNAL(toggled(bool)), SIGNAL(optionsChanged()));
+    topBox->addWidget(cNormalize);
 
     topBox->addStretch();
 
-    grid->setRowStretch( 1, 1 );
+    grid->setRowStretch(1, 1);
 
-    cNormalize->setChecked( false );
+    cNormalize->setChecked(false);
 }
 
 NormalizeFilterWidget::~NormalizeFilterWidget()
-{}
-
-FilterOptions* NormalizeFilterWidget::currentFilterOptions()
 {
-    if( cNormalize->isChecked() )
-    {
+}
+
+FilterOptions *NormalizeFilterWidget::currentFilterOptions()
+{
+    if (cNormalize->isChecked()) {
         NormalizeFilterOptions *options = new NormalizeFilterOptions();
         options->data.normalize = cNormalize->isChecked();
         return options;
-    }
-    else
-    {
+    } else {
         return 0;
     }
 }
 
-bool NormalizeFilterWidget::setCurrentFilterOptions( const FilterOptions *_options )
+bool NormalizeFilterWidget::setCurrentFilterOptions(const FilterOptions *_options)
 {
-    if( !_options )
-    {
-        cNormalize->setChecked( false );
+    if (!_options) {
+        cNormalize->setChecked(false);
 
         return true;
     }
 
-    if( _options->pluginName != global_plugin_name )
+    if (_options->pluginName != global_plugin_name)
         return false;
 
-    const NormalizeFilterOptions *options = dynamic_cast<const NormalizeFilterOptions*>(_options);
-    cNormalize->setChecked( options->data.normalize );
+    const NormalizeFilterOptions *options = dynamic_cast<const NormalizeFilterOptions *>(_options);
+    cNormalize->setChecked(options->data.normalize);
 
     return true;
 }
-
-

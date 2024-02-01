@@ -12,40 +12,40 @@
 #ifndef OPTIONSLAYER_H
 #define OPTIONSLAYER_H
 
-#include <QWidget>
 #include <QColor>
 #include <QTimer>
 #include <QUrl>
+#include <QWidget>
 
 class Config;
 class Options;
 class ConversionOptions;
 
 class QFrame;
-class KPushButton;
+class QPushButton;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class OptionsLayer : public QWidget
 {
     Q_OBJECT
 public:
     /** Constructor */
-    OptionsLayer( Config *config, QWidget *parent );
+    OptionsLayer(Config *config, QWidget *parent);
 
     /** Destructor */
     ~OptionsLayer();
 
     void fadeIn();
     void fadeOut(); // should be private
-    void addUrls( const QList<QUrl>& _urls );
+    void addUrls(const QList<QUrl> &_urls);
 
 private:
     QFrame *frame;
     Options *options;
-    KPushButton *pOk;
-    KPushButton *pCancel;
+    QPushButton *pOk;
+    QPushButton *pCancel;
 
     QTimer fadeTimer;
     float fadeAlpha;
@@ -54,39 +54,38 @@ private:
     QList<QUrl> urls;
     QString command;
 
-    inline QBrush brushSetAlpha( QBrush brush, const int alpha )
+    inline QBrush brushSetAlpha(QBrush brush, const int alpha)
     {
         QColor color = brush.color();
-        color.setAlpha( alpha );
-        brush.setColor( color );
+        color.setAlpha(alpha);
+        brush.setColor(color);
         return brush;
     }
 
 public slots:
     /** Set the current profile */
-    void setProfile( const QString& profile );
+    void setProfile(const QString &profile);
 
     /** Set the current format */
-    void setFormat( const QString& format );
+    void setFormat(const QString &format);
 
     /** Set the current output directory */
-    void setOutputDirectory( const QString& directory );
+    void setOutputDirectory(const QString &directory);
 
     /** Set the command to execute after the conversion is complete */
-    void setCommand( const QString& _command );
+    void setCommand(const QString &_command);
 
     /** Set the current conversion options */
-    void setCurrentConversionOptions( const ConversionOptions *options );
+    void setCurrentConversionOptions(const ConversionOptions *options);
 
 private slots:
     void fadeAnim();
     void abort();
     void ok();
 
-signals:
-    void done( const QList<QUrl>& urls, ConversionOptions *options, const QString& command );
+Q_SIGNALS:
+    void done(const QList<QUrl> &urls, ConversionOptions *options, const QString &command);
     void saveFileList();
-
 };
 
 #endif

@@ -2,7 +2,7 @@
 #ifndef REPLAYGAINSCANNER_H
 #define REPLAYGAINSCANNER_H
 
-#include <KDialog>
+#include <QDialog>
 #include <QUrl>
 
 class Config;
@@ -12,30 +12,28 @@ class ReplayGainFileList;
 class ProgressIndicator;
 
 class QCheckBox;
-class KPushButton;
+class QPushButton;
 class QTreeWidget;
-class KFileDialog;
-
+class QFileDialog;
 
 /**
  * @short The Replay Gain Tool
  * @author Daniel Faust <hessijames@gmail.com>
  */
-class ReplayGainScanner : public KDialog
+class ReplayGainScanner : public QDialog
 {
     Q_OBJECT
 public:
-    ReplayGainScanner( Config*, Logger*, bool showMainWindowButton, QWidget *parent, Qt::WFlags f=0 );
+    ReplayGainScanner(Config *, Logger *, bool showMainWindowButton, QWidget *parent, Qt::WindowFlags f = {});
     ~ReplayGainScanner();
 
-    void addFiles( QList<QUrl> urls );
+    void addFiles(QList<QUrl> urls);
 
 private slots:
-    void addClicked( int );
+    void addClicked(int);
     void showDirDialog();
     void showFileDialog();
     void showMainWindowClicked();
-    void fileDialogAccepted();
     void showHelp();
     void calcReplayGainClicked();
     void removeReplayGainClicked();
@@ -43,27 +41,29 @@ private slots:
     void closeClicked();
     void processStarted();
     void processStopped();
-    void progressChanged( const QString& progress );
+    void progressChanged(const QString &progress);
 
 private:
+    void readConfig();
+    void writeConfig();
+
     ComboButton *cAdd;
-    KPushButton *pShowMainWindow;
+    QPushButton *pShowMainWindow;
     QCheckBox *cForce;
     ReplayGainFileList *fileList;
     ProgressIndicator *progressIndicator;
-    KPushButton *pTagVisible;
-    KPushButton *pRemoveTag;
-    KPushButton *pCancel;
-    KPushButton *pClose;
-    KFileDialog *fileDialog;
+    QPushButton *pTagVisible;
+    QPushButton *pRemoveTag;
+    QPushButton *pCancel;
+    QPushButton *pClose;
 
     Config *config;
     Logger *logger;
 
-signals:
-    void addFile( const QString& );
-    void addDir( const QString&, const QStringList& filter = QStringList(), bool recursive = true );
-    void calcAllReplayGain( bool force );
+Q_SIGNALS:
+    void addFile(const QString &);
+    void addDir(const QString &, const QStringList &filter = QStringList(), bool recursive = true);
+    void calcAllReplayGain(bool force);
     void removeAllReplayGain();
     void cancelProcess();
     void showMainWindow();

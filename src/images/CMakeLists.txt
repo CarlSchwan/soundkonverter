@@ -1,1 +1,1 @@
-install( FILES nocover.png DESTINATION  ${DATA_INSTALL_DIR}/soundkonverter/images)
+install( FILES nocover.png DESTINATION  ${KDE_INSTALL_DATADIR}/soundkonverter/images)

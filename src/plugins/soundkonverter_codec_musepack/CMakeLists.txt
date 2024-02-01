@@ -1,15 +1,13 @@
-project(soundkonverter_codec_musepack)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_musepack_SRCS
    soundkonverter_codec_musepack.cpp
    musepackcodecwidget.cpp
-   musepackconversionoptions.cpp
 )
 
-add_library(soundkonverter_codec_musepack MODULE ${soundkonverter_codec_musepack_SRCS})
-target_link_libraries(soundkonverter_codec_musepack KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_musepack
+    SOURCES ${soundkonverter_codec_musepack_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_musepack DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_musepack.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_musepack KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

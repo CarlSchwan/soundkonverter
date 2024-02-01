@@ -16,78 +16,77 @@ class CodecWidget;
 class FilterWidget;
 
 class KComboBox;
-class KPushButton;
+class QPushButton;
 class QGridLayout;
 class QLabel;
 class QToolButton;
 
-
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
 */
 class OptionsDetailed : public QWidget
 {
     Q_OBJECT
 public:
-    OptionsDetailed( Config *_config, QWidget *parent );
+    OptionsDetailed(Config *_config, QWidget *parent);
     ~OptionsDetailed();
 
     void init();
 
     /** Return the current options */
-    ConversionOptions *currentConversionOptions( bool saveLastUsed = true );
+    ConversionOptions *currentConversionOptions(bool saveLastUsed = true);
     /** Set the current options */
-    bool setCurrentConversionOptions( const ConversionOptions *conversionOptions );
+    bool setCurrentConversionOptions(const ConversionOptions *conversionOptions);
 
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     QString currentFormat();
-    void setCurrentFormat( const QString& format );
+    void setCurrentFormat(const QString &format);
     void resetFilterOptions();
-    void setReplayGainChecked( bool enabled );
+    void setReplayGainChecked(bool enabled);
 
-    bool isReplayGainEnabled( QString *toolTip = 0 );
+    bool isReplayGainEnabled(QString *toolTip = 0);
     bool isReplayGainChecked();
     CodecPlugin *getCurrentPlugin();
 
     OutputDirectory *outputDirectory; // this way it's easier to sync simple and detailed options
 
-//     QSize sizeHint();
+    //     QSize sizeHint();
 
 private:
     QGridLayout *grid;
     KComboBox *cFormat;
     QLabel *lPlugin;
     KComboBox *cPlugin;
-    KPushButton *pConfigurePlugin;
+    QPushButton *pConfigurePlugin;
     CodecWidget *wPlugin;
-    QMap<FilterWidget*,FilterPlugin*> wFilter;
+    QMap<FilterWidget *, FilterPlugin *> wFilter;
     QCheckBox *cReplayGain;
     QLabel *lEstimSize;
-    KPushButton *pProfileSave;
+    QPushButton *pProfileSave;
     QToolButton *pProfileLoad;
 
     Config *config;
 
     CodecPlugin *currentPlugin;
 
-//     QSize size_hint;
+    //     QSize size_hint;
 
 public slots:
     void somethingChanged();
     void loadCustomProfileButtonClicked();
-    bool saveCustomProfile( bool lastUsed = false );
+    bool saveCustomProfile(bool lastUsed = false);
     void updateProfiles();
 
 private slots:
-    void formatChanged( const QString& format );
-    void encoderChanged( const QString& encoder );
+    void formatChanged(const QString &format);
+    void encoderChanged(const QString &encoder);
     void configurePlugin();
 
-signals:
+Q_SIGNALS:
     // connected to optionsSimple
-    void currentDataRateChanged( int rate );
-//     void optionsChanged();
+    void currentDataRateChanged(int rate);
+    //     void optionsChanged();
     void customProfilesEdited();
 };
 

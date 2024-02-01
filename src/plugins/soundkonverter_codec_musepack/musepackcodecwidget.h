@@ -19,10 +19,10 @@ public:
     ~MusePackCodecWidget();
 
     ConversionOptions *currentConversionOptions();
-    bool setCurrentConversionOptions( const ConversionOptions *_options );
-    void setCurrentFormat( const QString& format );
+    bool setCurrentConversionOptions(const ConversionOptions *_options);
+    void setCurrentFormat(const QString &format);
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     int currentDataRate();
 
 private:
@@ -37,15 +37,15 @@ private:
 
     QString currentFormat; // holds the current output file format
 
-    int bitrateForQuality( double quality );
-    double qualityForBitrate( int bitrate );
+    int bitrateForQuality(double quality);
+    double qualityForBitrate(int bitrate);
 
 private slots:
     // presets
-    void presetChanged( const QString& preset );
+    void presetChanged(const QString &preset);
     // user defined options
-    void qualitySliderChanged( int quality );
-    void qualitySpinBoxChanged( double quality );
+    void qualitySliderChanged(int quality);
+    void qualitySpinBoxChanged(double quality);
 };
 
 #endif // MUSEPACKCODECWIDGET_H

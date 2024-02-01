@@ -4,33 +4,31 @@
 
 #include "../../core/replaygainplugin.h"
 
-#include <KUrl>
-#include <QWeakPointer>
+#include <QPointer>
+#include <QUrl>
 
 class ConversionOptions;
-class KDialog;
+class QDialog;
 class QComboBox;
 class QCheckBox;
 class QDoubleSpinBox;
-
 
 class Mp3GainPluginItem : public ReplayGainPluginItem
 {
     Q_OBJECT
 public:
-    explicit Mp3GainPluginItem( QObject *parent );
+    explicit Mp3GainPluginItem(QObject *parent);
     ~Mp3GainPluginItem();
 
-    KUrl::List undoFileList;
+    QList<QUrl> undoFileList;
 };
-
 
 class soundkonverter_replaygain_mp3gain : public ReplayGainPlugin
 {
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_replaygain_mp3gain( QObject *parent, const QVariantList& args );
+    soundkonverter_replaygain_mp3gain(QObject *parent, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_replaygain_mp3gain();
@@ -39,16 +37,16 @@ public:
 
     QList<ReplayGainPipe> codecTable();
 
-    bool isConfigSupported( ActionType action, const QString& codecName );
-    void showConfigDialog( ActionType action, const QString& codecName, QWidget *parent );
+    bool isConfigSupported(ActionType action, const QString &codecName);
+    void showConfigDialog(ActionType action, const QString &codecName, QWidget *parent);
     bool hasInfo();
-    void showInfo( QWidget *parent );
+    void showInfo(QWidget *parent);
 
-    int apply( const KUrl::List& fileList, ApplyMode mode = Add );
-    float parseOutput( const QString& output );
+    int apply(const QList<QUrl> &fileList, ApplyMode mode = Add);
+    float parseOutput(const QString &output);
 
 private:
-    QWeakPointer<KDialog> configDialog;
+    QPointer<QDialog> configDialog;
     QComboBox *configDialogTagModeComboBox;
     QCheckBox *configDialogModifyAudioStreamCheckBox;
     QDoubleSpinBox *configDialogGainAdjustmentSpinBox;
@@ -59,11 +57,10 @@ private:
 
 private slots:
     /** The undo process has exited */
-    virtual void undoProcessExit( int exitCode, QProcess::ExitStatus exitStatus );
+    virtual void undoProcessExit(int exitCode, QProcess::ExitStatus exitStatus);
 
     void configDialogSave();
     void configDialogDefault();
-
 };
 
 #endif // _SOUNDKONVERTER_REPLAYGAIN_MP3GAIN_H_

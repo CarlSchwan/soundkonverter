@@ -1,9 +1,8 @@
 
 #include "ripperplugin.h"
 
-
-RipperPluginItem::RipperPluginItem( QObject *parent )
-    : BackendPluginItem( parent )
+RipperPluginItem::RipperPluginItem(QObject *parent)
+    : BackendPluginItem(parent)
 {
     data.fromSector = 0;
     data.toSector = 0;
@@ -14,20 +13,22 @@ RipperPluginItem::RipperPluginItem( QObject *parent )
 }
 
 RipperPluginItem::~RipperPluginItem()
-{}
-
+{
+}
 
 //
 // class RipperPlugin
 //
 ////////////////////
 
-RipperPlugin::RipperPlugin( QObject *parent )
-    : BackendPlugin( parent )
-{}
+RipperPlugin::RipperPlugin(QObject *parent)
+    : BackendPlugin(parent)
+{
+}
 
 RipperPlugin::~RipperPlugin()
-{}
+{
+}
 
 QString RipperPlugin::type() const
 {

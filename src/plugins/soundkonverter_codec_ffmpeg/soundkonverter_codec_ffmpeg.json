@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "hessijames@gmail.com",
+                "Name": "Daniel Faust"
+            }
+        ],
+        "License": "GPL",
+        "Name": "soundKonverter FFmpeg Plugin",
+        "Version": "1.0"
+    }
+}

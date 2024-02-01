@@ -1,13 +1,12 @@
-project(soundkonverter_codec_mplayer)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_mplayer_SRCS
    soundkonverter_codec_mplayer.cpp
 )
 
-add_library(soundkonverter_codec_mplayer MODULE ${soundkonverter_codec_mplayer_SRCS})
-target_link_libraries(soundkonverter_codec_mplayer KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_mplayer
+    SOURCES ${soundkonverter_codec_mplayer_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_mplayer DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_mplayer.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_mplayer KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

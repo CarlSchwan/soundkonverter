@@ -1,12 +1,11 @@
 
 #include "mplayercodecglobal.h"
 
-#include "soundkonverter_codec_mplayer.h"
 #include "../../core/conversionoptions.h"
+#include "soundkonverter_codec_mplayer.h"
 
-
-soundkonverter_codec_mplayer::soundkonverter_codec_mplayer( QObject *parent, const QVariantList& args  )
-    : CodecPlugin( parent )
+soundkonverter_codec_mplayer::soundkonverter_codec_mplayer(QObject *parent, const QVariantList &args)
+    : CodecPlugin(parent)
 {
     Q_UNUSED(args)
 
@@ -14,7 +13,8 @@ soundkonverter_codec_mplayer::soundkonverter_codec_mplayer( QObject *parent, con
 }
 
 soundkonverter_codec_mplayer::~soundkonverter_codec_mplayer()
-{}
+{
+}
 
 QString soundkonverter_codec_mplayer::name() const
 {
@@ -66,21 +66,20 @@ QList<ConversionPipeTrunk> soundkonverter_codec_mplayer::codecTable()
     /// encode
     toCodecs += "wav";
 
-    for( int i=0; i<fromCodecs.count(); i++ )
-    {
-        for( int j=0; j<toCodecs.count(); j++ )
-        {
-            if( fromCodecs.at(i) == "wav" && toCodecs.at(j) == "wav" )
+    for (int i = 0; i < fromCodecs.count(); i++) {
+        for (int j = 0; j < toCodecs.count(); j++) {
+            if (fromCodecs.at(i) == "wav" && toCodecs.at(j) == "wav")
                 continue;
 
             ConversionPipeTrunk newTrunk;
             newTrunk.codecFrom = fromCodecs.at(i);
             newTrunk.codecTo = toCodecs.at(j);
             newTrunk.rating = 80;
-            newTrunk.enabled = ( binaries["mplayer"] != "" );
-            newTrunk.problemInfo = standardMessage( "decode_codec,backend", fromCodecs.at(i), "mplayer" ) + "\n" + standardMessage( "install_patented_backend", "mplayer" );
+            newTrunk.enabled = (binaries["mplayer"] != "");
+            newTrunk.problemInfo =
+                standardMessage("decode_codec,backend", fromCodecs.at(i), "mplayer") + "\n" + standardMessage("install_patented_backend", "mplayer");
             newTrunk.data.hasInternalReplayGain = false;
-            table.append( newTrunk );
+            table.append(newTrunk);
         }
     }
 
@@ -92,8 +91,7 @@ QList<ConversionPipeTrunk> soundkonverter_codec_mplayer::codecTable()
     return table;
 }
 
-
-bool soundkonverter_codec_mplayer::isConfigSupported( ActionType action, const QString& codecName )
+bool soundkonverter_codec_mplayer::isConfigSupported(ActionType action, const QString &codecName)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -101,7 +99,7 @@ bool soundkonverter_codec_mplayer::isConfigSupported( ActionType action, const Q
     return false;
 }
 
-void soundkonverter_codec_mplayer::showConfigDialog( ActionType action, const QString& codecName, QWidget *parent )
+void soundkonverter_codec_mplayer::showConfigDialog(ActionType action, const QString &codecName, QWidget *parent)
 {
     Q_UNUSED(action)
     Q_UNUSED(codecName)
@@ -113,7 +111,7 @@ bool soundkonverter_codec_mplayer::hasInfo()
     return false;
 }
 
-void soundkonverter_codec_mplayer::showInfo( QWidget *parent )
+void soundkonverter_codec_mplayer::showInfo(QWidget *parent)
 {
     Q_UNUSED(parent)
 }
@@ -123,43 +121,54 @@ CodecWidget *soundkonverter_codec_mplayer::newCodecWidget()
     return 0;
 }
 
-int soundkonverter_codec_mplayer::convert( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+int soundkonverter_codec_mplayer::convert(const QUrl &inputFile,
+                                          const QUrl &outputFile,
+                                          const QString &inputCodec,
+                                          const QString &outputCodec,
+                                          const ConversionOptions *_conversionOptions,
+                                          TagData *tags,
+                                          bool replayGain)
 {
-    const QStringList command = convertCommand( inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain );
-    if( command.isEmpty() )
+    const QStringList command = convertCommand(inputFile, outputFile, inputCodec, outputCodec, _conversionOptions, tags, replayGain);
+    if (command.isEmpty())
         return BackendPlugin::UnknownError;
 
-    CodecPluginItem *newItem = new CodecPluginItem( this );
+    CodecPluginItem *newItem = new CodecPluginItem(this);
     newItem->id = lastId++;
-    newItem->process = new KProcess( newItem );
-    newItem->process->setOutputChannelMode( KProcess::MergedChannels );
-    connect( newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()) );
-    connect( newItem->process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processExit(int,QProcess::ExitStatus)) );
+    newItem->process = new KProcess(newItem);
+    newItem->process->setOutputChannelMode(KProcess::MergedChannels);
+    connect(newItem->process, SIGNAL(readyRead()), this, SLOT(processOutput()));
+    connect(newItem->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processExit(int, QProcess::ExitStatus)));
 
     newItem->process->clearProgram();
-    newItem->process->setShellCommand( command.join(" ") );
+    newItem->process->setShellCommand(command.join(" "));
     newItem->process->start();
 
-    logCommand( newItem->id, command.join(" ") );
+    logCommand(newItem->id, command.join(" "));
 
-    backendItems.append( newItem );
+    backendItems.append(newItem);
     return newItem->id;
 }
 
-QStringList soundkonverter_codec_mplayer::convertCommand( const KUrl& inputFile, const KUrl& outputFile, const QString& inputCodec, const QString& outputCodec, const ConversionOptions *_conversionOptions, TagData *tags, bool replayGain )
+QStringList soundkonverter_codec_mplayer::convertCommand(const QUrl &inputFile,
+                                                         const QUrl &outputFile,
+                                                         const QString &inputCodec,
+                                                         const QString &outputCodec,
+                                                         const ConversionOptions *_conversionOptions,
+                                                         TagData *tags,
+                                                         bool replayGain)
 {
     Q_UNUSED(inputCodec)
     Q_UNUSED(_conversionOptions)
     Q_UNUSED(tags)
     Q_UNUSED(replayGain)
 
-    if( outputFile.isEmpty() )
+    if (outputFile.isEmpty())
         return QStringList();
 
     QStringList command;
 
-    if( outputCodec == "wav" )
-    {
+    if (outputCodec == "wav") {
         command += binaries["mplayer"];
         command += "-ao";
         command += "pcm:file=\"" + escapeUrl(outputFile) + "\"";
@@ -173,7 +182,7 @@ QStringList soundkonverter_codec_mplayer::convertCommand( const KUrl& inputFile,
     return command;
 }
 
-float soundkonverter_codec_mplayer::parseOutput( const QString& output )
+float soundkonverter_codec_mplayer::parseOutput(const QString &output)
 {
     // decoding audio
     // A: 921.7 (15:21.7) of 2260.0 (37:40.0)  0.4%
@@ -181,17 +190,14 @@ float soundkonverter_codec_mplayer::parseOutput( const QString& output )
     // A:19743.6 V:19743.6 A-V:  0.016 ct: -0.506 491/491  0%  0%  0.6% 237 0
 
     QRegExp regAudio("A:\\s+(\\d+\\.\\d)\\s+\\(.*\\)\\s+of\\s+(\\d+\\.\\d)\\s+\\(.*\\)");
-    if( output.contains(regAudio) )
-    {
-        return regAudio.cap(1).toFloat()/regAudio.cap(2).toFloat()*100.0f;
+    if (output.contains(regAudio)) {
+        return regAudio.cap(1).toFloat() / regAudio.cap(2).toFloat() * 100.0f;
     }
     QRegExp regVideo("A:\\s*\\d+\\.\\d\\s+V:\\s*\\d+\\.\\d");
-    if( output.contains(regVideo) )
-    {
+    if (output.contains(regVideo)) {
         return 0;
     }
-    if( output.contains("Too many buffered pts") )
-    {
+    if (output.contains("Too many buffered pts")) {
         return 0;
     }
 
@@ -202,6 +208,6 @@ float soundkonverter_codec_mplayer::parseOutput( const QString& output )
     return -1;
 }
 
-K_PLUGIN_FACTORY(codec_mplayer, registerPlugin<soundkonverter_codec_mplayer>();)
+K_PLUGIN_FACTORY_WITH_JSON(soundkonverter_codec_mplayerFactory, "soundkonverter_codec_mplayer.json", registerPlugin<soundkonverter_codec_mplayer>();)
 
 #include "soundkonverter_codec_mplayer.moc"

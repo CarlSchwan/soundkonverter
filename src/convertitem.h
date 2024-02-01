@@ -5,15 +5,16 @@
 
 #include "pluginloader.h"
 
-#include <kio/job.h>
+#include <KIO/FileCopyJob>
 
+#include <QElapsedTimer>
 #include <QList>
+#include <QPointer>
 #include <QTime>
 #include <QWeakPointer>
 
 class FileListItem;
 class KProcess;
-
 
 /**
  * @short The items for the conversion (for every active file)
@@ -26,21 +27,21 @@ public:
      * A list of flags for knowing what to do
      */
     enum Mode {
-        initial            = 0x0000, // Initial state
-        get                = 0x0001, // Copy the file to tmp
-        convert            = 0x0002, // Convert the file
-        rip                = 0x0004, // Ripping the file (only for the current state)
-        decode             = 0x0008, // Decoding the file (only for the current state)
-        filter             = 0x0010, // Applying filters (only for the current state)
-        encode             = 0x0020, // Encoding the file (only for the current state)
-        wait_replaygain    = 0x0040, // Wait for replaygain
-        replaygain         = 0x0080  // Apply replaygain
-//         write_tags         = 0x0100, // Write the tags to the file
-//         execute_userscript = 0x0200  // Run the user script
+        initial = 0x0000, // Initial state
+        get = 0x0001, // Copy the file to tmp
+        convert = 0x0002, // Convert the file
+        rip = 0x0004, // Ripping the file (only for the current state)
+        decode = 0x0008, // Decoding the file (only for the current state)
+        filter = 0x0010, // Applying filters (only for the current state)
+        encode = 0x0020, // Encoding the file (only for the current state)
+        wait_replaygain = 0x0040, // Wait for replaygain
+        replaygain = 0x0080 // Apply replaygain
+        //         write_tags         = 0x0100, // Write the tags to the file
+        //         execute_userscript = 0x0200  // Run the user script
     };
 
     /** Constructor, @p item a pointer to the file list item */
-    explicit ConvertItem( FileListItem *item );
+    explicit ConvertItem(FileListItem *item);
 
     /** Destructor */
     ~ConvertItem();
@@ -58,9 +59,9 @@ public:
     int lastTake; // TODO use cleaner solution
 
     /** for the conversion and moving the file to a temporary place */
-    QWeakPointer<KProcess> process;
+    QPointer<KProcess> process;
     /** for moving the file to the temporary directory */
-    QWeakPointer<KIO::FileCopyJob> kioCopyJob;
+    QPointer<KIO::FileCopyJob> kioCopyJob;
     /** the active plugin */
     BackendPlugin *backendPlugin;
     /** the id from the active plugin (-1 if false) */
@@ -73,15 +74,15 @@ public:
     bool internalReplayGainUsed;
 
     /** the url from fileListItem or the download temp file */
-    KUrl inputUrl;
+    QUrl inputUrl;
     /** the path and the name of the output file */
-    KUrl outputUrl;
+    QUrl outputUrl;
     /** the downloaded input file */
-    KUrl tempInputUrl;
+    QUrl tempInputUrl;
     /** the temp files for the conversion */
-    QList<KUrl> tempConvertUrls;
+    QList<QUrl> tempConvertUrls;
 
-    KUrl generateTempUrl( const QString& prefix, const QString& extension, bool useSharedMemory = false );
+    QUrl generateTempUrl(const QString &prefix, const QString &extension, bool useSharedMemory = false);
 
     /** what shall we do with the file? */
     Mode mode;
@@ -103,7 +104,7 @@ public:
     /** the current conversion progress */
     float progress;
 
-    QTime progressedTime;
+    QElapsedTimer progressedTime;
 };
 
 #endif // CONVERTITEM_H

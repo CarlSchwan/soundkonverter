@@ -16,10 +16,10 @@ public:
     ~FaacCodecWidget();
 
     ConversionOptions *currentConversionOptions();
-    bool setCurrentConversionOptions( const ConversionOptions *_options );
-    void setCurrentFormat( const QString& format );
+    bool setCurrentConversionOptions(const ConversionOptions *_options);
+    void setCurrentFormat(const QString &format);
     QString currentProfile();
-    bool setCurrentProfile( const QString& profile );
+    bool setCurrentProfile(const QString &profile);
     int currentDataRate();
 
 private:
@@ -29,13 +29,13 @@ private:
 
     QString currentFormat; // holds the current output file format
 
-    int bitrateForQuality( int quality );
-    int qualityForBitrate( int bitrate );
+    int bitrateForQuality(int quality);
+    int qualityForBitrate(int bitrate);
 
 private slots:
-    void modeChanged( int mode );
-    void qualitySliderChanged( int quality );
-    void qualitySpinBoxChanged( int quality );
+    void modeChanged(int mode);
+    void qualitySliderChanged(int quality);
+    void qualitySpinBoxChanged(int quality);
 };
 
 #endif // FAACCODECWIDGET_H

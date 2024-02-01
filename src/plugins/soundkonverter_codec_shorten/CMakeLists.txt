@@ -1,14 +1,13 @@
-project(soundkonverter_codec_shorten)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_shorten_SRCS
    soundkonverter_codec_shorten.cpp
    shortencodecwidget.cpp
 )
 
-add_library(soundkonverter_codec_shorten MODULE ${soundkonverter_codec_shorten_SRCS})
-target_link_libraries(soundkonverter_codec_shorten KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_shorten
+    SOURCES ${soundkonverter_codec_shorten_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_shorten DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_shorten.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_shorten KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

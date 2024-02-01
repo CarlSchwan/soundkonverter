@@ -4,18 +4,17 @@
 
 #include "../../core/conversionoptions.h"
 
-
 class SoxFilterOptions : public FilterOptions
 {
 public:
     SoxFilterOptions();
     ~SoxFilterOptions();
 
-    bool equals( FilterOptions *_other );
-    QDomElement toXml( QDomDocument document, const QString& elementName ) const;
-    bool fromXml( QDomElement filterOptions );
+    bool equals(FilterOptions *_other);
+    QDomElement toXml(QDomDocument document, const QString &elementName) const;
+    bool fromXml(QDomElement filterOptions);
 
-    FilterOptions* copy() const;
+    FilterOptions *copy() const;
 
     struct EffectData {
         QString effectName;

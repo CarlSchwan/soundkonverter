@@ -1,139 +1,149 @@
 
 #include "replaygainscanner.h"
 
-#include "replaygainfilelist.h"
-#include "replaygainprocessor.h"
+#include "codecproblems.h"
+#include "combobutton.h"
 #include "config.h"
 #include "logger.h"
-#include "combobutton.h"
 #include "opener/diropener.h"
-#include "codecproblems.h"
 #include "progressindicator.h"
+#include "replaygainfilelist.h"
+#include "replaygainprocessor.h"
 
-#include <KFileDialog>
-#include <KIcon>
-#include <KLocale>
-#include <KPushButton>
+#include <KLocalizedString>
 #include <KMessageBox>
-
+#include <KSharedConfig>
+#include <KWindowConfig>
 #include <QApplication>
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QFileDialog>
+#include <QIcon>
 #include <QLabel>
 #include <QLayout>
-#include <QBoxLayout>
+#include <QLocale>
+#include <QPushButton>
 #include <QStringList>
 
-
-ReplayGainScanner::ReplayGainScanner( Config* _config, Logger* _logger, bool showMainWindowButton, QWidget *parent, Qt::WFlags f )
-    : KDialog( parent, f ),
-    config( _config ),
-    logger( _logger )
+ReplayGainScanner::ReplayGainScanner(Config *_config, Logger *_logger, bool showMainWindowButton, QWidget *parent, Qt::WindowFlags f)
+    : QDialog(parent, f)
+    , config(_config)
+    , logger(_logger)
 {
-    setButtons( 0 );
+    auto layout = new QVBoxLayout(this);
 
-    setCaption( i18n("Replay Gain tool") );
-    setWindowIcon( KIcon("soundkonverter-replaygain") );
+    setWindowTitle(i18n("Replay Gain tool"));
+    setWindowIcon(QIcon::fromTheme("soundkonverter-replaygain"));
 
     const int fontHeight = QFontMetrics(QApplication::font()).boundingRect("M").size().height();
 
-    QWidget *widget = new QWidget( this );
-    setMainWidget( widget );
+    QWidget *widget = new QWidget(this);
+    layout->addWidget(widget);
 
-    QGridLayout* grid = new QGridLayout( widget );
+    QGridLayout *grid = new QGridLayout(widget);
 
-    QHBoxLayout* filterBox = new QHBoxLayout();
-    grid->addLayout( filterBox, 0, 0 );
+    QHBoxLayout *filterBox = new QHBoxLayout();
+    grid->addLayout(filterBox, 0, 0);
 
-    cAdd = new ComboButton( widget );
-    cAdd->insertItem( KIcon("folder"), i18n("Add folder...") );
-    cAdd->insertItem( KIcon("audio-x-generic"), i18n("Add files...") );
-    filterBox->addWidget( cAdd );
-    connect( cAdd, SIGNAL(clicked(int)), this, SLOT(addClicked(int)) );
+    cAdd = new ComboButton(widget);
+    cAdd->insertItem(QIcon::fromTheme("folder"), i18n("Add folder..."));
+    cAdd->insertItem(QIcon::fromTheme("audio-x-generic"), i18n("Add files..."));
+    filterBox->addWidget(cAdd);
+    connect(cAdd, SIGNAL(clicked(int)), this, SLOT(addClicked(int)));
 
     filterBox->addStretch();
 
-    pShowMainWindow = new KPushButton( KIcon("soundkonverter"), i18n("Show soundKonverter main window"), widget );
-    pShowMainWindow->setVisible( showMainWindowButton );
-    filterBox->addWidget( pShowMainWindow );
-    connect( pShowMainWindow, SIGNAL(clicked()), this, SLOT(showMainWindowClicked()) );
-    
-    fileList = new ReplayGainFileList( config, logger, widget );
-    grid->addWidget( fileList, 1, 0 );
-    connect( fileList, SIGNAL(processStarted()), this, SLOT(processStarted()) );
-    connect( fileList, SIGNAL(processStopped()), this, SLOT(processStopped()) );
+    pShowMainWindow = new QPushButton(QIcon::fromTheme("soundkonverter"), i18n("Show soundKonverter main window"), widget);
+    pShowMainWindow->setVisible(showMainWindowButton);
+    filterBox->addWidget(pShowMainWindow);
+    connect(pShowMainWindow, SIGNAL(clicked()), this, SLOT(showMainWindowClicked()));
 
-    QHBoxLayout* progressBox = new QHBoxLayout();
-    grid->addLayout( progressBox, 2, 0 );
+    fileList = new ReplayGainFileList(config, logger, widget);
+    grid->addWidget(fileList, 1, 0);
+    connect(fileList, SIGNAL(processStarted()), this, SLOT(processStarted()));
+    connect(fileList, SIGNAL(processStopped()), this, SLOT(processStopped()));
 
-    progressIndicator = new ProgressIndicator( this );
-    progressBox->addWidget( progressIndicator );
-    connect( fileList, SIGNAL(timeChanged(float)), progressIndicator, SLOT(timeChanged(float)) );
-    connect( fileList, SIGNAL(finished(bool)), progressIndicator, SLOT(finished(bool)) );
-    connect( progressIndicator, SIGNAL(progressChanged(const QString&)), this, SLOT(progressChanged(const QString&)) );
+    QHBoxLayout *progressBox = new QHBoxLayout();
+    grid->addLayout(progressBox, 2, 0);
 
+    progressIndicator = new ProgressIndicator(this);
+    progressBox->addWidget(progressIndicator);
+    connect(fileList, SIGNAL(timeChanged(float)), progressIndicator, SLOT(timeChanged(float)));
+    connect(fileList, SIGNAL(finished(bool)), progressIndicator, SLOT(finished(bool)));
+    connect(progressIndicator, SIGNAL(progressChanged(const QString &)), this, SLOT(progressChanged(const QString &)));
 
-    QHBoxLayout* buttonBox = new QHBoxLayout();
-    grid->addLayout( buttonBox, 3, 0 );
+    QHBoxLayout *buttonBox = new QHBoxLayout();
+    grid->addLayout(buttonBox, 3, 0);
 
-    pTagVisible = new KPushButton( KIcon("list-add"), i18n("Tag untagged"), widget );
-    pTagVisible->setToolTip( i18n("Calculate Replay Gain tags for all files in the file list without Replay Gain tags.") );
-    buttonBox->addWidget( pTagVisible );
-    connect( pTagVisible, SIGNAL(clicked()), this, SLOT(calcReplayGainClicked()) );
+    pTagVisible = new QPushButton(QIcon::fromTheme("list-add"), i18n("Tag untagged"), widget);
+    pTagVisible->setToolTip(i18n("Calculate Replay Gain tags for all files in the file list without Replay Gain tags."));
+    buttonBox->addWidget(pTagVisible);
+    connect(pTagVisible, SIGNAL(clicked()), this, SLOT(calcReplayGainClicked()));
 
-    pRemoveTag = new KPushButton( KIcon("list-remove"), i18n("Untag tagged"), widget );
-    pRemoveTag->setToolTip( i18n("Remove the Replay Gain tags from all files in the file list.") );
-    buttonBox->addWidget( pRemoveTag );
-    connect( pRemoveTag, SIGNAL(clicked()), this, SLOT(removeReplayGainClicked()) );
+    pRemoveTag = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Untag tagged"), widget);
+    pRemoveTag->setToolTip(i18n("Remove the Replay Gain tags from all files in the file list."));
+    buttonBox->addWidget(pRemoveTag);
+    connect(pRemoveTag, SIGNAL(clicked()), this, SLOT(removeReplayGainClicked()));
 
-    pCancel = new KPushButton( KIcon("dialog-cancel"), i18n("Cancel"), widget );
+    pCancel = new QPushButton(QIcon::fromTheme("dialog-cancel"), i18n("Cancel"), widget);
     pCancel->hide();
-    buttonBox->addWidget( pCancel );
-    connect( pCancel, SIGNAL(clicked()), this, SLOT(cancelClicked()) );
+    buttonBox->addWidget(pCancel);
+    connect(pCancel, SIGNAL(clicked()), this, SLOT(cancelClicked()));
 
-    cForce = new QCheckBox( i18n("Force recalculation"), this );
-    cForce->setToolTip( i18n("Recalculate Replay Gain tags for files that already have Replay Gain tags set.") );
-    buttonBox->addWidget( cForce );
-    
+    cForce = new QCheckBox(i18n("Force recalculation"), this);
+    cForce->setToolTip(i18n("Recalculate Replay Gain tags for files that already have Replay Gain tags set."));
+    buttonBox->addWidget(cForce);
+
     buttonBox->addStretch();
 
-    pClose = new KPushButton( KIcon("dialog-close"), i18n("Close"), widget );
+    pClose = new QPushButton(QIcon::fromTheme("dialog-close"), i18n("Close"), widget);
     pClose->setFocus();
-    buttonBox->addWidget( pClose );
-    connect( pClose, SIGNAL(clicked()), this, SLOT(closeClicked()) );
+    buttonBox->addWidget(pClose);
+    connect(pClose, SIGNAL(clicked()), this, SLOT(closeClicked()));
 
-    ReplayGainProcessor *replayGainProcessor = new ReplayGainProcessor( config, fileList, logger );
-    connect( fileList, SIGNAL(processItem(ReplayGainFileListItem*,ReplayGainPlugin::ApplyMode)), replayGainProcessor, SLOT(add(ReplayGainFileListItem*,ReplayGainPlugin::ApplyMode)) );
-    connect( fileList, SIGNAL(killItem(ReplayGainFileListItem*)), replayGainProcessor, SLOT(kill(ReplayGainFileListItem*)) );
-    connect( replayGainProcessor, SIGNAL(finished(ReplayGainFileListItem*,ReplayGainFileListItem::ReturnCode)), fileList, SLOT(itemFinished(ReplayGainFileListItem*,ReplayGainFileListItem::ReturnCode)) );
-    connect( replayGainProcessor, SIGNAL(updateItem(ReplayGainFileListItem*,bool)), fileList, SLOT(updateItem(ReplayGainFileListItem*,bool)) );
+    ReplayGainProcessor *replayGainProcessor = new ReplayGainProcessor(config, fileList, logger);
+    connect(fileList,
+            SIGNAL(processItem(ReplayGainFileListItem *, ReplayGainPlugin::ApplyMode)),
+            replayGainProcessor,
+            SLOT(add(ReplayGainFileListItem *, ReplayGainPlugin::ApplyMode)));
+    connect(fileList, SIGNAL(killItem(ReplayGainFileListItem *)), replayGainProcessor, SLOT(kill(ReplayGainFileListItem *)));
+    connect(replayGainProcessor,
+            SIGNAL(finished(ReplayGainFileListItem *, ReplayGainFileListItem::ReturnCode)),
+            fileList,
+            SLOT(itemFinished(ReplayGainFileListItem *, ReplayGainFileListItem::ReturnCode)));
+    connect(replayGainProcessor, SIGNAL(updateItem(ReplayGainFileListItem *, bool)), fileList, SLOT(updateItem(ReplayGainFileListItem *, bool)));
 
-    connect( replayGainProcessor, SIGNAL(finishedProcess(int,bool)), logger, SLOT(processCompleted(int,bool)) );
+    connect(replayGainProcessor, SIGNAL(finishedProcess(int, bool)), logger, SLOT(processCompleted(int, bool)));
 
-    connect( replayGainProcessor, SIGNAL(updateTime(float)), progressIndicator, SLOT(update(float)) );
-    connect( replayGainProcessor, SIGNAL(timeFinished(float)), progressIndicator, SLOT(timeFinished(float)) );
+    connect(replayGainProcessor, SIGNAL(updateTime(float)), progressIndicator, SLOT(update(float)));
+    connect(replayGainProcessor, SIGNAL(timeFinished(float)), progressIndicator, SLOT(timeFinished(float)));
 
-
-    setInitialSize( QSize(60*fontHeight,40*fontHeight) );
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "ReplayGainTool" );
-    restoreDialogSize( group );
+    resize(QSize(60 * fontHeight, 40 * fontHeight));
+    readConfig();
 }
 
 ReplayGainScanner::~ReplayGainScanner()
 {
-    KSharedConfig::Ptr conf = KGlobal::config();
-    KConfigGroup group = conf->group( "ReplayGainTool" );
-    saveDialogSize( group );
+    writeConfig();
 }
 
-void ReplayGainScanner::addClicked( int index )
+void ReplayGainScanner::readConfig()
 {
-    if( index == 1 )
-    {
+    KConfigGroup group(KSharedConfig::openStateConfig(), u"ReplayGainTool"_s);
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
+}
+
+void ReplayGainScanner::writeConfig()
+{
+    KConfigGroup group(KSharedConfig::openStateConfig(), u"ReplayGainTool"_s);
+    KWindowConfig::saveWindowSize(windowHandle(), group);
+}
+
+void ReplayGainScanner::addClicked(int index)
+{
+    if (index == 1) {
         showFileDialog();
-    }
-    else
-    {
+    } else {
         showDirDialog();
     }
 }
@@ -142,70 +152,55 @@ void ReplayGainScanner::showFileDialog()
 {
     QStringList filterList;
     QStringList allFilter;
-    const QStringList formats = config->pluginLoader()->formatList( PluginLoader::ReplayGain, PluginLoader::CompressionType(PluginLoader::InferiorQuality|PluginLoader::Lossy|PluginLoader::Lossless|PluginLoader::Hybrid) );
-    foreach( QString format, formats )
-    {
+    const QStringList formats = config->pluginLoader()->formatList(
+        PluginLoader::ReplayGain,
+        PluginLoader::CompressionType(PluginLoader::InferiorQuality | PluginLoader::Lossy | PluginLoader::Lossless | PluginLoader::Hybrid));
+    foreach (QString format, formats) {
         QString extensionFilter = config->pluginLoader()->codecExtensions(format).join(" *.");
-        if( extensionFilter.length() == 0 )
+        if (extensionFilter.length() == 0)
             continue;
         extensionFilter = "*." + extensionFilter;
         allFilter += extensionFilter;
-        filterList += extensionFilter + "|" + i18n("%1 files",format.replace("/","\\/"));
+        filterList += extensionFilter + "|" + i18n("%1 files", format.replace("/", "\\/"));
     }
-    filterList.prepend( allFilter.join(" ") + "|" + i18n("All supported files") );
+    filterList.prepend(allFilter.join(" ") + "|" + i18n("All supported files"));
     filterList += "*.*|" + i18n("All files");
 
     // add the control elements
-    QLabel *formatHelp = new QLabel( "<a href=\"format-help\">" + i18n("Are you missing some file formats?") + "</a>", this );
-    connect( formatHelp, SIGNAL(linkActivated(const QString&)), this, SLOT(showHelp()) );
+    auto urls = QFileDialog::getOpenFileUrls(this, i18n("Add Files"), QUrl("kfiledialog:///soundkonverter-add-media"), filterList.join("\n"));
 
-    fileDialog = new KFileDialog( KUrl("kfiledialog:///soundkonverter-add-media"), filterList.join("\n"), this, formatHelp );
-    fileDialog->setWindowTitle( i18n("Add Files") );
-    fileDialog->setMode( KFile::Files | KFile::ExistingOnly );
-    connect( fileDialog, SIGNAL(accepted()), this, SLOT(fileDialogAccepted()) );
-    fileDialog->exec();
-}
-
-void ReplayGainScanner::fileDialogAccepted()
-{
     QStringList errorList;
     //    codec    @0 files @1 solutions
-    QMap< QString, QList<QStringList> > problems;
+    QMap<QString, QList<QStringList>> problems;
     QString fileName;
 
-    QList<QUrl> urls = fileDialog->selectedUrls();
+    const bool canDecodeAac = config->pluginLoader()->canDecode("m4a/aac");
+    const bool canDecodeAlac = config->pluginLoader()->canDecode("m4a/alac");
+    const bool checkM4a = (!canDecodeAac || !canDecodeAlac) && canDecodeAac != canDecodeAlac;
 
-    const bool canDecodeAac = config->pluginLoader()->canDecode( "m4a/aac" );
-    const bool canDecodeAlac = config->pluginLoader()->canDecode( "m4a/alac" );
-    const bool checkM4a = ( !canDecodeAac || !canDecodeAlac ) && canDecodeAac != canDecodeAlac;
-
-    for( int i=0; i<urls.count(); i++ )
-    {
+    for (int i = 0; i < urls.count(); i++) {
         QString mimeType;
-        QString codecName = config->pluginLoader()->getCodecFromFile( urls.at(i), &mimeType, checkM4a );
+        QString codecName = config->pluginLoader()->getCodecFromFile(urls.at(i), &mimeType, checkM4a);
 
-        if( !config->pluginLoader()->canReplayGain(codecName,0,&errorList) )
-        {
+        if (!config->pluginLoader()->canReplayGain(codecName, 0, &errorList)) {
             fileName = urls.at(i).toDisplayString(QUrl::PreferLocalFile);
 
-            if( codecName.isEmpty() )
+            if (codecName.isEmpty())
                 codecName = mimeType;
-            if( codecName.isEmpty() )
-                codecName = fileName.right(fileName.length()-fileName.lastIndexOf(".")-1);
+            if (codecName.isEmpty())
+                codecName = fileName.right(fileName.length() - fileName.lastIndexOf(".") - 1);
 
-            if( problems.value(codecName).count() < 2 )
-            {
+            if (problems.value(codecName).count() < 2) {
                 problems[codecName] += QStringList();
                 problems[codecName] += QStringList();
             }
             problems[codecName][0] += fileName;
-            if( !errorList.isEmpty() )
-            {
+            if (!errorList.isEmpty()) {
                 problems[codecName][1] += errorList;
-            }
-            else
-            {
-                problems[codecName][1] += i18n("This file type is unknown to soundKonverter.\nMaybe you need to install an additional soundKonverter plugin.\nYou should have a look at your distribution's package manager for this.");
+            } else {
+                problems[codecName][1] += i18n(
+                    "This file type is unknown to soundKonverter.\nMaybe you need to install an additional soundKonverter plugin.\nYou should have a look at "
+                    "your distribution's package manager for this.");
             }
             urls.removeAt(i);
             i--;
@@ -213,84 +208,71 @@ void ReplayGainScanner::fileDialogAccepted()
     }
 
     QList<CodecProblems::Problem> problemList;
-    for( int i=0; i<problems.count(); i++ )
-    {
+    for (int i = 0; i < problems.count(); i++) {
         CodecProblems::Problem problem;
         problem.codecName = problems.keys().at(i);
-        if( problem.codecName != "wav" )
-        {
-            #if QT_VERSION >= 0x040500
+        if (problem.codecName != "wav") {
+#if QT_VERSION >= 0x040500
             problems[problem.codecName][1].removeDuplicates();
-            #else
+#else
             QStringList found;
-            for( int j=0; j<problems.value(problem.codecName).at(1).count(); j++ )
-            {
-                if( found.contains(problems.value(problem.codecName).at(1).at(j)) )
-                {
+            for (int j = 0; j < problems.value(problem.codecName).at(1).count(); j++) {
+                if (found.contains(problems.value(problem.codecName).at(1).at(j))) {
                     problems[problem.codecName][1].removeAt(j);
                     j--;
-                }
-                else
-                {
+                } else {
                     found += problems.value(problem.codecName).at(1).at(j);
                 }
             }
-            #endif
+#endif
             problem.solutions = problems.value(problem.codecName).at(1);
-            if( problems.value(problem.codecName).at(0).count() <= 3 )
-            {
+            if (problems.value(problem.codecName).at(0).count() <= 3) {
                 problem.affectedFiles = problems.value(problem.codecName).at(0);
-            }
-            else
-            {
+            } else {
                 problem.affectedFiles += problems.value(problem.codecName).at(0).at(0);
                 problem.affectedFiles += problems.value(problem.codecName).at(0).at(1);
-                problem.affectedFiles += i18n("... and %1 more files",problems.value(problem.codecName).at(0).count()-2);
+                problem.affectedFiles += i18n("... and %1 more files", problems.value(problem.codecName).at(0).count() - 2);
             }
             problemList += problem;
         }
     }
 
-    if( problemList.count() > 0 )
-    {
-        CodecProblems *problemsDialog = new CodecProblems( CodecProblems::ReplayGain, problemList, this );
+    if (problemList.count() > 0) {
+        CodecProblems *problemsDialog = new CodecProblems(CodecProblems::ReplayGain, problemList, this);
         problemsDialog->exec();
     }
 
-    if( urls.count() > 0 )
-        fileList->addFiles( urls );
+    if (urls.count() > 0)
+        fileList->addFiles(urls);
 }
 
 void ReplayGainScanner::showHelp()
 {
     QList<CodecProblems::Problem> problemList;
-    const QMap<QString,QStringList> problems = config->pluginLoader()->replaygainProblems();
-    for( int i=0; i<problems.count(); i++ )
-    {
+    const QMap<QString, QStringList> problems = config->pluginLoader()->replaygainProblems();
+    for (int i = 0; i < problems.count(); i++) {
         CodecProblems::Problem problem;
         problem.codecName = problems.keys().at(i);
-        if( problem.codecName != "wav" )
-        {
+        if (problem.codecName != "wav") {
             problem.solutions = problems.value(problem.codecName);
             problemList += problem;
         }
     }
 
-    CodecProblems *problemsDialog = new CodecProblems( CodecProblems::Debug, problemList, this );
+    CodecProblems *problemsDialog = new CodecProblems(CodecProblems::Debug, problemList, this);
     problemsDialog->exec();
 }
 
 void ReplayGainScanner::showDirDialog()
 {
-    DirOpener *dialog = new DirOpener( config, DirOpener::ReplayGain, this );
+    DirOpener *dialog = new DirOpener(config, DirOpener::ReplayGain, this);
 
-    if( !dialog->dialogAborted )
-    {
-        connect( dialog, SIGNAL(openFiles(const QUrl&,bool,const QStringList&)), fileList, SLOT(addDir(const QUrl&,bool,const QStringList&)) );
+    if (!dialog->dialogAborted) {
+        connect(dialog, SIGNAL(openFiles(const QUrl &, bool, const QStringList &)), fileList, SLOT(addDir(const QUrl &, bool, const QStringList &)));
 
         dialog->exec();
 
-        disconnect( dialog, SIGNAL(openFiles(const QUrl&,bool,const QStringList&)), 0, 0 );
+        disconnect(dialog, SIGNAL(openFiles(const QUrl &, bool, const QStringList &)), 0, 0);
     }
 
     delete dialog;
@@ -302,19 +284,19 @@ void ReplayGainScanner::showMainWindowClicked()
     emit showMainWindow();
 }
 
-void ReplayGainScanner::addFiles( QList<QUrl> urls )
+void ReplayGainScanner::addFiles(QList<QUrl> urls)
 {
-    fileList->addFiles( urls );
+    fileList->addFiles(urls);
 }
 
 void ReplayGainScanner::calcReplayGainClicked()
 {
-    fileList->startProcessing( cForce->isChecked() ? ReplayGainPlugin::Force : ReplayGainPlugin::Add );
+    fileList->startProcessing(cForce->isChecked() ? ReplayGainPlugin::Force : ReplayGainPlugin::Add);
 }
 
 void ReplayGainScanner::removeReplayGainClicked()
 {
-    fileList->startProcessing( ReplayGainPlugin::Remove );
+    fileList->startProcessing(ReplayGainPlugin::Remove);
 }
 
 void ReplayGainScanner::cancelClicked()
@@ -324,15 +306,15 @@ void ReplayGainScanner::cancelClicked()
 
 void ReplayGainScanner::closeClicked()
 {
-    if( pCancel->isVisible() )
-    {
-        const int ret = KMessageBox::questionYesNo( this, i18n("There are still Replay Gain jobs running.\nDo you really want to cancel them?") );
-        if( ret == KMessageBox::Yes )
-        {
+    if (pCancel->isVisible()) {
+        const int ret = KMessageBox::questionTwoActions(this,
+                                                        i18n("There are still Replay Gain jobs running."),
+                                                        i18n("Do you really want to stop them?"),
+                                                        KStandardGuiItem::stop(),
+                                                        KStandardGuiItem::cancel());
+        if (ret == KMessageBox::PrimaryAction) {
             fileList->cancelProcess();
-        }
-        else
-        {
+        } else {
             return;
         }
     }
@@ -354,7 +336,7 @@ void ReplayGainScanner::processStopped()
     pCancel->hide();
 }
 
-void ReplayGainScanner::progressChanged( const QString& progress )
+void ReplayGainScanner::progressChanged(const QString &progress)
 {
-    setCaption( progress + " - " + i18n("Replay Gain tool") );
+    setWindowTitle(progress + " - " + i18n("Replay Gain tool"));
 }

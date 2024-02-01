@@ -1,58 +1,6 @@
-project(soundkonverter)
-cmake_minimum_required(VERSION 3.3.0)
-
-set(CMAKE_CXX_STANDARD 11)
-
-# show more warnings
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-# strict ISO C and ISO C++
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
-# use c++11 standard
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-# implicit conversions
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wconversion")
-# implicit conversions from signed to unsigned
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wsign-conversion")
-
-# hide deprecated declarations warnings
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-
-# kde libs
-find_package(ECM REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${ECM_MODULE_PATH})
-
-include(KDEInstallDirs)
-include(KDECompilerSettings)
-include(KDECMakeSettings)
-include(CMakePackageConfigHelpers)
-include(ECMInstallIcons)
-include(FeatureSummary)
-
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Xml)
-find_package(KF5 REQUIRED COMPONENTS I18n XmlGui KIO Solid Config ConfigWidgets WidgetsAddons KDELibs4Support)
-find_package(KF5Cddb)
-find_package(Phonon4Qt5 REQUIRED)
-
-
-# additional libs
-find_package(Cdparanoia REQUIRED)
-
-set(TAGLIB_MIN_VERSION "1.10")
-find_package(Taglib ${TAGLIB_MIN_VERSION} REQUIRED)
-
-
-# plugins 
-add_subdirectory(plugins)
-
 
 # include directories
 include_directories(${CDPARANOIA_INCLUDE_DIR})
-
-
-# translation
-include(ECMOptionalAddSubdirectory)
-ecm_optional_add_subdirectory( po )
-
 
 # soundkonvertercore
 set(soundkonvertercore_SRCS
@@ -66,10 +14,9 @@ set(soundkonvertercore_SRCS
 )
 
 add_library(soundkonvertercore SHARED ${soundkonvertercore_SRCS})
-target_link_libraries(soundkonvertercore KF5::WidgetsAddons KF5::KIOFileWidgets KF5::KIOCore KF5::KDELibs4Support)
+target_link_libraries(soundkonvertercore KF6::WidgetsAddons KF6::KIOFileWidgets KF6::KIOCore KF6::I18n KF6::StatusNotifierItem KF6::KCMUtils)
 
 install(TARGETS soundkonvertercore DESTINATION ${LIB_INSTALL_DIR})
-
 
 # soundkonverter
 set(soundkonverter_SRCS
@@ -93,7 +40,6 @@ set(soundkonverter_SRCS
    global.cpp
    main.cpp
    soundkonverter.cpp
-   soundkonverterapp.cpp
    soundkonverterview.cpp
    codecproblems.cpp
    codecoptimizations.cpp
@@ -115,29 +61,36 @@ set(soundkonverter_SRCS
    progressindicator.cpp
    outputdirectory.cpp
    aboutplugins.cpp
+   soundkonverter.qrc
 )
 
 add_executable(soundkonverter ${soundkonverter_SRCS})
-target_link_libraries(soundkonverter KF5::WidgetsAddons KF5::KIOFileWidgets KF5::KIOCore KF5::Solid KF5::Cddb Phonon::phonon4qt5 Taglib::Taglib ${CDPARANOIA_LIBRARIES} KF5::KDELibs4Support soundkonvertercore)
+target_link_libraries(soundkonverter
+    PRIVATE
+        KF6::WidgetsAddons
+        KF6::KIOFileWidgets
+        KF6::KIOCore
+        KF6::Solid
+        KF6::I18n
+        KF6::XmlGui
+        KCddb6
+        Phonon::phonon4qt6
+        Taglib::Taglib
+        ${CDPARANOIA_LIBRARIES}
+        soundkonvertercore
+)
 
-install(TARGETS soundkonverter DESTINATION ${BIN_INSTALL_DIR})
+install(TARGETS soundkonverter ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
+#install(FILES soundkonverter_codecplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+#install(FILES soundkonverter_filterplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+#install(FILES soundkonverter_replaygainplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+#install(FILES soundkonverter_ripperplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
+#install(FILES soundkonverter-rip-audiocd.desktop DESTINATION ${DATA_INSTALL_DIR}/solid/actions)
 
-# install directories
-install(FILES soundkonverter.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-install(FILES soundkonverterui.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/soundkonverter)
-
-install(FILES soundkonverter_codecplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-install(FILES soundkonverter_filterplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-install(FILES soundkonverter_replaygainplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-install(FILES soundkonverter_ripperplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-install(FILES soundkonverter-rip-audiocd.desktop DESTINATION ${DATA_INSTALL_DIR}/solid/actions)
-
-install(FILES soundkonverter.appdata.xml DESTINATION ${SHARE_INSTALL_PREFIX}/metainfo)
 
 add_subdirectory(icons)
 add_subdirectory(images)
 
-
-# summary
-feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+# plugins
+add_subdirectory(plugins)

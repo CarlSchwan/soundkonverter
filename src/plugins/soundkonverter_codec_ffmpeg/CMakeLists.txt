@@ -1,14 +1,13 @@
-project(soundkonverter_codec_ffmpeg)
+# SPDX-FileCopyrightText: 2024 Carl Schwan <carl@carlschwan.eu>
+# SPDX-License-Identifier: BSD-2-Clauses
 
 set(soundkonverter_codec_ffmpeg_SRCS
    soundkonverter_codec_ffmpeg.cpp
    ffmpegcodecwidget.cpp
 )
 
-add_library(soundkonverter_codec_ffmpeg MODULE ${soundkonverter_codec_ffmpeg_SRCS})
-target_link_libraries(soundkonverter_codec_ffmpeg KF5::WidgetsAddons Qt5::Xml soundkonvertercore)
+kcoreaddons_add_plugin(soundkonverter_codec_ffmpeg
+    SOURCES ${soundkonverter_codec_ffmpeg_SRCS}
+    INSTALL_NAMESPACE soundkonverterplugins/codecs)
 
-########### install files ###############
-
-install(TARGETS soundkonverter_codec_ffmpeg DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES soundkonverter_codec_ffmpeg.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+target_link_libraries(soundkonverter_codec_ffmpeg KF6::WidgetsAddons Qt6::Xml soundkonvertercore)

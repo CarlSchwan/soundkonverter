@@ -12,52 +12,48 @@ MusePackConversionOptions::MusePackConversionOptions()
 }
 
 MusePackConversionOptions::~MusePackConversionOptions()
-{}
-
-bool MusePackConversionOptions::equals( ConversionOptions *_other )
 {
-    if( !_other || _other->pluginName!=pluginName )
+}
+
+bool MusePackConversionOptions::equals(ConversionOptions *_other)
+{
+    if (!_other || _other->pluginName != pluginName)
         return false;
 
-    MusePackConversionOptions *other = dynamic_cast<MusePackConversionOptions*>(_other);
+    MusePackConversionOptions *other = dynamic_cast<MusePackConversionOptions *>(_other);
 
-    if( data.preset==other->data.preset && data.preset==Data::UserDefined )
-    {
+    if (data.preset == other->data.preset && data.preset == Data::UserDefined) {
         return ConversionOptions::equals(_other);
-    }
-    else if( data.preset==other->data.preset )
-    {
-        return ( equalsBasics(_other) && equalsFilters(_other) );
-    }
-    else
-    {
+    } else if (data.preset == other->data.preset) {
+        return (equalsBasics(_other) && equalsFilters(_other));
+    } else {
         return false;
     }
 }
 
-QDomElement MusePackConversionOptions::toXml( QDomDocument document ) const
+QDomElement MusePackConversionOptions::toXml(QDomDocument document) const
 {
-    QDomElement conversionOptions = ConversionOptions::toXml( document );
+    QDomElement conversionOptions = ConversionOptions::toXml(document);
     QDomElement encodingOptions = conversionOptions.elementsByTagName("encodingOptions").at(0).toElement();
     QDomElement data = document.createElement("data");
-    data.setAttribute("preset",MusePackConversionOptions::data.preset);
+    data.setAttribute("preset", MusePackConversionOptions::data.preset);
     encodingOptions.appendChild(data);
 
     return conversionOptions;
 }
 
-bool MusePackConversionOptions::fromXml( QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements )
+bool MusePackConversionOptions::fromXml(QDomElement conversionOptions, QList<QDomElement> *filterOptionsElements)
 {
-    ConversionOptions::fromXml( conversionOptions, filterOptionsElements );
+    ConversionOptions::fromXml(conversionOptions, filterOptionsElements);
     QDomElement encodingOptions = conversionOptions.elementsByTagName("encodingOptions").at(0).toElement();
     QDomElement data = encodingOptions.elementsByTagName("data").at(0).toElement();
     MusePackConversionOptions::data.preset = (Data::Preset)data.attribute("preset").toInt();
     return true;
 }
 
-ConversionOptions* MusePackConversionOptions::copy() const
+ConversionOptions *MusePackConversionOptions::copy() const
 {
-    MusePackConversionOptions* c = new MusePackConversionOptions();
+    MusePackConversionOptions *c = new MusePackConversionOptions();
     c->pluginName = pluginName;
     c->qualityMode = qualityMode;
     c->quality = quality;
@@ -72,12 +68,11 @@ ConversionOptions* MusePackConversionOptions::copy() const
     c->outputFilesystem = outputFilesystem;
     c->replaygain = replaygain;
 
-    foreach( const FilterOptions* f, filterOptions )
-    {
+    foreach (const FilterOptions *f, filterOptions) {
         c->filterOptions.append(f->copy());
     }
 
     c->data.preset = data.preset;
 
-    return static_cast<ConversionOptions*>(c);
+    return static_cast<ConversionOptions *>(c);
 }

@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "hessijames@gmail.com",
+                "Name": "Daniel Faust"
+            }
+        ],
+        "Id": "soundkonverter_codec_ttaenc",
+        "License": "GPL",
+        "Name": "soundKonverter TTA Enc Plugin",
+        "ServiceTypes": [
+            "soundKonverter/CodecPlugin"
+        ],
+        "Version": "1.0"
+    }
+}

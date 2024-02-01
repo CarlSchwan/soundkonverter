@@ -21,7 +21,7 @@ class QAbstractButton;
 class KLineEdit;
 
 /**
-	@author Daniel Faust <hessijames@gmail.com>
+    @author Daniel Faust <hessijames@gmail.com>
  */
 class ConfigCoverArtPage : public ConfigPageBase
 {
@@ -30,7 +30,7 @@ public:
     /**
      * Default Constructor
      */
-    ConfigCoverArtPage( Config *_config, QWidget *parent );
+    ConfigCoverArtPage(Config *_config, QWidget *parent);
 
     /**
      * Default Destructor
@@ -42,26 +42,25 @@ private:
     QRadioButton *rWriteCoversAuto;
     QRadioButton *rWriteCoversNever;
 
-    QLabel       *lWriteCoverName;
+    QLabel *lWriteCoverName;
     QRadioButton *rWriteCoverNameTitle;
     QRadioButton *rWriteCoverNameDefault;
-    QLabel       *lWriteCoverNameDefaultLabel;
-    KLineEdit    *lWriteCoverNameDefaultEdit;
+    QLabel *lWriteCoverNameDefaultLabel;
+    KLineEdit *lWriteCoverNameDefaultEdit;
 
-//     QCheckBox *cCopyCover;
-//     QCheckBox *cEmbedCover;
-//     QListView *lCoverList;
+    //     QCheckBox *cCopyCover;
+    //     QCheckBox *cEmbedCover;
+    //     QListView *lCoverList;
 
     Config *config;
 
 private slots:
     void somethingChanged();
-    void writeCoversChanged( QAbstractButton *button );
+    void writeCoversChanged(QAbstractButton *button);
 
 public slots:
     void resetDefaults();
     void saveSettings();
-
 };
 
 #endif
