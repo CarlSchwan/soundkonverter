@@ -61,6 +61,7 @@ set(soundkonverter_SRCS
    progressindicator.cpp
    outputdirectory.cpp
    aboutplugins.cpp
+   soundkonverter.qrc
 )
 
 add_executable(soundkonverter ${soundkonverter_SRCS})
@@ -79,11 +80,7 @@ target_link_libraries(soundkonverter
         soundkonvertercore
 )
 
-install(TARGETS soundkonverter DESTINATION ${BIN_INSTALL_DIR})
-
-
-# install directories
-install(FILES soundkonverterui.rc DESTINATION ${KXMLGUI_INSTALL_DIR}/soundkonverter)
+install(TARGETS soundkonverter ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
 #install(FILES soundkonverter_codecplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 #install(FILES soundkonverter_filterplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})

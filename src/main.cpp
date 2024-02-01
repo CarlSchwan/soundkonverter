@@ -55,6 +55,7 @@ int main(int argc, char **argv)
 
     // soundKonverterApp app;
     auto mainWindow = new soundKonverter();
+    mainWindow->show();
 
     /*
     static bool first = true;
