@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_twolame",
         "License": "GPL",
         "Name": "soundKonverter TwoLame Plugin",
         "ServiceTypes": [

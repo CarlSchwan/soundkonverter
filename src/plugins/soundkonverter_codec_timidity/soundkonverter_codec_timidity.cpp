@@ -5,7 +5,7 @@
 #include "soundkonverter_codec_timidity.h"
 #include "timiditycodecwidget.h"
 
-soundkonverter_codec_timidity::soundkonverter_codec_timidity(QObject *parent, const QVariantList &args)
+soundkonverter_codec_timidity::soundkonverter_codec_timidity(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

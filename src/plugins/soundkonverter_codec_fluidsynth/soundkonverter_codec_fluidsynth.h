@@ -17,7 +17,7 @@ class soundkonverter_codec_fluidsynth : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args);
+    soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_fluidsynth();

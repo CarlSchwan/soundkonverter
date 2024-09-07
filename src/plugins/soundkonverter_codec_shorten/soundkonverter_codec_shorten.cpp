@@ -5,7 +5,7 @@
 #include "shortencodecwidget.h"
 #include "soundkonverter_codec_shorten.h"
 
-soundkonverter_codec_shorten::soundkonverter_codec_shorten(QObject *parent, const QVariantList &args)
+soundkonverter_codec_shorten::soundkonverter_codec_shorten(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

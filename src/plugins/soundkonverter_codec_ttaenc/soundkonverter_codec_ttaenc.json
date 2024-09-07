@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_ttaenc",
         "License": "GPL",
         "Name": "soundKonverter TTA Enc Plugin",
         "ServiceTypes": [

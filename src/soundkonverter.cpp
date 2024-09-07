@@ -316,5 +316,3 @@ void soundKonverter::progressChanged(const QString &progress)
         systemTray->setToolTip(QIcon::fromTheme("soundKonverter"), i18n("Converting") + ": " + progress, {});
     }
 }
-
-#include "soundkonverter.moc"

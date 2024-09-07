@@ -6,11 +6,15 @@
 #include "opustoolsconversionoptions.h"
 #include "soundkonverter_codec_opustools.h"
 
+#include <KConfigGroup>
+#include <KLocalizedString>
+#include <KSharedConfig>
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QDialog>
+#include <QDialogButtonBox>
 
-soundkonverter_codec_opustools::soundkonverter_codec_opustools(QObject *parent, const QVariantList &args)
+soundkonverter_codec_opustools::soundkonverter_codec_opustools(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -81,16 +85,15 @@ void soundkonverter_codec_opustools::showConfigDialog(ActionType action, const Q
 
     if (!configDialog.data()) {
         configDialog = new QDialog(parent);
-        configDialog.data()->setCaption(i18n("Configure %1", *global_plugin_name));
-        configDialog.data()->setButtons(QDialog::Ok | QDialog::Cancel | QDialog::Default);
+        configDialog.data()->setWindowTitle(i18n("Configure %1", *global_plugin_name));
 
         QWidget *configDialogWidget = new QWidget(configDialog.data());
         QVBoxLayout *configDialogBox = new QVBoxLayout(configDialogWidget);
         configDialogUncoupledChannelsCheckBox = new QCheckBox(i18n("Uncoupled channels"), configDialogWidget);
         configDialogUncoupledChannelsCheckBox->setToolTip(i18n("Use one mono stream per channel"));
         configDialogBox->addWidget(configDialogUncoupledChannelsCheckBox);
-
-        configDialog.data()->setMainWidget(configDialogWidget);
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(configDialogWidget);
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::RestoreDefaults);
         connect(configDialog.data(), SIGNAL(okClicked()), this, SLOT(configDialogSave()));
         connect(configDialog.data(), SIGNAL(defaultClicked()), this, SLOT(configDialogDefault()));
     }

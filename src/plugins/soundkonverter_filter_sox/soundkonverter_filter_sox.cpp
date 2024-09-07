@@ -430,7 +430,7 @@ float soundkonverter_filter_sox::parseOutput(const QString &output)
     //     // 01-Unknown.wav: 98% complete, ratio=0,479    // encode
     //     // 01-Unknown.wav: 27% complete                 // decode
     //
-    //     QRegExp regEnc("(\\d+)% complete");
+    //     QRegularExpression regEnc("(\\d+)% complete");
     //     if( output.contains(regEnc) )
     //     {
     //         return (float)regEnc.cap(1).toInt();
@@ -466,7 +466,7 @@ void soundkonverter_filter_sox::infoProcessExit(int exitCode, QProcess::ExitStat
     Q_UNUSED(exitStatus)
     Q_UNUSED(exitCode)
 
-    QRegExp formatsReg("AUDIO FILE FORMATS: ([^\n]*)");
+    QRegularExpression formatsReg("AUDIO FILE FORMATS: ([^\n]*)");
     if (infoProcessOutputData.contains(formatsReg)) {
         const QStringList formats = formatsReg.cap(1).split(" ", QString::SkipEmptyParts);
 

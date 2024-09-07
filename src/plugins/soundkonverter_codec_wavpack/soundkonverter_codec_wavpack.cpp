@@ -5,7 +5,9 @@
 #include "soundkonverter_codec_wavpack.h"
 #include "wavpackcodecwidget.h"
 
-soundkonverter_codec_wavpack::soundkonverter_codec_wavpack(QObject *parent, const QVariantList &args)
+#include <KLocalizedString>
+
+soundkonverter_codec_wavpack::soundkonverter_codec_wavpack(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -170,9 +172,9 @@ float soundkonverter_codec_wavpack::parseOutput(const QString &output)
     // creating test.wv,  58% done...
     // restoring test.wv.wav,  31% done...
 
-    QRegExp reg("\\s+(\\d+)% done");
+    QRegularExpression reg("\\s+(\\d+)% done");
     if (output.contains(reg)) {
-        return (float)reg.cap(1).toInt();
+        return (float)reg.match(output).captured(1).toInt();
     }
 
     return -1;

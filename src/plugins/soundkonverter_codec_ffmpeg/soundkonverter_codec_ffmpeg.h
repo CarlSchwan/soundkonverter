@@ -28,7 +28,7 @@ public:
     };
 
     /** Default Constructor */
-    soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args);
+    soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_ffmpeg();

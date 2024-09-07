@@ -10,7 +10,6 @@
 #include "outputdirectory.h"
 
 #include <kio/job.h>
-#include <kio/jobclasses.h>
 
 #include <KLocalizedString>
 #include <KMessageBox>

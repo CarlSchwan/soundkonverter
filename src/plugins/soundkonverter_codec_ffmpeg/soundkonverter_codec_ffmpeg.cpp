@@ -17,7 +17,7 @@
 
 // TODO check for decoders at runtime, too
 
-soundkonverter_codec_ffmpeg::soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args)
+soundkonverter_codec_ffmpeg::soundkonverter_codec_ffmpeg(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

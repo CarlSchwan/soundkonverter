@@ -4,6 +4,8 @@
 
 #include "../../core/codecplugin.h"
 
+#include <KPluginFactory>
+
 #include <QPointer>
 
 class ConversionOptions;
@@ -15,7 +17,7 @@ class soundkonverter_codec_opustools : public CodecPlugin
     Q_OBJECT
 public:
     /** Default Constructor */
-    soundkonverter_codec_opustools(QObject *parent, const QVariantList &args);
+    soundkonverter_codec_opustools(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args);
 
     /** Default Destructor */
     ~soundkonverter_codec_opustools();

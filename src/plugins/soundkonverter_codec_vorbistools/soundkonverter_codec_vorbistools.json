@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_vorbistools",
         "License": "GPL",
         "Name": "soundKonverter Vorbis Tools Plugin",
         "ServiceTypes": [

@@ -5,7 +5,6 @@
 #include "aftencodecwidget.h"
 #include "soundkonverter_codec_aften.h"
 
-#include <KPluginFactory>
 #include <QRegularExpression>
 
 soundkonverter_codec_aften::soundkonverter_codec_aften(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)

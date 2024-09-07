@@ -5,7 +5,7 @@
 #include "soundkonverter_codec_speex.h"
 #include "speexcodecwidget.h"
 
-soundkonverter_codec_speex::soundkonverter_codec_speex(QObject *parent, const QVariantList &args)
+soundkonverter_codec_speex::soundkonverter_codec_speex(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

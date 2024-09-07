@@ -4,6 +4,7 @@
 set(soundkonverter_codec_lame_SRCS
    soundkonverter_codec_lame.cpp
    lamecodecwidget.cpp
+   lameconversionoptions.cpp
 )
 
 kcoreaddons_add_plugin(soundkonverter_codec_lame

@@ -5,7 +5,9 @@
 #include "soundkonverter_codec_vorbistools.h"
 #include "vorbistoolscodecwidget.h"
 
-soundkonverter_codec_vorbistools::soundkonverter_codec_vorbistools(QObject *parent, const QVariantList &args)
+#include <KLocalizedString>
+
+soundkonverter_codec_vorbistools::soundkonverter_codec_vorbistools(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

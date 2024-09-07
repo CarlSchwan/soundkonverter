@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_neroaac",
         "License": "GPL",
         "Name": "soundKonverter Nero AAC Plugin",
         "ServiceTypes": [

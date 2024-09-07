@@ -108,7 +108,7 @@ float soundkonverter_replaygain_vorbisgain::parseOutput(const QString &output, R
     // -12.14 dB |  46927 |  0.25 |    11599 | 03 - Sugar.ogg
     //   59% - 04 - Suggestions.ogg
 
-    QRegExp regApply("(\\d+)%");
+    QRegularExpression regApply("(\\d+)%");
     if (output.contains(regApply)) {
         progress = (float)regApply.cap(1).toInt();
     }
