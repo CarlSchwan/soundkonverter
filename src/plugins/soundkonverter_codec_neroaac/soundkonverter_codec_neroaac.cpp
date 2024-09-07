@@ -6,10 +6,12 @@
 #include "neroaaccodecwidget.h"
 #include "soundkonverter_codec_neroaac.h"
 
+#include <KLocalizedString>
+
 // NeroAAC is a propritary implementation of an aac encoder that claims to reach a better quality then faac.\nYou can download it at
 // http://www.nero.com/enu/downloads-nerodigital-nero-aac-codec.php
 
-soundkonverter_codec_neroaac::soundkonverter_codec_neroaac(QObject *parent, const QVariantList &args)
+soundkonverter_codec_neroaac::soundkonverter_codec_neroaac(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -187,9 +189,9 @@ float soundkonverter_codec_neroaac::parseOutput(const QString &output, int lengt
 
     // Processed 218 seconds...
 
-    QRegExp regEnc("Processed (\\d+) seconds");
+    QRegularExpression regEnc("Processed (\\d+) seconds");
     if (output.contains(regEnc)) {
-        return (float)regEnc.cap(1).toInt() * 100 / (float)length;
+        return (float)regEnc.match(output).captured(1).toInt() * 100 / (float)length;
     }
 
     // no output when decoding

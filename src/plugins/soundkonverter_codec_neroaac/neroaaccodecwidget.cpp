@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <KComboBox>
+#include <KLocalizedString>
 #include <QApplication>
 #include <QCheckBox>
 #include <QDoubleSpinBox>

@@ -8,6 +8,7 @@
 
 #include <KComboBox>
 #include <KLineEdit>
+#include <KLocalizedString>
 #include <QApplication>
 #include <QCheckBox>
 #include <QDoubleSpinBox>

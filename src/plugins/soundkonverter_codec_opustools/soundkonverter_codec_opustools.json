@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_opustools",
         "License": "GPL",
         "Name": "soundKonverter Opus Tools Plugin",
         "ServiceTypes": [

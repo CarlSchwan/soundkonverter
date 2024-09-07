@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_libav",
         "License": "GPL",
         "Name": "soundKonverter libav Plugin",
         "ServiceTypes": [

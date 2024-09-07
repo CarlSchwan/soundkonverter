@@ -4,6 +4,7 @@
 #include "../../core/conversionoptions.h"
 #include "timiditycodecwidget.h"
 
+#include <KLocalizedString>
 #include <QLocale>
 
 TimidityCodecWidget::TimidityCodecWidget()

@@ -3,6 +3,8 @@
 #define SOUNDKONVERTER_CODEC_MUSEPACK_H
 
 #include "../../core/codecplugin.h"
+
+#include <KPluginFactory>
 #include <KPluginMetaData>
 
 class ConversionOptions;

@@ -82,13 +82,6 @@ target_link_libraries(soundkonverter
 
 install(TARGETS soundkonverter ${KF6_INSTALL_TARGETS_DEFAULT_ARGS})
 
-#install(FILES soundkonverter_codecplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-#install(FILES soundkonverter_filterplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-#install(FILES soundkonverter_replaygainplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-#install(FILES soundkonverter_ripperplugin.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
-#install(FILES soundkonverter-rip-audiocd.desktop DESTINATION ${DATA_INSTALL_DIR}/solid/actions)
-
-
 add_subdirectory(icons)
 add_subdirectory(images)
 

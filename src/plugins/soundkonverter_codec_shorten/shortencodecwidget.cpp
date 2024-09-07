@@ -5,6 +5,7 @@
 #include "shortencodecwidget.h"
 
 #include <KLineEdit>
+#include <KLocalizedString>
 #include <QCheckBox>
 #include <QLayout>
 #include <QLocale>

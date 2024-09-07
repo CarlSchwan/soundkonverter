@@ -223,9 +223,9 @@ float soundkonverter_codec_musepack::parseOutput(const QString &output)
     // 0:04.1
     // 0:02.6
 
-    QRegExp reg("(\\d+\\.\\d)\\s+\\d+\\.\\d kbps");
+    QRegularExpression reg("(\\d+\\.\\d)\\s+\\d+\\.\\d kbps");
     if (output.contains(reg)) {
-        return reg.cap(1).toFloat();
+        return reg.match(output).captured(1).toFloat();
     }
 
     return -1;

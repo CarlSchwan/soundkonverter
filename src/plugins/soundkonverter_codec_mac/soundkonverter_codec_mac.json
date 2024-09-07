@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_mac",
         "License": "GPL",
         "Name": "soundKonverter Mac Plugin",
         "ServiceTypes": [

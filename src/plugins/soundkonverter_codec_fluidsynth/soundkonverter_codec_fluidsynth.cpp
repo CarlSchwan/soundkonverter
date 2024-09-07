@@ -14,7 +14,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-soundkonverter_codec_fluidsynth::soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args)
+soundkonverter_codec_fluidsynth::soundkonverter_codec_fluidsynth(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)

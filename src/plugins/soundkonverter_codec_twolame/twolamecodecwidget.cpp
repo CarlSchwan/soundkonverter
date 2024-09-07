@@ -6,6 +6,7 @@
 #include "../../core/conversionoptions.h"
 
 #include <KComboBox>
+#include <KLocalizedString>
 #include <QCheckBox>
 #include <QLabel>
 #include <QLayout>

@@ -3,6 +3,7 @@
 
 set(soundkonverter_codec_musepack_SRCS
    soundkonverter_codec_musepack.cpp
+   musepackconversionoptions.cpp
    musepackcodecwidget.cpp
 )
 

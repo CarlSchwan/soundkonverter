@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2021 Carl Schwan <carlschwan@kde.org>
 # SPDX-License-Identifier: BSD-2-Clause
 
-project(soundkonverter)
 cmake_minimum_required(VERSION 3.16)
+project(soundkonverter)
 
-set(KF_MIN_VERSION "5.240.0")
+set(KF_MIN_VERSION "6.5.0")
 set(QT_MIN_VERSION "6.5")
-set(TAGLIB_MIN_VERSION "1.11.1")
+set(TAGLIB_MIN_VERSION "2.0")
 
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -29,7 +29,7 @@ set_package_properties(Qt6 PROPERTIES
     PURPOSE "Required application components"
 )
 
-find_package(KF6 ${KF_MIN_VERSION} COMPONENTS I18n XmlGui KIO Solid Config ConfigWidgets WidgetsAddons StatusNotifierItem)
+find_package(KF6 ${KF_MIN_VERSION} COMPONENTS I18n XmlGui KCMUtils KIO Solid Config ConfigWidgets WidgetsAddons StatusNotifierItem)
 set_package_properties(KF6 PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required application components"

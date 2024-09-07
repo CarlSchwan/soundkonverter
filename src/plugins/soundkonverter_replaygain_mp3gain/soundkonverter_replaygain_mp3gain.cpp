@@ -278,8 +278,8 @@ float soundkonverter_replaygain_mp3gain::parseOutput(const QString &output)
 
     float progress = -1.0f;
 
-    QRegExp reg1("\\[(\\d+)/(\\d+)\\] (\\d+)%");
-    QRegExp reg2("(\\d+)%");
+    QRegularExpression reg1("\\[(\\d+)/(\\d+)\\] (\\d+)%");
+    QRegularExpression reg2("(\\d+)%");
     if (output.contains(reg1)) {
         float fraction = 1.0f / reg1.cap(2).toInt();
         progress = 100 * (reg1.cap(1).toInt() - 1) * fraction + reg1.cap(3).toInt() * fraction;
@@ -290,7 +290,7 @@ float soundkonverter_replaygain_mp3gain::parseOutput(const QString &output)
     // Applying mp3 gain change of -6 to /home/user/file.mp3...
     // Undoing mp3gain changes (6,6) to /home/user/file.mp3...
     // Deleting tag info of /home/user/file.mp3...
-    QRegExp reg3("[Applying mp3 gain change|Undoing mp3gain changes|Deleting tag info]");
+    QRegularExpression reg3("[Applying mp3 gain change|Undoing mp3gain changes|Deleting tag info]");
     if (progress == -1 && output.contains(reg3)) {
         progress = 0.0f;
     }

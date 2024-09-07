@@ -32,6 +32,8 @@ int main(int argc, char **argv)
     about.addCredit(i18n("All programmers of audio converters"), i18n("Backends"));
     about.addCredit(i18n("Patrick Auernig"), i18n("Inital Port to KDE Frameworks 5"), "patrick.auernig@gmail.com");
 
+    KAboutData::setApplicationData(about);
+
     QCommandLineParser parser;
     parser.addOption(QCommandLineOption("replaygain", i18n("Open the Replay Gain tool and add all given files")));
     parser.addOption(QCommandLineOption("rip <device>", i18n("List all tracks on the cd drive <device>, 'auto' will search for a cd")));

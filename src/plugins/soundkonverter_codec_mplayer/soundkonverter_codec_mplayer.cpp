@@ -4,7 +4,7 @@
 #include "../../core/conversionoptions.h"
 #include "soundkonverter_codec_mplayer.h"
 
-soundkonverter_codec_mplayer::soundkonverter_codec_mplayer(QObject *parent, const QVariantList &args)
+soundkonverter_codec_mplayer::soundkonverter_codec_mplayer(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -84,9 +84,9 @@ QList<ConversionPipeTrunk> soundkonverter_codec_mplayer::codecTable()
     }
 
     QSet<QString> codecs;
-    codecs += QSet<QString>::fromList(fromCodecs);
-    codecs += QSet<QString>::fromList(toCodecs);
-    allCodecs = codecs.toList();
+    codecs += QSet<QString>(fromCodecs.begin(), fromCodecs.end());
+    codecs += QSet<QString>(toCodecs.begin(), toCodecs.end());
+    allCodecs = QList<QString>(codecs.begin(), codecs.end());
 
     return table;
 }
@@ -189,11 +189,12 @@ float soundkonverter_codec_mplayer::parseOutput(const QString &output)
     // decoding video
     // A:19743.6 V:19743.6 A-V:  0.016 ct: -0.506 491/491  0%  0%  0.6% 237 0
 
-    QRegExp regAudio("A:\\s+(\\d+\\.\\d)\\s+\\(.*\\)\\s+of\\s+(\\d+\\.\\d)\\s+\\(.*\\)");
+    QRegularExpression regAudio("A:\\s+(\\d+\\.\\d)\\s+\\(.*\\)\\s+of\\s+(\\d+\\.\\d)\\s+\\(.*\\)");
     if (output.contains(regAudio)) {
-        return regAudio.cap(1).toFloat() / regAudio.cap(2).toFloat() * 100.0f;
+        auto match = regAudio.match(output);
+        return match.captured(1).toFloat() / match.captured(2).toFloat() * 100.0f;
     }
-    QRegExp regVideo("A:\\s*\\d+\\.\\d\\s+V:\\s*\\d+\\.\\d");
+    QRegularExpression regVideo("A:\\s*\\d+\\.\\d\\s+V:\\s*\\d+\\.\\d");
     if (output.contains(regVideo)) {
         return 0;
     }

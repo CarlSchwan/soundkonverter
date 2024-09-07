@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_lame",
         "License": "GPL",
         "Name": "soundKonverter Lame Plugin",
         "ServiceTypes": [

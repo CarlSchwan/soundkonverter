@@ -5,6 +5,7 @@
 #include "twolamecodecwidget.h"
 
 #include <KComboBox>
+#include <KLocalizedString>
 #include <QCheckBox>
 #include <QDialog>
 #include <QGroupBox>
@@ -15,7 +16,7 @@
 #include <QSpinBox>
 #include <QWidget>
 
-soundkonverter_codec_twolame::soundkonverter_codec_twolame(QObject *parent, const QVariantList &args)
+soundkonverter_codec_twolame::soundkonverter_codec_twolame(QObject *parent, const KPluginMetaData &metadata, const QVariantList &args)
     : CodecPlugin(parent)
 {
     Q_UNUSED(args)
@@ -88,16 +89,14 @@ bool soundkonverter_codec_twolame::hasInfo()
 void soundkonverter_codec_twolame::showInfo(QWidget *parent)
 {
     QDialog *dialog = new QDialog(parent);
-    dialog->setCaption(i18n("About %1", *global_plugin_name));
-    dialog->setButtons(QDialog::Ok);
+    dialog->setWindowTitle(i18n("About %1", *global_plugin_name));
+    // dialog->setButtons(QDialog::Ok);
 
     QLabel *widget = new QLabel(dialog);
 
     widget->setText(i18n("TwoLame is a free MP2 encoder.\nYou can get it at: http://www.twolame.org"));
 
-    dialog->setMainWidget(widget);
-
-    dialog->enableButtonApply(false);
+    // dialog->enableButtonApply(false);
     dialog->show();
 }
 

@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_fluidsynth",
         "License": "GPL",
         "Name": "soundKonverter Fluidsynth Plugin",
         "ServiceTypes": [

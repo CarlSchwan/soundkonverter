@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_mplayer",
         "License": "GPL",
         "Name": "soundKonverter MPlayer Plugin",
         "ServiceTypes": [

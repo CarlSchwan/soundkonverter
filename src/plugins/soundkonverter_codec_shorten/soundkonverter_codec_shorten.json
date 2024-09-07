@@ -6,7 +6,6 @@
                 "Name": "Daniel Faust"
             }
         ],
-        "Id": "soundkonverter_codec_shorten",
         "License": "GPL",
         "Name": "soundKonverter Shorten Plugin",
         "ServiceTypes": [

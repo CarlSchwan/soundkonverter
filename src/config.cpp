@@ -138,7 +138,6 @@ void Config::load()
         PluginLoader::CompressionType(PluginLoader::InferiorQuality | PluginLoader::Lossy | PluginLoader::Lossless | PluginLoader::Hybrid));
 
     // build default backend priority list
-
     foreach (const QString &format, formats) {
         if (format == "wav")
             continue;
